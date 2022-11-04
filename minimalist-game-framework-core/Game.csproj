@@ -1,0 +1,45 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>Builds\Temp</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>Builds\Debug</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>Builds\Release</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Assets\**" />
+    <Compile Remove="Docs\**" />
+    <Compile Remove="Libraries\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <EmbeddedResource Remove="Docs\**" />
+    <EmbeddedResource Remove="Libraries\**" />
+    <None Remove="Assets\**" />
+    <None Remove="Docs\**" />
+    <None Remove="Libraries\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="LICENSE.md" />
+    <None Remove="README.md" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>
