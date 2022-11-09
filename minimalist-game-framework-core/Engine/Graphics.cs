@@ -17,6 +17,19 @@ static partial class Engine
         SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
     }
 
+    
+    /// <summary>
+    /// Draws a single point
+    /// </summary>
+    /// <param name="point">The location of the point.</param>
+    /// <param name="color">The color of the point.</param>
+    public static void DrawPoint(Vector2 point, Color color)
+    {
+        DrawPrimitiveSetup(color);
+
+        SDL.SDL_RenderDrawPoint(Renderer, (int)point.X, (int)point.Y);
+    }
+    
     /// <summary>
     /// Draws a line.
     /// </summary>
