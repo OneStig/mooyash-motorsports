@@ -109,6 +109,67 @@ static partial class Engine
     }
 }
 
+
+/// <summary>
+/// Representation of a polygon for geometry and rendering
+/// </summary>
+class Polygon
+{
+    public readonly SDL.SDL_Point[] points;
+    public readonly int vertices;
+
+    public Polygon(Vector2[] initial)
+    {
+        vertices = initial.Length;
+        points = new SDL.SDL_Point[vertices];
+
+        for (int i = 0; i < vertices; i++)
+        {
+            points[i].x = (int)initial[i].X;
+            points[i].y = (int)initial[i].Y;
+        }
+    }
+
+    public void editPoint(int index, Vector2 position)
+    {
+        points[index].x = (int)position.X;
+        points[index].y = (int)position.Y;
+    }
+
+    public SDL.SDL_Point getCenter()
+    {
+        SDL.SDL_Point min = points[0];
+        SDL.SDL_Point max = points[0];
+        
+        for (int i = 1; i < points.Length; i++)
+        {
+            if (points[i].x > max.x)
+            {
+                max.x = points[i].x;
+            }
+            else if (points[i].x < min.x)
+            {
+                min.x = points[i].x;
+            }
+
+            if (points[i].y > max.y)
+            {
+                max.y = points[i].y;
+            }
+            else if (points[i].y < min.y)
+            {
+                min.y = points[i].y;
+            }
+        }
+
+        SDL.SDL_Point ans;
+        ans.x = min.x + (max.x - min.x) / 2;
+        ans.y = min.y + (max.y - min.y) / 2;
+
+        return ans;
+    }
+}
+
 /// <summary>
 /// A handle to a texture. These should only be created by calling LoadTexture().
 /// </summary>
