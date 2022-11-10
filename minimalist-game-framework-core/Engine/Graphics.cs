@@ -95,28 +95,29 @@ static partial class Engine
             xBucket[i] = Int32.MinValue;
         }
 
-        for (int i = 1; i < points.Length; i++)
+        for (int i = 0; i < points.Length; i++)
         {
-            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[i - 1].x, points[i - 1].y);
+            int ia = (i + 1) % points.Length;
+            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[ia].x, points[ia].y);
 
-            if (points[i].x == points[i - 1].x)
+            if (points[i].x == points[ia].x)
             {
                 continue;
             }
 
-            double m = (points[i].y * 1.0 - points[i - 1].y * 1.0) / (points[i].x * 1.0 - points[i - 1].x * 1.0);
+            double m = (points[i].y * 1.0 - points[ia].y * 1.0) / (points[i].x * 1.0 - points[ia].x * 1.0);
             double b = m * points[i].x * -1 + points[i].y;
 
             int start, end;
-            if (points[i - 1].x < points[i].x)
+            if (points[i].x < points[ia].x)
             {
-                start = points[i - 1].x;
-                end = points[i].x - 1;
+                start = points[i].x;
+                end = points[ia].x - 1;
             }
             else
             {
-                start = points[i].x + 1;
-                end = points[i - 1].x;
+                start = points[ia].x + 1;
+                end = points[i].x;
             }
 
             start = Math.Max(0, start);
