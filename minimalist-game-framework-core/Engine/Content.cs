@@ -116,30 +116,44 @@ static partial class Engine
 class Polygon
 {
     public readonly SDL.SDL_Point[] points;
+    public int topPoint;
     public readonly int vertices;
 
     public Polygon(Vector2[] initial)
     {
-        vertices = initial.Length;
-        points = new SDL.SDL_Point[vertices];
-
-        for (int i = 0; i < vertices; i++)
+        if (initial.Length > 0)
         {
-            points[i].x = (int)initial[i].X;
-            points[i].y = (int)initial[i].Y;
+            vertices = initial.Length;
+            points = new SDL.SDL_Point[vertices];
+            topPoint = 0;
+
+            for (int i = 0; i < vertices; i++)
+            {
+                points[i].x = (int)initial[i].X;
+                points[i].y = (int)initial[i].Y;
+
+                if (points[i].y < points[topPoint].y)
+                {
+                    topPoint = i;
+                }
+            }
         }
     }
 
     public void editPoint(int index, Vector2 position)
     {
-        points[index].x = (int)position.X;
-        points[index].y = (int)position.Y;
+        if (index < vertices && index >= 0)
+        {
+            points[index].x = (int)position.X;
+            points[index].y = (int)position.Y;
+        }
     }
 
     public SDL.SDL_Point getCenter()
     {
         SDL.SDL_Point min = points[0];
         SDL.SDL_Point max = points[0];
+        topPoint = 0;
         
         for (int i = 1; i < points.Length; i++)
         {
@@ -158,6 +172,7 @@ class Polygon
             }
             else if (points[i].y < min.y)
             {
+                topPoint = i;
                 min.y = points[i].y;
             }
         }
