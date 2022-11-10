@@ -92,7 +92,7 @@ static partial class Engine
 
         for (int i = 0; i < xBucket.Length; i++)
         {
-            xBucket[i] = -1;
+            xBucket[i] = Int32.MinValue;
         }
 
         for (int i = 1; i < points.Length; i++)
@@ -119,13 +119,16 @@ static partial class Engine
                 end = points[i - 1].x;
             }
 
+            start = Math.Max(0, start);
+            end = Math.Min((int)Game.Resolution.X, end);
+
             for (int x = start; x <= end; x++)
             {
                 int y = (int)Math.Round(m * x + b);
 
                 SDL.SDL_RenderDrawPoint(Renderer, x, y);
 
-                if (xBucket[x - points[polygon.xMin].x] == -1)
+                if (xBucket[x - points[polygon.xMin].x] == Int32.MinValue)
                 {
                     xBucket[x - points[polygon.xMin].x] = y;
                 }
