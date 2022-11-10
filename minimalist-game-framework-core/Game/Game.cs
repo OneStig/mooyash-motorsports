@@ -12,7 +12,5 @@ class Game
 
     public void Update()
     {
-        Polygon p = new Polygon(new int[] { 30, 200, 230, 100, -30 }, new int[] { 40, -50, 100, 150, 75 });
-        Engine.DrawConvexPolygon(p, new Color(255, 255, 255));
     }
 }
