@@ -145,6 +145,33 @@ class Polygon
             }
         }
     }
+
+    public Polygon(int[] xVals, int[] yVals)
+    {
+        if (xVals.Length > 0 && xVals.Length == yVals.Length)
+        {
+            vertices = xVals.Length;
+            points = new SDL.SDL_Point[vertices];
+            xMin = 0;
+            xMax = 0;
+
+            for (int i = 0; i < vertices; i++)
+            {
+                points[i].x = xVals[i];
+                points[i].y = yVals[i];
+
+                if (points[i].x < points[xMin].x)
+                {
+                    xMin = i;
+                }
+
+                if (points[i].x > points[xMax].x)
+                {
+                    xMax = i;
+                }
+            }
+        }
+    }
 }
 
 /// <summary>

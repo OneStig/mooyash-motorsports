@@ -77,6 +77,68 @@ static partial class Engine
         SDL.SDL_RenderFillRect(Renderer, ref rect);
     }
 
+    /// <summary>
+    /// Draws a filled in solid colored polygon. Assumes the polygon is convex.
+    /// </summary>
+    /// <param name="polygon">The bounds of the polygon.</param>
+    /// <param name="color">The color of the polygon.</param>
+    public static void DrawConvexPolygon(Polygon polygon, Color color)
+    {
+        DrawPrimitiveSetup(color);
+
+        SDL.SDL_Point[] points = polygon.points;
+
+        int[] xBucket = new int[points[polygon.xMax].x - points[polygon.xMin].x + 1];
+
+        for (int i = 0; i < xBucket.Length; i++)
+        {
+            xBucket[i] = -1;
+        }
+
+        for (int i = 1; i < points.Length; i++)
+        {
+            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[i - 1].x, points[i - 1].y);
+
+            if (points[i].x == points[i - 1].x)
+            {
+                continue;
+            }
+
+            double m = (points[i].y * 1.0 - points[i - 1].y * 1.0) / (points[i].x * 1.0 - points[i - 1].x * 1.0);
+            double b = m * points[i].x * -1 + points[i].y;
+
+            int start, end;
+            if (points[i - 1].x < points[i].x)
+            {
+                start = points[i - 1].x;
+                end = points[i].x - 1;
+            }
+            else
+            {
+                start = points[i].x + 1;
+                end = points[i - 1].x;
+            }
+
+            for (int x = start; x <= end; x++)
+            {
+                int y = (int)Math.Round(m * x + b);
+
+                SDL.SDL_RenderDrawPoint(Renderer, x, y);
+
+                if (xBucket[x - points[polygon.xMin].x] == -1)
+                {
+                    xBucket[x - points[polygon.xMin].x] = y;
+                }
+                else
+                {
+                    SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - points[polygon.xMin].x]);
+                }
+            }
+        }
+
+        SDL.SDL_RenderDrawLine(Renderer, points[0].x, points[0].y, points[points.Length - 1].x, points[points.Length - 1].y);
+    }
+
     // ======================================================================================
     // Texture drawing
     // ======================================================================================
