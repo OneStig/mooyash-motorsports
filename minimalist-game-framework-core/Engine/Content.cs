@@ -111,12 +111,12 @@ static partial class Engine
 
 
 /// <summary>
-/// Representation of a polygon for geometry and rendering
+/// Representation of a polygon for geometry and rendering.
 /// </summary>
 class Polygon
 {
-    public readonly SDL.SDL_Point[] points;
-    public int topPoint;
+    public SDL.SDL_Point[] points;
+    public int xMin, xMax;
     public readonly int vertices;
 
     public Polygon(Vector2[] initial)
@@ -125,63 +125,25 @@ class Polygon
         {
             vertices = initial.Length;
             points = new SDL.SDL_Point[vertices];
-            topPoint = 0;
+            xMin = 0;
+            xMax = 0;
 
             for (int i = 0; i < vertices; i++)
             {
                 points[i].x = (int)initial[i].X;
                 points[i].y = (int)initial[i].Y;
 
-                if (points[i].y < points[topPoint].y)
+                if (points[i].x < points[xMin].x)
                 {
-                    topPoint = i;
+                    xMin = i;
+                }
+
+                if (points[i].x > points[xMax].x)
+                {
+                    xMax = i;
                 }
             }
         }
-    }
-
-    public void editPoint(int index, Vector2 position)
-    {
-        if (index < vertices && index >= 0)
-        {
-            points[index].x = (int)position.X;
-            points[index].y = (int)position.Y;
-        }
-    }
-
-    public SDL.SDL_Point getCenter()
-    {
-        SDL.SDL_Point min = points[0];
-        SDL.SDL_Point max = points[0];
-        topPoint = 0;
-        
-        for (int i = 1; i < points.Length; i++)
-        {
-            if (points[i].x > max.x)
-            {
-                max.x = points[i].x;
-            }
-            else if (points[i].x < min.x)
-            {
-                min.x = points[i].x;
-            }
-
-            if (points[i].y > max.y)
-            {
-                max.y = points[i].y;
-            }
-            else if (points[i].y < min.y)
-            {
-                topPoint = i;
-                min.y = points[i].y;
-            }
-        }
-
-        SDL.SDL_Point ans;
-        ans.x = min.x + (max.x - min.x) / 2;
-        ans.y = min.y + (max.y - min.y) / 2;
-
-        return ans;
     }
 }
 
