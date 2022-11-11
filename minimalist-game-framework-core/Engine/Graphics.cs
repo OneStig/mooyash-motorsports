@@ -82,9 +82,9 @@ static partial class Engine
     /// </summary>
     /// <param name="polygon">The bounds of the polygon.</param>
     /// <param name="color">The color of the polygon.</param>
-    public static void DrawConvexPolygon(Polygon polygon, Color color)
+    public static void DrawConvexPolygon(Polygon polygon)
     {
-        DrawPrimitiveSetup(color);
+        DrawPrimitiveSetup(polygon.color);
 
         SDL.SDL_Point[] points = polygon.points;
 

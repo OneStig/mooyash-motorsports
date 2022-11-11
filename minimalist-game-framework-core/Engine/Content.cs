@@ -116,13 +116,16 @@ static partial class Engine
 class Polygon
 {
     public SDL.SDL_Point[] points;
+    public Color color;
     public int xMin, xMax;
     public readonly int vertices;
 
-    public Polygon(Vector2[] initial)
+    public Polygon(Vector2[] initial, Color color)
     {
         if (initial.Length > 0)
         {
+            this.color = color;
+
             vertices = initial.Length;
             points = new SDL.SDL_Point[vertices];
             xMin = 0;
@@ -146,10 +149,12 @@ class Polygon
         }
     }
 
-    public Polygon(int[] xVals, int[] yVals)
+    public Polygon(int[] xVals, int[] yVals, Color color)
     {
         if (xVals.Length > 0 && xVals.Length == yVals.Length)
         {
+            this.color = color;
+
             vertices = xVals.Length;
             points = new SDL.SDL_Point[vertices];
             xMin = 0;
