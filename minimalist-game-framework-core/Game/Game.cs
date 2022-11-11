@@ -9,9 +9,9 @@ class Game
     public static readonly Vector2 Resolution = new Vector2(320, 180);
 
     public Dictionary<string, GameObject> gameObjects;
-    // public string[] allObjects;
+    public string[] allObjects;
 
-    // bool mode; (saves 31 bits of overhead yay)
+    bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
@@ -19,16 +19,20 @@ class Game
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
+        playing = false;
     }
 
     public void Update()
     {
-        // if mode false:
-        //  handled by menu class
-
-        // if mode true:
-        //  input handling
-        //  physics handled by physics engine
-        //  rendering handled by rendering engine
+        if (playing)
+        {
+            //  input handling
+            //  physics handled by physics engine
+            //  rendering handled by rendering engine
+        }
+        else
+        {
+            //  handled by menu class
+        }
     }
 }
