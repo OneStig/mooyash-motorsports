@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-struct Vector2
+public struct Vector2
 {
     public float X, Y;
 

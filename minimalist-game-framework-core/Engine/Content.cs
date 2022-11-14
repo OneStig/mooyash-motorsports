@@ -113,7 +113,7 @@ static partial class Engine
 /// <summary>
 /// Representation of a polygon for geometry and rendering.
 /// </summary>
-class Polygon
+public class Polygon
 {
     public SDL.SDL_Point[] points;
     public Color color;
@@ -182,7 +182,7 @@ class Polygon
 /// <summary>
 /// A handle to a texture. These should only be created by calling LoadTexture().
 /// </summary>
-class Texture
+public class Texture
 {
     public readonly IntPtr Handle;
     public readonly int Width;
