@@ -17,6 +17,19 @@ static partial class Engine
         SDL.SDL_SetRenderDrawBlendMode(Renderer, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
     }
 
+    
+    /// <summary>
+    /// Draws a single point
+    /// </summary>
+    /// <param name="point">The location of the point.</param>
+    /// <param name="color">The color of the point.</param>
+    public static void DrawPoint(Vector2 point, Color color)
+    {
+        DrawPrimitiveSetup(color);
+
+        SDL.SDL_RenderDrawPoint(Renderer, (int)point.X, (int)point.Y);
+    }
+    
     /// <summary>
     /// Draws a line.
     /// </summary>
@@ -62,6 +75,72 @@ static partial class Engine
         rect.w = (int)bounds.Size.X;
         rect.h = (int)bounds.Size.Y;
         SDL.SDL_RenderFillRect(Renderer, ref rect);
+    }
+
+    /// <summary>
+    /// Draws a filled in solid colored polygon. Assumes the polygon is convex.
+    /// </summary>
+    /// <param name="polygon">The bounds of the polygon.</param>
+    /// <param name="color">The color of the polygon.</param>
+    public static void DrawConvexPolygon(Polygon polygon)
+    {
+        DrawPrimitiveSetup(polygon.color);
+
+        SDL.SDL_Point[] points = polygon.points;
+
+        int[] xBucket = new int[points[polygon.xMax].x - points[polygon.xMin].x + 1];
+
+        for (int i = 0; i < xBucket.Length; i++)
+        {
+            xBucket[i] = Int32.MinValue;
+        }
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            int ia = (i + 1) % points.Length;
+            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[ia].x, points[ia].y);
+
+            if (points[i].x == points[ia].x)
+            {
+                continue;
+            }
+
+            double m = (points[i].y * 1.0 - points[ia].y * 1.0) / (points[i].x * 1.0 - points[ia].x * 1.0);
+            double b = m * points[i].x * -1 + points[i].y;
+
+            int start, end;
+            if (points[i].x < points[ia].x)
+            {
+                start = points[i].x;
+                end = points[ia].x - 1;
+            }
+            else
+            {
+                start = points[ia].x + 1;
+                end = points[i].x;
+            }
+
+            start = Math.Max(0, start);
+            end = Math.Min((int)Game.Resolution.X, end);
+
+            for (int x = start; x <= end; x++)
+            {
+                int y = (int)Math.Round(m * x + b);
+
+                SDL.SDL_RenderDrawPoint(Renderer, x, y);
+
+                if (xBucket[x - points[polygon.xMin].x] == Int32.MinValue)
+                {
+                    xBucket[x - points[polygon.xMin].x] = y;
+                }
+                else
+                {
+                    SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - points[polygon.xMin].x]);
+                }
+            }
+        }
+
+        SDL.SDL_RenderDrawLine(Renderer, points[0].x, points[0].y, points[points.Length - 1].x, points[points.Length - 1].y);
     }
 
     // ======================================================================================

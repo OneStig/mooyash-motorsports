@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-struct Color
+public struct Color
 {
     public byte R;
     public byte G;

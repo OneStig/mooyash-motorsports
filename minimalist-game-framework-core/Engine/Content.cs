@@ -109,10 +109,80 @@ static partial class Engine
     }
 }
 
+
+/// <summary>
+/// Representation of a polygon for geometry and rendering.
+/// </summary>
+public class Polygon
+{
+    public SDL.SDL_Point[] points;
+    public Color color;
+    public int xMin, xMax;
+    public readonly int vertices;
+
+    public Polygon(Vector2[] initial, Color color)
+    {
+        if (initial.Length > 0)
+        {
+            this.color = color;
+
+            vertices = initial.Length;
+            points = new SDL.SDL_Point[vertices];
+            xMin = 0;
+            xMax = 0;
+
+            for (int i = 0; i < vertices; i++)
+            {
+                points[i].x = (int)initial[i].X;
+                points[i].y = (int)initial[i].Y;
+
+                if (points[i].x < points[xMin].x)
+                {
+                    xMin = i;
+                }
+
+                if (points[i].x > points[xMax].x)
+                {
+                    xMax = i;
+                }
+            }
+        }
+    }
+
+    public Polygon(int[] xVals, int[] yVals, Color color)
+    {
+        if (xVals.Length > 0 && xVals.Length == yVals.Length)
+        {
+            this.color = color;
+
+            vertices = xVals.Length;
+            points = new SDL.SDL_Point[vertices];
+            xMin = 0;
+            xMax = 0;
+
+            for (int i = 0; i < vertices; i++)
+            {
+                points[i].x = xVals[i];
+                points[i].y = yVals[i];
+
+                if (points[i].x < points[xMin].x)
+                {
+                    xMin = i;
+                }
+
+                if (points[i].x > points[xMax].x)
+                {
+                    xMax = i;
+                }
+            }
+        }
+    }
+}
+
 /// <summary>
 /// A handle to a texture. These should only be created by calling LoadTexture().
 /// </summary>
-class Texture
+public class Texture
 {
     public readonly IntPtr Handle;
     public readonly int Width;
