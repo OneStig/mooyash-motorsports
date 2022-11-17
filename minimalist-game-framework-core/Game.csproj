@@ -32,6 +32,7 @@
     <None Remove="Assets\**" />
     <None Remove="Docs\**" />
     <None Remove="Libraries\**" />
+    <None Remove="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,9 @@
     <None Remove="README.md" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
 </Project>
