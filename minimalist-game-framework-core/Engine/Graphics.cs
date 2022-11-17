@@ -77,11 +77,24 @@ static partial class Engine
         SDL.SDL_RenderFillRect(Renderer, ref rect);
     }
 
+    public static void DrawConvexYCap(Polygon polygon, int maxY)
+    {
+        Polygon newP = polygon;
+
+        for (int i = 0; i < polygon.points.Length; i++)
+        {
+            polygon.points[i].y = Math.Max(polygon.points[i].y, 180 - maxY);
+        }
+
+        DrawConvexPolygon(newP);
+    }
+
     /// <summary>
     /// Draws a filled in solid colored polygon. Assumes the polygon is convex.
     /// </summary>
     /// <param name="polygon">The bounds of the polygon.</param>
     /// <param name="color">The color of the polygon.</param>
+    /// 
     public static void DrawConvexPolygon(Polygon polygon)
     {
         DrawPrimitiveSetup(polygon.color);

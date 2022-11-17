@@ -20,10 +20,18 @@ class Game
 
         // First mode is false (menu)
         playing = false;
+
+        RenderEngine.camera = new Camera();
+        RenderEngine.camera.position = new Vector2(230, 300);
+        RenderEngine.camera.angle = Math.PI/2;
+        RenderEngine.camera.scale = 1;
+        RenderEngine.camera.vanish = 150;
     }
 
     public void Update()
     {
+        
+        RenderEngine.drawPerTrack(Track.templateTrack);
         if (playing)
         {
             //  input handling

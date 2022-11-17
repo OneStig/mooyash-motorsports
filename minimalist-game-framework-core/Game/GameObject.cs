@@ -5,7 +5,7 @@ namespace Mooyash.Modules
     public class GameObject
     {
         public Vector2 position;
-        public double angle; //radians counter-clockwise to positive x-axis
+        public double angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
         public Texture[] textures;
     }
