@@ -7,6 +7,12 @@ namespace Mooyash.Modules
     {
         public List<Polygon> interactable;
         public List<Polygon> visual;
+
+        public Track(List<Polygon> interactable, List<Polygon> visual)
+        {
+            this.interactable = interactable;
+            this.visual = visual;
+        }
     }
 }
 

@@ -6,7 +6,7 @@ using Mooyash.Services;
 class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
-    public static readonly Vector2 Resolution = new Vector2(320, 180);
+    public static readonly Vector2 Resolution = new Vector2(1280, 720);
 
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
@@ -29,10 +29,16 @@ class Game
             //  input handling
             //  physics handled by physics engine
             //  rendering handled by rendering engine
+
+            Render
         }
         else
         {
             //  handled by menu class
+            if (Engine.GetKeyDown(Key.Space))
+            {
+                playing = true;
+            }
         }
     }
 }
