@@ -6,7 +6,7 @@ namespace Mooyash.Services
     {
         private static int frameCount = 0;
         private static Texture[] titles = new Texture[43];
-        
+
 
         public static void loadMenuAndBackground()
         {
@@ -22,14 +22,15 @@ namespace Mooyash.Services
         {
             //increment the framCount int by one and load the next frame every time this is called
             Engine.DrawTexture(titles[frameCount], new Vector2(70, 25));
-            if(frameCount == 42)
+            if (frameCount == 42)
             {
                 frameCount = 0;
-            } else
+            }
+            else
             {
                 frameCount++;
             }
-            
+
         }
 
     //button object, supports squares and rectangles
@@ -67,5 +68,25 @@ namespace Mooyash.Services
         {
             return withinButton() && Engine.GetKeyDown(key);
         }
+    }
+    public class Screen
+    {
+        public Texture[] textures;
+        public Vector2[] positions;
+        public Vector2[] sizes;
+
+        public Screen(Texture[] textures, Vector2[] positions, Vector2[] sizes)
+        {
+            this.textures = textures;
+            this.positions = positions;
+            this.sizes = sizes;
+        }
+
+        public void DrawScreen(int frame)
+        {
+            int i = frame % textures.Length;
+            Engine.DrawTexture(textures[i], positions[i], size: sizes[i]);
+        }
+
     }
 }
