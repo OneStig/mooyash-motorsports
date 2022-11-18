@@ -174,6 +174,34 @@ public class Polygon
             }
         }
     }
+
+    public bool splice(double height)
+    {
+        bool[] bounds = new bool[points.Length];
+        int count = 0;
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            bounds[i] = false;
+            if (points[i].Y < height)
+            {
+                bounds[i] = true;
+                count++;
+            }
+        }
+
+        if (count == points.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < points.Length; i++) {
+
+        }
+
+
+        return true;
+    }
 }
 
 /// <summary>
