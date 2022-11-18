@@ -4,22 +4,23 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        
+        static int cc;
+        static int mapChoice;
+        static bool timeTrial;
+
     }
 
     //button object, supports squares and rectangles
     public class button
     {
         //coordinates start from the top left, width determines size of the button
-        int x0;
-        int y0;
+        Vector2 dimensions;
         int xWidth;
         int yWidth;
 
-        public button(int x0, int y0, int xWidth, int yWidth)
-        { 
-            this.x0 = x0; 
-            this.y0 = y0;
+        public button(Vector2 dimensions, int xWidth, int yWidth)
+        {
+            this.dimensions = dimensions;
             this.xWidth = xWidth;
             this.yWidth = yWidth;
         }
@@ -30,19 +31,19 @@ namespace Mooyash.Services
             int mouseX = (int)Engine.MousePosition.X;
             int mouseY = (int)Engine.MousePosition.Y;
 
-            return (mouseX < (x0 + xWidth)) && (mouseY < (y0 + yWidth));
+            return (mouseX < (dimensions.X + xWidth)) && (mouseY < (dimensions.Y + yWidth));
         }
 
-        //whether the user has left clicked the button
-        public bool isClickedLeft()
+        //returns whether a mouse button has been clicked
+        public bool isMouseClicked(MouseButton button)
         {
-            return withinButton() && Engine.GetMouseButtonDown(MouseButton.Left);
+            return withinButton() && Engine.GetMouseButtonDown(button);
         }
-
-        //whether the user has right clicked the button
-        public bool isClickedRight()
+        
+        //returns whether a key has been pressed
+        public bool isClickedKey(Key key) 
         {
-            return withinButton() && Engine.GetMouseButtonDown(MouseButton.Right);
+            return withinButton() && Engine.GetKeyDown(key);
         }
     }
 }
