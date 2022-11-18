@@ -34,7 +34,7 @@ static partial class Engine
         }
         catch
         {
-            Console.WriteLine("Running on non-Windows OS");
+            Console.WriteLine("MACS ARE SIMPLY BETTER");
         }
         
 
