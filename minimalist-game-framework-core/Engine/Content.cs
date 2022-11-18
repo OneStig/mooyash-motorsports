@@ -115,7 +115,7 @@ static partial class Engine
 /// </summary>
 public class Polygon
 {
-    public SDL.SDL_Point[] points;
+    public Vector2[] points;
     public Color color;
     public int xMin, xMax;
     public readonly int vertices;
@@ -127,21 +127,18 @@ public class Polygon
             this.color = color;
 
             vertices = initial.Length;
-            points = new SDL.SDL_Point[vertices];
+            points = initial;
             xMin = 0;
             xMax = 0;
 
             for (int i = 0; i < vertices; i++)
             {
-                points[i].x = (int)initial[i].X;
-                points[i].y = (int)initial[i].Y;
-
-                if (points[i].x < points[xMin].x)
+                if (points[i].X < points[xMin].X)
                 {
                     xMin = i;
                 }
 
-                if (points[i].x > points[xMax].x)
+                if (points[i].X > points[xMax].X)
                 {
                     xMax = i;
                 }
@@ -149,28 +146,28 @@ public class Polygon
         }
     }
 
-    public Polygon(int[] xVals, int[] yVals, Color color)
+    public Polygon(float[] xVals, float[] yVals, Color color)
     {
         if (xVals.Length > 0 && xVals.Length == yVals.Length)
         {
             this.color = color;
 
             vertices = xVals.Length;
-            points = new SDL.SDL_Point[vertices];
+            points = new Vector2[vertices];
             xMin = 0;
             xMax = 0;
 
             for (int i = 0; i < vertices; i++)
             {
-                points[i].x = xVals[i];
-                points[i].y = yVals[i];
+                points[i].X = xVals[i];
+                points[i].Y = yVals[i];
 
-                if (points[i].x < points[xMin].x)
+                if (points[i].X < points[xMin].X)
                 {
                     xMin = i;
                 }
 
-                if (points[i].x > points[xMax].x)
+                if (points[i].X > points[xMax].X)
                 {
                     xMax = i;
                 }
