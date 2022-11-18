@@ -22,15 +22,15 @@ class Game
         playing = false;
 
         RenderEngine.camera = new Camera();
-        RenderEngine.camera.position = new Vector2(230, 300);
+        RenderEngine.camera.position = new Vector2(235, 350);
         RenderEngine.camera.angle = Math.PI/2;
-        RenderEngine.camera.scale = 1;
-        RenderEngine.camera.vanish = 150;
+        RenderEngine.camera.height = 1;
+        RenderEngine.camera.hfov = Math.PI/2;
+        RenderEngine.camera.screen = 1;
     }
 
     public void Update()
     {
-        
         RenderEngine.drawPerTrack(Track.templateTrack);
         if (playing)
         {

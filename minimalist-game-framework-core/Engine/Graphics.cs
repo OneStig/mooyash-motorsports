@@ -83,7 +83,7 @@ static partial class Engine
 
         for (int i = 0; i < polygon.points.Length; i++)
         {
-            polygon.points[i].y = Math.Max(polygon.points[i].y, 180 - maxY);
+            polygon.points[i].y = Math.Max(polygon.points[i].y, maxY);
         }
 
         DrawConvexPolygon(newP);
