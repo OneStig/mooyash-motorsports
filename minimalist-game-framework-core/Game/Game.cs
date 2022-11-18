@@ -17,7 +17,7 @@ class Game
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-
+        MenuSystem.loadMenuAndBackground();
         // First mode is false (menu)
         playing = false;
     }
@@ -32,7 +32,7 @@ class Game
         }
         else
         {
-            //  handled by menu class
+            MenuSystem.updateMenuAndBackground();
         }
     }
 }

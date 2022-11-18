@@ -4,11 +4,33 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        static int cc;
-        static int mapChoice;
-        static bool timeTrial;
+        private static int frameCount = 0;
+        private static Texture[] titles = new Texture[43];
+        
 
-    }
+        public static void loadMenuAndBackground()
+        {
+            for (int i = 1; i < 44; i++)
+            {
+                titles[i - 1] = Engine.LoadTexture("Title" + i + ".png");
+
+            }
+
+        }
+
+        public static void updateMenuAndBackground()
+        {
+            //increment the framCount int by one and load the next frame every time this is called
+            Engine.DrawTexture(titles[frameCount], new Vector2(70, 25));
+            if(frameCount == 42)
+            {
+                frameCount = 0;
+            } else
+            {
+                frameCount++;
+            }
+            
+        }
 
     //button object, supports squares and rectangles
     public class button
@@ -25,11 +47,11 @@ namespace Mooyash.Services
             this.yWidth = yWidth;
         }
 
-        //returns whether the mouse is within the bounds of the button
-        private bool withinButton()
-        {
-            int mouseX = (int)Engine.MousePosition.X;
-            int mouseY = (int)Engine.MousePosition.Y;
+            //returns whether the mouse is within the bounds of the button
+            private bool withinButton()
+            {
+                int mouseX = (int)Engine.MousePosition.X;
+                int mouseY = (int)Engine.MousePosition.Y;
 
             return (mouseX < (dimensions.X + xWidth)) && (mouseY < (dimensions.Y + yWidth));
         }
@@ -47,4 +69,3 @@ namespace Mooyash.Services
         }
     }
 }
-
