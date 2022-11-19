@@ -33,10 +33,10 @@ namespace Mooyash.Services
         {
             Vector2 result = new Vector2();
             //project coordinates onto screen
-            result.X =  camera.screen * input.X / input.Y;
+            result.X = camera.screen * input.X / input.Y;
             result.Y = -camera.screen * camera.height / input.Y;
             //scale according to FOV
-            float scale = Game.Resolution.X / (float) (2 * camera.screen * Math.Tan(camera.hfov / 2));
+            float scale = Game.Resolution.X / (float)(2 * camera.screen * Math.Tan(camera.hfov / 2));
             result.X = result.X * scale;
             result.Y = result.Y * scale;
             //convert to MGF coordinate system
@@ -56,34 +56,35 @@ namespace Mooyash.Services
 
         public static void drawPerPolygon(Polygon p)
         {
-            Vector2[] points = new Vector2[p.points.Length];
-            bool draw = false;
-            for(int i = 0; i < points.Length; i++)
+            Polygon temp = new Polygon(p.points);
+            //Vector2[] points = new Vector2[p.points.Length];
+            bool draw = true;
+            bool splice = true;
+            //check whether polygon should be drawn (return if shouldn't) or spliced
+            if(!draw) { return; }
+            for (int i = 0; i < temp.points.Length; i++)
             {
-                p.points[i] = rotate(p.points[i]);
+                temp.points[i] = rotate(p.points[i]);
             }
-            if(!p.splice())
+            if (splice)
             {
-
+                temp.splice();
             }
-            for(int i = 0; i < points.Length; i++)
+            for (int i = 0; i < points.Length; i++)
             {
-                p.points[i] = convert(p.points[i]);
+                temp.points[i] = project(temp.points[i]);
             }
-            if(draw)
-            {
-                Engine.DrawConvexPolygon(new Polygon(p.points, p.color));
-            }
+            Engine.DrawConvexPolygon(temp);
         }
 
         //don't draw everything in the track
         public static void drawPerTrack(Track t)
         {
-            foreach(Polygon p in t.interactable)
+            foreach (Polygon p in t.interactable)
             {
                 drawPerPolygon(p);
             }
-            foreach(Polygon p in t.visual)
+            foreach (Polygon p in t.visual)
             {
                 drawPerPolygon(p);
             }
