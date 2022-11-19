@@ -11,6 +11,24 @@ namespace Mooyash.Modules
         public static readonly Color dirt = new Color(155, 118, 83);
         public static readonly Color grass = new Color(31, 109, 4);
 
+        public static readonly Track testTrack = new Track(
+            new List<Polygon>()
+            {
+                new Polygon(
+                    new float[]
+                    {
+                        50, 100, 100, 50
+                    },
+                    new float[]
+                    {
+                        50, 50, 100, 100
+                    }, new Color(255, 255, 255)
+                    )
+            },
+
+            new List<Polygon>()
+            );
+
         public static readonly Track templateTrack = new Track(
             new List<Polygon>() // interactable polys
             {

@@ -73,7 +73,14 @@ namespace Mooyash.Services
 
         public static void drawPerPolygon(Polygon p)
         {
-            Polygon temp = new Polygon(p.points, p.color);
+            Vector2[] tempPoints = new Vector2[p.vertices];
+
+            for (int i = 0; i < p.vertices; i++)
+            {
+                tempPoints[i] = p.points[i];
+            }
+
+            Polygon temp = new Polygon(tempPoints, p.color);
             bool draw = false;
             bool splice = false;
             bool inside;
@@ -92,9 +99,11 @@ namespace Mooyash.Services
             {
                 temp.splice(camera.screen);
             }
+
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = project(temp.points[i]);
+                temp.points[i].Y -= 100;
             }
             //FIX THIS (I shouldn't have to create a new polygon)
             Engine.DrawConvexPolygon(new Polygon(temp.points, temp.color));

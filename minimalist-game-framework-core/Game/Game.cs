@@ -21,12 +21,12 @@ class Game
         // First mode is false (menu)
         playing = false;
 
-        RenderEngine.camera = new Camera(new Vector2(235, 350), Math.PI/2, 1, Math.PI/2, 1);
+        RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 50, Math.PI/2, 20);
     }
 
     public void Update()
     {
-        RenderEngine.drawPerTrack(Track.templateTrack);
+        RenderEngine.drawPerTrack(Track.testTrack);
         if (playing)
         {
             //  input handling
