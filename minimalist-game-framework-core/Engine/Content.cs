@@ -118,7 +118,7 @@ public class Polygon
     public Vector2[] points;
     public Color color;
     public int xMin, xMax;
-    public readonly int vertices;
+    public int vertices;
 
     public Polygon(Vector2[] initial, Color color)
     {
@@ -126,23 +126,11 @@ public class Polygon
         {
             this.color = color;
 
-            vertices = initial.Length;
             points = initial;
             xMin = 0;
             xMax = 0;
 
-            for (int i = 0; i < vertices; i++)
-            {
-                if (points[i].X < points[xMin].X)
-                {
-                    xMin = i;
-                }
-
-                if (points[i].X > points[xMax].X)
-                {
-                    xMax = i;
-                }
-            }
+            calcMinMax();
         }
     }
 
@@ -154,53 +142,112 @@ public class Polygon
 
             vertices = xVals.Length;
             points = new Vector2[vertices];
-            xMin = 0;
-            xMax = 0;
 
             for (int i = 0; i < vertices; i++)
             {
                 points[i].X = xVals[i];
                 points[i].Y = yVals[i];
-
-                if (points[i].X < points[xMin].X)
-                {
-                    xMin = i;
-                }
-
-                if (points[i].X > points[xMax].X)
-                {
-                    xMax = i;
-                }
             }
+
+            calcMinMax();
         }
     }
 
-    public bool splice(double height)
+    public void splice(float height) // Assumes that height is a valid line that passes through
     {
-        bool[] bounds = new bool[points.Length];
-        int count = 0;
+        int start = 0;
 
-        for (int i = 0; i < points.Length; i++)
+        int enter = 0;
+
+        while (points[start].Y < height)
         {
-            bounds[i] = false;
-            if (points[i].Y < height)
+            start = (start + 1) % points.Length;
+        }
+
+        for (int k = 0; k < points.Length; k++)
+        {
+            int i = start + k % points.Length;
+            int ia = (i + 1) % points.Length; // looking at segment from i to ia, and ia to iaa
+            int iaa = (ia + 1) % points.Length;
+
+            if (points[i].Y >= height && points[ia].Y < height && points[iaa].Y >= height) // 1 bad vertex
             {
-                bounds[i] = true;
-                count++;
+                Vector2[] newP = new Vector2[vertices + 1];
+
+                newP[0] = points[i];
+
+                float m = (points[i].Y - points[ia].Y) / (points[i].X - points[ia].X);
+
+                newP[1] = new Vector2(points[i].X + (height - points[i].Y) / m, height);
+
+                m = (points[ia].Y - points[iaa].Y) / (points[ia].X - points[iaa].X);
+
+                newP[2] = new Vector2(points[ia].X + (height - points[ia].Y) / m, height);
+
+                int cur = iaa;
+
+                for (int j = 3; j < newP.Length; j++)
+                {
+                    newP[j] = points[cur];
+                    cur = (cur + 1) % points.Length;
+                }
+
+                points = newP;
+
+                break;
+            }
+
+            if (points[i].Y >= height && points[ia].Y < height) // entering removed aera
+            {
+                enter = ia;
+
+                float m = (points[i].Y - points[ia].Y) / (points[i].X - points[ia].X);
+
+                points[ia] = new Vector2(points[i].X + (height - points[i].Y) / m, height);
+
+            }
+            else if (points[i].Y < height && points[ia].Y >= height) // exiting removed area
+            {
+                float m = (points[i].Y - points[ia].Y) / (points[i].X - points[ia].X);
+
+                List<Vector2> temp = new List<Vector2>();
+
+                temp.Add(new Vector2(points[i].X + (height - points[i].Y) / m, height));
+
+                for (int j = ia; j != enter; j = (j + 1) % points.Length)
+                {
+                    temp.Add(points[j]);
+                }
+
+                temp.Add(points[enter]);
+
+                points = temp.ToArray();
+                
+                break;
             }
         }
 
-        if (count == points.Length)
+        calcMinMax();
+    }
+
+    private void calcMinMax()
+    {
+        vertices = points.Length;
+        xMin = 0;
+        xMax = 0;
+
+        for (int i = 0; i < vertices; i++)
         {
-            return false;
+            if (points[i].X < points[xMin].X)
+            {
+                xMin = i;
+            }
+
+            if (points[i].X > points[xMax].X)
+            {
+                xMax = i;
+            }
         }
-
-        for (int i = 0; i < points.Length; i++) {
-
-        }
-
-
-        return true;
     }
 }
 

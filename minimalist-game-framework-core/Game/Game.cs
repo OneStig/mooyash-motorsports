@@ -6,12 +6,14 @@ using Mooyash.Services;
 class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
-    public static readonly Vector2 Resolution = new Vector2(320, 180);
+    public static readonly Vector2 Resolution = new Vector2(800, 800);
 
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
 
     bool playing; // (saves 31 bits of overhead yay)
+
+    Polygon p = new Polygon(new float[] { 300, 200, 300, 400, 550 }, new float[] { 400, 50, 75, 175, 400 }, Color.White);
 
     public Game()
     {
@@ -20,10 +22,13 @@ class Game
 
         // First mode is false (menu)
         playing = false;
+        p.splice(120);
     }
 
     public void Update()
     {
+        Engine.DrawConvexPolygon(p);
+
         if (playing)
         {
             //  input handling
