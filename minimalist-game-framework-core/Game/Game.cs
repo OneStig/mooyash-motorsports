@@ -27,7 +27,7 @@ class Game
     public void Update()
     {
         System.Diagnostics.Debug.WriteLine(1/Engine.TimeDelta);
-        RenderEngine.drawPerTrack(Track.testTrack);
+        RenderEngine.drawPerTrack(Track.templateTrack);
         if(Engine.GetKeyHeld(Key.W))
         {
             RenderEngine.camera.position += new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);

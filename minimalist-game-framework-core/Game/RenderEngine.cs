@@ -16,7 +16,6 @@ namespace Mooyash.Services
         public float cos { get; private set; } // of angle
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
-        public float vslope { get; private set; } //for handling drawing conditions
 
         public Camera(Vector2 position, double angle, float height, double hfov, float screen)
         {
@@ -29,7 +28,6 @@ namespace Mooyash.Services
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
             hslope = (float) Math.Tan(hfov / 2);
-            vslope = (float)Game.Resolution.Y * hslope / Game.Resolution.X;
             scale = Game.Resolution.X / (float)(2 * screen * hslope);
         }
 
@@ -92,20 +90,22 @@ namespace Mooyash.Services
             }
 
             Polygon temp = new Polygon(tempPoints, p.color);
-            bool draw = false;
+            //used to check if polygon should be drawn and/or spliced
+            bool leftCut = true;
+            bool rightCut = true;
+            bool botCut = true;
             bool splice = false;
-            bool inside;
 
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = rotate(temp.points[i]);
-                inside = (camera.vslope * temp.points[i].Y > 1) &&
-                    (camera.hslope * temp.points[i].Y + temp.points[i].X > 0) &&
-                    (camera.hslope * temp.points[i].Y - temp.points[i].X > 0);
-                draw = (draw || inside);
-                splice = (splice || !inside);
+                leftCut &= (camera.hslope * temp.points[i].Y + temp.points[i].X < 0);
+                rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
+                //technically, we could be more aggressive with botCut, but should be unnecessary
+                botCut &= (temp.points[i].Y < camera.screen);
+                splice |= (temp.points[i].Y < camera.screen);
             }
-            if(!draw) { return; }
+            if(leftCut || rightCut || botCut) { return; }
             if (splice)
             {
                 temp.splice(camera.screen);
