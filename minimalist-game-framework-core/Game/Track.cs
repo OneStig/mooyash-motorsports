@@ -15,14 +15,14 @@ namespace Mooyash.Modules
             new List<Polygon>() // interactable polys
             {
                 new Polygon(
-                    new int[] { // x values
+                    new float[] { // x values
                         300,
                         200,
                         175,
                         300,
                         400
                     },
-                    new int[] { // y values
+                    new float[] { // y values
                         200,
                         300,
                         400,
@@ -32,13 +32,13 @@ namespace Mooyash.Modules
                 ),
 
                 new Polygon(
-                    new int[] { // x values
+                    new float[] { // x values
                         175,
                         175,
                         300,
                         300
                     },
-                    new int[] { // y values
+                    new float[] { // y values
                         400,
                         500,
                         500,
@@ -47,7 +47,7 @@ namespace Mooyash.Modules
                 ),
 
                 new Polygon(
-                    new int[] { // x values
+                    new float[] { // x values
                         300,
                         175,
                         200,
@@ -55,7 +55,7 @@ namespace Mooyash.Modules
                         400,
                         400
                     },
-                    new int[] { // y values
+                    new float[] { // y values
                         500,
                         500,
                         600,
@@ -68,13 +68,13 @@ namespace Mooyash.Modules
             new List<Polygon>() // visual polys
             {
                 new Polygon(
-                    new int[] { // x values
+                    new float[] { // x values
                         185,
                         185,
                         285,
                         285
                     },
-                    new int[] { // y values
+                    new float[] { // y values
                         405,
                         505,
                         505,

@@ -77,6 +77,7 @@ namespace Mooyash.Services
             bool draw = false;
             bool splice = false;
             bool inside;
+
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = rotate(temp.points[i]);
@@ -89,13 +90,14 @@ namespace Mooyash.Services
             if(!draw) { return; }
             if (splice)
             {
-                temp.splice();
+                temp.splice(camera.screen);
             }
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = project(temp.points[i]);
             }
-            Engine.DrawConvexPolygon(temp);
+            //FIX THIS (I shouldn't have to create a new polygon)
+            Engine.DrawConvexPolygon(new Polygon(temp.points, temp.color));
         }
 
         public static void drawPerTrack(Track t)

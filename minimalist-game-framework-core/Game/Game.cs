@@ -21,12 +21,7 @@ class Game
         // First mode is false (menu)
         playing = false;
 
-        RenderEngine.camera = new Camera();
-        RenderEngine.camera.position = new Vector2(235, 350);
-        RenderEngine.camera.angle = Math.PI/2;
-        RenderEngine.camera.height = 1;
-        RenderEngine.camera.hfov = Math.PI/2;
-        RenderEngine.camera.screen = 1;
+        RenderEngine.camera = new Camera(new Vector2(235, 350), Math.PI/2, 1, Math.PI/2, 1);
     }
 
     public void Update()
