@@ -21,12 +21,37 @@ class Game
         // First mode is false (menu)
         playing = false;
 
-        RenderEngine.camera = new Camera(new Vector2(64, 64), Math.PI/2, 10, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()
     {
+        System.Diagnostics.Debug.WriteLine(1/Engine.TimeDelta);
         RenderEngine.drawPerTrack(Track.testTrack);
+        if(Engine.GetKeyHeld(Key.W))
+        {
+            RenderEngine.camera.position += new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
+        }
+        if (Engine.GetKeyHeld(Key.S))
+        {
+            RenderEngine.camera.position -= new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
+        }
+        if (Engine.GetKeyHeld(Key.A))
+        {
+            RenderEngine.camera.changeAngle(-0.02);
+        }
+        if (Engine.GetKeyHeld(Key.D))
+        {
+            RenderEngine.camera.changeAngle(0.02);
+        }
+        if (Engine.GetKeyHeld(Key.Up))
+        {
+            RenderEngine.camera.height += 1;
+        }
+        if (Engine.GetKeyHeld(Key.Down))
+        {
+            RenderEngine.camera.height -= 1;
+        }
         if (playing)
         {
             //  input handling

@@ -7,16 +7,16 @@ namespace Mooyash.Services
     {
         public Vector2 position;
         public float height;
-        public double hfov { get; } //in radians
-        public double angle { get; } //0 = positive x, pi/2 = positive y
-        public float screen { get; } //how far (in cm) the screen is in front of camera
+        public double hfov { get; private set; } //in radians
+        public double angle { get; private set; } //0 = positive x, pi/2 = positive y
+        public float screen { get; private set; } //how far (in cm) the screen is in front of camera
 
         //precalculate values to speed up rendering
-        public float sin { get; } // of angle
-        public float cos { get; } // of angle
-        public float scale { get; } //based on hfov and screen
-        public float hslope { get; } //for handling drawing conditions
-        public float vslope { get; } //for handling drawing conditions
+        public float sin { get; private set; } // of angle
+        public float cos { get; private set; } // of angle
+        public float scale { get; private set; } //based on hfov and screen
+        public float hslope { get; private set; } //for handling drawing conditions
+        public float vslope { get; private set; } //for handling drawing conditions
 
         public Camera(Vector2 position, double angle, float height, double hfov, float screen)
         {
@@ -31,6 +31,13 @@ namespace Mooyash.Services
             hslope = (float) Math.Tan(hfov / 2);
             vslope = (float)Game.Resolution.Y * hslope / Game.Resolution.X;
             scale = Game.Resolution.X / (float)(2 * screen * hslope);
+        }
+
+        public void changeAngle(double dAngle)
+        {
+            angle += dAngle;
+            sin = (float)Math.Sin(angle);
+            cos = (float)Math.Cos(angle);
         }
     }
 
