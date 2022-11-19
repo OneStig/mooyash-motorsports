@@ -86,7 +86,13 @@ static partial class Engine
     {
         DrawPrimitiveSetup(polygon.color);
 
-        SDL.SDL_Point[] points = polygon.points;
+        SDL.SDL_Point[] points = new SDL.SDL_Point[polygon.points.Length];
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            points[i].x = (int)Math.Round(polygon.points[i].X);
+            points[i].y = (int)Math.Round(polygon.points[i].Y);
+        }
 
         int[] xBucket = new int[points[polygon.xMax].x - points[polygon.xMin].x + 1];
 
