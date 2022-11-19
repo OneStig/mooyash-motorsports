@@ -21,7 +21,7 @@ class Game
         // First mode is false (menu)
         playing = false;
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 50, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(64, 64), Math.PI/2, 10, Math.PI/2, 20);
     }
 
     public void Update()

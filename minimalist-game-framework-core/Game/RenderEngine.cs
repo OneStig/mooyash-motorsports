@@ -10,10 +10,13 @@ namespace Mooyash.Services
         public double hfov { get; } //in radians
         public double angle { get; } //0 = positive x, pi/2 = positive y
         public float screen { get; } //how far (in cm) the screen is in front of camera
+
+        //precalculate values to speed up rendering
         public float sin { get; } // of angle
         public float cos { get; } // of angle
         public float scale { get; } //based on hfov and screen
-        public float slope { get; } //for handling drawing conditions
+        public float hslope { get; } //for handling drawing conditions
+        public float vslope { get; } //for handling drawing conditions
 
         public Camera(Vector2 position, double angle, float height, double hfov, float screen)
         {
@@ -25,8 +28,9 @@ namespace Mooyash.Services
 
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
-            slope = (float) Math.Tan(hfov / 2);
-            scale = Game.Resolution.X / (float)(2 * screen * slope);
+            hslope = (float) Math.Tan(hfov / 2);
+            vslope = (float)Game.Resolution.Y * hslope / Game.Resolution.X;
+            scale = Game.Resolution.X / (float)(2 * screen * hslope);
         }
     }
 
@@ -58,7 +62,7 @@ namespace Mooyash.Services
             result.Y = result.Y * camera.scale;
             //convert to MGF coordinate system
             result.X += Game.Resolution.X / 2;
-            result.Y = Game.Resolution.Y - result.Y;
+            result.Y = Game.Resolution.Y/2 - result.Y;
             return result;
 
             /*
@@ -88,9 +92,9 @@ namespace Mooyash.Services
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = rotate(temp.points[i]);
-                inside = (temp.points[i].Y > camera.screen) &&
-                    (camera.slope * temp.points[i].Y + temp.points[i].X > 0) &&
-                    (camera.slope * temp.points[i].Y - temp.points[i].X > 0);
+                inside = (camera.vslope * temp.points[i].Y > 1) &&
+                    (camera.hslope * temp.points[i].Y + temp.points[i].X > 0) &&
+                    (camera.hslope * temp.points[i].Y - temp.points[i].X > 0);
                 draw = (draw || inside);
                 splice = (splice || !inside);
             }
@@ -103,9 +107,7 @@ namespace Mooyash.Services
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = project(temp.points[i]);
-                temp.points[i].Y -= 100;
             }
-            //FIX THIS (I shouldn't have to create a new polygon)
             Engine.DrawConvexPolygon(new Polygon(temp.points, temp.color));
         }
 
