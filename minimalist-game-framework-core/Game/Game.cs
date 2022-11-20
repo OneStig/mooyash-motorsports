@@ -119,7 +119,75 @@ class Game
         {
             Console.WriteLine("Saved new track file");
             label = "saved to track file";
-            string raw = JsonConvert.SerializeObject(curTrack, Formatting.None);
+            // string raw = JsonConvert.SerializeObject(curTrack, Formatting.None);
+
+            string raw = "public static readonly Track genTrack = new Track(\n";
+            raw += "new List<Polygon>() {\n";
+
+            foreach (Polygon p in curTrack.interactable)
+            {
+                raw += "new Polygon(";
+                raw += "new float[] {";
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += p.points[i].x;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "},\nnew float[] {";
+
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += p.points[i].y;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "}, new Color" + p.color.ToString() + "),\n";
+
+            }
+
+            raw += "},\n new List<Polygon> () {\n";
+
+            foreach (Polygon p in curTrack.visual)
+            {
+                raw += "new Polygon(";
+                raw += "new float[] {";
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += p.points[i].x;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "},\nnew float[] {";
+
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += p.points[i].y;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "}, new Color" + p.color.ToString() + "),\n";
+
+            }
+
+            raw += "});";
+
             File.WriteAllText("GeneratedTrack.json", raw);
         }
 
