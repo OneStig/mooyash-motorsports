@@ -12,6 +12,7 @@ class Game
     public string[] allObjects;
 
     bool playing; // (saves 31 bits of overhead yay)
+    bool debugging;
 
     public Game()
     {
@@ -20,13 +21,19 @@ class Game
 
         // First mode is false (menu)
         playing = false;
+        debugging = true; // set true for diagnostics
 
         RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()
     {
-        System.Diagnostics.Debug.WriteLine(1/Engine.TimeDelta);
+        if (debugging)
+        {
+            System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
+            Console.WriteLine(1 / Engine.TimeDelta);
+        }
+        
         RenderEngine.drawPerTrack(Track.templateTrack);
         if(Engine.GetKeyHeld(Key.W))
         {
