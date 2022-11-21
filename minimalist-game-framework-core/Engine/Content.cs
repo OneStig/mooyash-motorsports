@@ -159,14 +159,18 @@ public class Polygon
 
         int enter = 0;
 
-        while (points[start].Y < height)
+        while(points[start].Y < height)
         {
-            start = (start + 1) % points.Length;
+            start++;
+            if(start >= points.Length)
+            {
+                return;
+            }
         }
 
         for (int k = 0; k < points.Length; k++)
         {
-            int i = start + k % points.Length;
+            int i = (start + k) % points.Length;
             int ia = (i + 1) % points.Length; // looking at segment from i to ia, and ia to iaa
             int iaa = (ia + 1) % points.Length;
 

@@ -82,6 +82,7 @@ static partial class Engine
     /// </summary>
     /// <param name="polygon">The bounds of the polygon.</param>
     /// <param name="color">The color of the polygon.</param>
+    /// 
     public static void DrawConvexPolygon(Polygon polygon)
     {
         DrawPrimitiveSetup(polygon.color);
