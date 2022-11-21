@@ -12,11 +12,18 @@ namespace Mooyash.Modules
 
     public class Kart : GameObject
     {
-        public Vector2 velocity;
-        public Vector2 acceleration;
-        public double throttle;
-        public double turnAngle;
+        public float velocity;
+        public float acceleration;
+        public float throttle;
+        public float steer;
         public bool stunned;
+
+        public void update(float dt)
+        {
+            float scalar = velocity * dt + 0.5f * acceleration * dt * dt;
+            position += scalar * new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+            velocity += acceleration;
+        }
     }
 
     public class Item : GameObject

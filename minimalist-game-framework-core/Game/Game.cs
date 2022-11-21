@@ -17,6 +17,8 @@ class Game
     public Game()
     {
         // Initialize game objects
+        PhysicsEngine.init();
+
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
