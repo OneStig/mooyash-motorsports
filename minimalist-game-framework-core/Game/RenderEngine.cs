@@ -69,15 +69,6 @@ namespace Mooyash.Services
             result.X += Game.Resolution.X / 2;
             result.Y = Game.Resolution.Y/2 - result.Y;
             return result;
-
-            /*
-            result.Y = (float) Math.Min(Game.Resolution.Y-camera.horizon,camera.scale * (x*Math.Cos(camera.angle) + y*Math.Sin(camera.angle)));
-            result.X = (float) (camera.scale * (-x*Math.Sin(camera.angle) + y*Math.Cos(camera.angle)) *
-                (1-result.Y/((float) camera.vanish)));
-            result.X += Game.Resolution.X/2;
-            result.Y = Game.Resolution.Y - result.Y;
-            return new Vector2(x,y);
-            */
         }
 
         public static void drawPerPolygon(Polygon p)
