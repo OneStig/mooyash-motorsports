@@ -32,6 +32,7 @@ namespace Mooyash.Services
             }
 
         }
+    }
 
     //button object, supports squares and rectangles
     public class button
@@ -40,19 +41,27 @@ namespace Mooyash.Services
         Vector2 dimensions;
         int xWidth;
         int yWidth;
+        Texture texture;
 
-        public button(Vector2 dimensions, int xWidth, int yWidth)
+        public button(Vector2 dimensions, int xWidth, int yWidth, Texture texture)
         {
             this.dimensions = dimensions;
             this.xWidth = xWidth;
             this.yWidth = yWidth;
+            this.texture = texture;
         }
 
-            //returns whether the mouse is within the bounds of the button
-            private bool withinButton()
-            {
-                int mouseX = (int)Engine.MousePosition.X;
-                int mouseY = (int)Engine.MousePosition.Y;
+        //draws the texture associated with the button
+        public void draw()
+        {
+            Engine.DrawTexture(texture, dimensions);
+        }
+
+        //returns whether the mouse is within the bounds of the button
+        private bool withinButton()
+        {
+            int mouseX = (int)Engine.MousePosition.X;
+            int mouseY = (int)Engine.MousePosition.Y;
 
             return (mouseX < (dimensions.X + xWidth)) && (mouseY < (dimensions.Y + yWidth));
         }
@@ -69,13 +78,13 @@ namespace Mooyash.Services
             return withinButton() && Engine.GetKeyDown(key);
         }
     }
-    public class Screen
+    public class Frame
     {
         public Texture[] textures;
         public Vector2[] positions;
         public Vector2[] sizes;
 
-        public Screen(Texture[] textures, Vector2[] positions, Vector2[] sizes)
+        public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes)
         {
             this.textures = textures;
             this.positions = positions;
