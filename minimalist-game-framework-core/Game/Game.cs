@@ -31,7 +31,8 @@ class Game
         if (debugging)
         {
             System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
-            Console.WriteLine(1 / Engine.TimeDelta);
+            //Console.WriteLine(1 / Engine.TimeDelta);
+            Console.WriteLine(Track.genTrack.isConvex());
 
             if (Engine.GetKeyHeld(Key.W))
             {

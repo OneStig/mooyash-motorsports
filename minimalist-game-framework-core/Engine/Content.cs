@@ -153,6 +153,19 @@ public class Polygon
         }
     }
 
+    public bool isConvex()
+    {
+        bool dir = Vector2.Cross(p.points[1] - p.points[0], p.points[0] - p.points[p.vertices - 1]) > 0;
+        for (int i = 1; i < p.vertices; i++)
+        {
+            if ( (Vector2.Cross(p.points[(i + 1) % p.vertices] - p.points[i], p.points[i] - p.points[i - 1]) > 0) != dir)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void splice(float height) // Assumes that height is a valid line that passes through
     {
         int start = 0;
