@@ -3,18 +3,21 @@ using System.Collections.Generic;
 
 namespace Mooyash.Services
 {
-    public static class MenuSystem
+    public static class MainMenu
     {
         private static int frameCount = 0;
         private static Texture[] loads = new Texture[100];
         private static Vector2[] loadPositions = new Vector2[100];
         private static Vector2[] sizes;
+
         private static Frame loadFrame;
         private static Stack<Frame> ScreenStack;
         
 
 
-        public static void loadMenuAndBackground()
+
+
+        public static Frame loadMenu()
         {
 
 
@@ -22,19 +25,22 @@ namespace Mooyash.Services
             {
                 loads[i - 1] = Engine.LoadTexture("Loading" + i + ".png");
                 loadPositions[i - 1] = new Vector2(20, 45);
-
-                loadFrame = new Frame(loads, loadPositions);
-
             }
+
+            return new Frame(loads, loadPositions, null);
         }
-        public static void updateMenuAndBackground()
+        public static void updateMenu()
         {
-            loadFrame.DrawFrame(frameCount);
             frameCount++;
             if (frameCount > 99)
             {
                 frameCount = 0;
             }
+        }
+
+        public static int count()
+        {
+            return frameCount;
         }
     }
 
@@ -95,19 +101,21 @@ namespace Mooyash.Services
         private Texture[] textures;
         private Vector2[] positions;
         private Vector2[] sizes;
+        private button[] buttons;
 
-        public Frame(Texture[] textures, Vector2[] positions)
+        public Frame(Texture[] textures, Vector2[] positions, button[] buttons)
         {
             this.textures = textures;
             this.positions = positions;
-
+            this.buttons = buttons;
         }
 
-        public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes)
+        public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes, button[] buttons)
         {
             this.textures = textures;
             this.positions = positions;
             this.sizes = sizes;
+            this.buttons = buttons;
         }
 
         public void DrawFrame(int frameCount)

@@ -11,13 +11,15 @@ class Game
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
 
+    private static Stack<Frame> ScreenStack = new Stack<Frame>();
+
     bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-        MenuSystem.loadMenuAndBackground();
+        ScreenStack.Push(MainMenu.loadMenu());
         
         // First mode is false (menu)
         playing = false;
@@ -34,7 +36,9 @@ class Game
         }
         else
         {
-            MenuSystem.updateMenuAndBackground();
+            //in the main menu, so check for user input and change the playing bool 
+            ScreenStack.Peek().DrawFrame(MainMenu.count());
+            MainMenu.updateMenu();
         }
     }
 }
