@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Mooyash.Services
@@ -47,6 +47,8 @@ namespace Mooyash.Services
             
 
         }
+    }
+
 
         //button object, supports squares and rectangles
         public class Button
@@ -63,14 +65,39 @@ namespace Mooyash.Services
                 this.yWidth = yWidth;
             }
 
-            //returns whether the mouse is within the bounds of the button
-            private bool withinButton()
-            {
-                int mouseX = (int)Engine.MousePosition.X;
-                int mouseY = (int)Engine.MousePosition.Y;
+    //button object, supports squares and rectangles
+    public class button
+    {
+        //coordinates start from the top left, width determines size of the button
+        Vector2 dimensions;
+        int xWidth;
+        int yWidth;
+        Texture texture;
+
+        public button(Vector2 dimensions, int xWidth, int yWidth, Texture texture)
+        {
+            this.dimensions = dimensions;
+            this.xWidth = xWidth;
+            this.yWidth = yWidth;
+            this.texture = texture;
+        }
+
+
+        //draws the texture associated with the button
+        public void draw()
+        {
+            Engine.DrawTexture(texture, dimensions);
+        }
+
+        //returns whether the mouse is within the bounds of the button
+        private bool withinButton()
+        {
+            int mouseX = (int)Engine.MousePosition.X;
+            int mouseY = (int)Engine.MousePosition.Y;
 
                 return (mouseX < (dimensions.X + xWidth)) && (mouseY < (dimensions.Y + yWidth));
             }
+
 
             //returns whether a mouse button has been clicked
             public bool isMouseClicked(MouseButton button)
@@ -83,6 +110,31 @@ namespace Mooyash.Services
             {
                 return withinButton() && Engine.GetKeyDown(key);
             }
+
+        //returns whether a mouse button has been clicked
+        public bool isMouseClicked(MouseButton button)
+        {
+            return withinButton() && Engine.GetMouseButtonDown(button);
+        }
+        
+        //returns whether a key has been pressed
+        public bool isClickedKey(Key key) 
+        {
+            return withinButton() && Engine.GetKeyDown(key);
+        }
+    }
+    public class Frame
+    {
+        public Texture[] textures;
+        public Vector2[] positions;
+        public Vector2[] sizes;
+
+        public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes)
+        {
+            this.textures = textures;
+            this.positions = positions;
+            this.sizes = sizes;
+
         }
         public class Screen
         {
