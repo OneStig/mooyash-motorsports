@@ -11,7 +11,7 @@ class Game
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
 
-    private static Stack<Frame> ScreenStack = new Stack<Frame>();
+    private static Stack<Screen> ScreenStack = new Stack<Screen>();
 
     bool playing; // (saves 31 bits of overhead yay)
 
@@ -19,7 +19,7 @@ class Game
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-        Frame menu = MainMenu.loadMenu();
+        Screen menu = MainMenu.loadMenu();
         ScreenStack.Push(menu);
         
         // First mode is false (menu)
@@ -41,6 +41,10 @@ class Game
             ScreenStack.Peek().DrawFrame(MainMenu.count());
             //temporary: if(ScreenStack.Peek().getButton(0).isMouseClicked() || ScreenStack.Peek().getButton(0).isClickedKey())
             //if this is true, set bool to true
+            if (ScreenStack.Peek().getButton(0).isMouseClicked(MouseButton.Left))
+            { 
+                playing  = true;
+            }
             MainMenu.updateMenu();
         }
     }

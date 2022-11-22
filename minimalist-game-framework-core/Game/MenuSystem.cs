@@ -10,10 +10,10 @@ namespace Mooyash.Services
         private static Vector2[] loadPositions = new Vector2[100];
         private static Vector2[] sizes;
 
-        private static Frame loadFrame;
-        private static Stack<Frame> ScreenStack;
+        private static Screen loadFrame;
+        private static Stack<Screen> ScreenStack;
 
-        public static Frame loadMenu()
+        public static Screen loadMenu()
         {
             for (int i = 1; i <= 100; i++)
             {
@@ -24,7 +24,7 @@ namespace Mooyash.Services
             //will initialize this with actual buttons when the title screen is finished
             button[] menuButtons = new button[1] { new button(Vector2.Zero, 320, 180) };
             //update the button locations/array when we finish the title screen, that way we can move on if the play clicks something
-            return new Frame(loads, loadPositions, sizes, menuButtons);
+            return new Screen(loads, loadPositions, sizes, menuButtons);
         }
 
         public static void updateMenu()
@@ -101,14 +101,14 @@ namespace Mooyash.Services
     }
 
 
-    public class Frame
+    public class Screen
     {
         private Texture[] textures;
         private Vector2[] positions;
         private Vector2[] sizes;
         private button[] buttons;
 
-        public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes, button[] buttons)
+        public Screen(Texture[] textures, Vector2[] positions, Vector2[] sizes, button[] buttons)
         {
             this.textures = textures;
             this.positions = positions;
@@ -116,7 +116,7 @@ namespace Mooyash.Services
             this.buttons = buttons;
         }
 
-        public void DrawFrame(int frameCount)
+        public void DrawScreen(int frameCount)
         {
 
             Engine.DrawTexture(textures[frameCount], positions[frameCount]);
