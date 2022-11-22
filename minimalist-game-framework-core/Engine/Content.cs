@@ -155,10 +155,10 @@ public class Polygon
 
     public bool isConvex()
     {
-        bool dir = Vector2.Cross(p.points[1] - p.points[0], p.points[0] - p.points[p.vertices - 1]) > 0;
-        for (int i = 1; i < p.vertices; i++)
+        bool dir = Vector2.Cross(points[1] - points[0], points[0] - points[vertices - 1]) >= 0;
+        for (int i = 1; i < vertices; i++)
         {
-            if ( (Vector2.Cross(p.points[(i + 1) % p.vertices] - p.points[i], p.points[i] - p.points[i - 1]) > 0) != dir)
+            if ( (Vector2.Cross(points[(i + 1) % vertices] - points[i], points[i] - points[i - 1]) >= 0) != dir)
             {
                 return false;
             }
