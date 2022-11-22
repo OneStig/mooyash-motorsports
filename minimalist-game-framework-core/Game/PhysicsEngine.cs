@@ -10,8 +10,6 @@ namespace Mooyash.Services
         public static void init()
         {
             playerKart = new Kart();
-            playerKart.
-
         }
     }
 }
