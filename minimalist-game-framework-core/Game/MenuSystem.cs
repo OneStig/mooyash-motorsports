@@ -12,23 +12,21 @@ namespace Mooyash.Services
 
         private static Frame loadFrame;
         private static Stack<Frame> ScreenStack;
-        
-
-
-
 
         public static Frame loadMenu()
         {
-
-
             for (int i = 1; i <= 100; i++)
             {
                 loads[i - 1] = Engine.LoadTexture("Loading" + i + ".png");
                 loadPositions[i - 1] = new Vector2(20, 45);
             }
 
-            return new Frame(loads, loadPositions, null);
+            //will initialize this with actual buttons when the title screen is finished
+            button[] menuButtons = new button[1] { new button(Vector2.Zero, 320, 180) };
+            //update the button locations/array when we finish the title screen, that way we can move on if the play clicks something
+            return new Frame(loads, loadPositions, sizes, menuButtons);
         }
+
         public static void updateMenu()
         {
             frameCount++;
@@ -61,6 +59,13 @@ namespace Mooyash.Services
             this.xWidth = xWidth;
             this.yWidth = yWidth;
             this.texture = texture;
+        }
+
+        public button(Vector2 dimensions, int xWidth, int yWidth)
+        {
+            this.dimensions = dimensions;
+            this.xWidth = xWidth;
+            this.yWidth = yWidth;
         }
 
 
@@ -103,13 +108,6 @@ namespace Mooyash.Services
         private Vector2[] sizes;
         private button[] buttons;
 
-        public Frame(Texture[] textures, Vector2[] positions, button[] buttons)
-        {
-            this.textures = textures;
-            this.positions = positions;
-            this.buttons = buttons;
-        }
-
         public Frame(Texture[] textures, Vector2[] positions, Vector2[] sizes, button[] buttons)
         {
             this.textures = textures;
@@ -123,6 +121,16 @@ namespace Mooyash.Services
 
             Engine.DrawTexture(textures[frameCount], positions[frameCount]);
             
+        }
+
+        public button[] getAllButtons()
+        {
+            return buttons;
+        }
+
+        public button getButton(int index)
+        {
+            return buttons[index];
         }
     }
 }

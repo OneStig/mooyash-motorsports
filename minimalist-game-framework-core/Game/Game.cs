@@ -19,7 +19,8 @@ class Game
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-        ScreenStack.Push(MainMenu.loadMenu());
+        Frame menu = MainMenu.loadMenu();
+        ScreenStack.Push(menu);
         
         // First mode is false (menu)
         playing = false;
@@ -38,6 +39,8 @@ class Game
         {
             //in the main menu, so check for user input and change the playing bool 
             ScreenStack.Peek().DrawFrame(MainMenu.count());
+            //temporary: if(ScreenStack.Peek().getButton(0).isMouseClicked() || ScreenStack.Peek().getButton(0).isClickedKey())
+            //if this is true, set bool to true
             MainMenu.updateMenu();
         }
     }
