@@ -18,12 +18,14 @@ class Game
         // Initialize game objects
         // Load textures into static member of various GameObjects
         MenuSystem.loadMenuAndBackground();
+        
         // First mode is false (menu)
         playing = false;
     }
 
     public void Update()
     {
+        // Engine.DrawRectSolid(new Bounds2(0, 0, 50, 50), Color.Aqua);
         if (playing)
         {
             //  input handling
