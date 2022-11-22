@@ -9,8 +9,10 @@ namespace Mooyash.Services
         private static Texture[] loads = new Texture[100];
         private static Vector2[] loadPositions = new Vector2[100];
         private static Vector2[] sizes;
+        
 
         private static Frame loadFrame;
+        private static Frame titleScreen;
         private static Stack<Frame> ScreenStack;
 
         public static Frame loadMenu()

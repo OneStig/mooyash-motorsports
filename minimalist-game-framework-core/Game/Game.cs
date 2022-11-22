@@ -22,6 +22,7 @@ class Game
         Frame menu = MainMenu.loadMenu();
         ScreenStack.Push(menu);
         
+        
         // First mode is false (menu)
         playing = false;
     }
