@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Drawing;
 using Mooyash.Modules;
 using Mooyash.Services;
 using Newtonsoft.Json;
+using SDL2;
 
 class Game
 {
@@ -23,6 +25,7 @@ class Game
         new Color(31, 109, 4),
         Color.Red,
         Color.Blue,
+        Color.Gray
     };
 
     string label = "";
@@ -53,6 +56,11 @@ class Game
     {
         foreach (Polygon p in curTrack.interactable) {
             Engine.DrawConvexPolygon(p);
+
+            //for (int i = 0; i < p.points.Length; i++)
+            //{
+            //    Engine.DrawLine(new Vector2(p.points[i].x, p.points[i].y), new Vector2(p.points[(i + 1) % p.points.Length].x, p.points[(i + 1) % p.points.Length].y), Color.HotPink);
+            //}
         }
 
         foreach (Polygon p in curTrack.visual)
@@ -60,9 +68,40 @@ class Game
             Engine.DrawConvexPolygon(p);
         }
 
-        if (curPoly.points != null && curPoly.points.Length >= 3)
+        if (curPoly.points != null)
         {
-            Engine.DrawConvexPolygon(curPoly);
+            if (curPoly.points.Length >= 3)
+            {
+                Engine.DrawConvexPolygon(curPoly);
+            }
+
+            for (int i = 0; i < curPoly.points.Length; i++)
+            {
+                Engine.DrawLine(new Vector2(curPoly.points[i].x, curPoly.points[i].y), new Vector2(curPoly.points[(i + 1) % curPoly.points.Length].x, curPoly.points[(i + 1) % curPoly.points.Length].y), Color.HotPink);
+            }
+
+            //List<PointF> firstPoints = new List<PointF>();
+
+            //foreach (SDL.SDL_Point a in curPoly.points)
+            //{
+            //    firstPoints.Add(new PointF(a.x, a.y));
+            //}
+
+            //List<List<PointF>> spliced = PolygonTriangulator.Triangulate(firstPoints, true);
+
+            //foreach (List<PointF> l in spliced)
+            //{
+            //    Vector2[] tmInput = new Vector2[l.Count];
+            //    int tc = 0;
+
+            //    foreach (PointF triPoint in l)
+            //    {
+            //        tmInput[tc++] = new Vector2(triPoint.X, triPoint.Y);
+            //    }
+
+            //    Polygon tp = new Polygon(tmInput, curPoly.color);
+            //    Engine.DrawConvexPolygon(tp);
+            //}
         }
 
         if (Engine.GetMouseButtonDown(MouseButton.Left))
@@ -92,6 +131,7 @@ class Game
             if (curPoly.points != null && curPoly.points.Length >= 3)
             {
                 curTrack.interactable.Add(curPoly);
+
                 curPoly = new Polygon(new Vector2[0], colors[cc]);
                 label = "Commit poly to interatable";
             }
@@ -210,6 +250,10 @@ class Game
         else if (Engine.GetKeyDown(Key.NumRow5))
         {
             cc = 4;
+        }
+        else if (Engine.GetKeyDown(Key.NumRow6))
+        {
+            cc = 5;
         }
 
         if (playing)
