@@ -153,6 +153,29 @@ public class Polygon
         }
     }
 
+    public bool isConvex()
+    {
+        if (vertices < 4)
+        {
+            return true;
+        } 
+
+        float dir = Vector2.Cross(points[1] - points[0], points[0] - points[vertices - 1]);
+        for (int i = 1; i < vertices; i++)
+        {
+            float cur = Vector2.Cross(points[(i + 1) % vertices] - points[i], points[i] - points[i - 1]);
+            if (dir == 0)
+            {
+                dir = cur;
+            }
+            else if (Math.Sign(dir) != Math.Sign(cur))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void splice(float height) // Assumes that height is a valid line that passes through
     {
         int start = 0;
