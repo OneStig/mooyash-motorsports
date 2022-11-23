@@ -155,10 +155,20 @@ public class Polygon
 
     public bool isConvex()
     {
-        bool dir = Vector2.Cross(points[1] - points[0], points[0] - points[vertices - 1]) >= 0;
+        if (vertices < 4)
+        {
+            return true;
+        } 
+
+        float dir = Vector2.Cross(points[1] - points[0], points[0] - points[vertices - 1]);
         for (int i = 1; i < vertices; i++)
         {
-            if ( (Vector2.Cross(points[(i + 1) % vertices] - points[i], points[i] - points[i - 1]) >= 0) != dir)
+            float cur = Vector2.Cross(points[(i + 1) % vertices] - points[i], points[i] - points[i - 1]);
+            if (dir == 0)
+            {
+                dir = cur;
+            }
+            else if (Math.Sign(dir) != Math.Sign(cur))
             {
                 return false;
             }
