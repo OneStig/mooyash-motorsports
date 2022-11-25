@@ -6,7 +6,7 @@ namespace Mooyash.Modules
     public class GameObject
     {
         public Vector2 position;
-        public double angle; //0 = positive x, pi/2 = positive y
+        public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
         public Texture[] textures;
 
@@ -20,22 +20,24 @@ namespace Mooyash.Modules
 
     public class Kart : GameObject
     {
-        public float velocity;
+        public Vector2 velocity;
         public float acceleration;
         public float throttle;
         public float steer;
         public bool stunned;
 
         private readonly float throttleConst = 500;
-        private readonly float steerConst = 3;
+        private readonly float steerConst = 30f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
         private readonly float dragConst = 1;
         private readonly float naturalDecel = 1;
 
         private readonly float steerDecay = 0.2f;
 
+        private readonly float kartLength = 100f; // length of wheel base from back to front axle
+
         public Kart() : base()
         {
-            
+            velocity = new Vector2(0, 0);
         }
 
         public void updateInput()
@@ -62,7 +64,8 @@ namespace Mooyash.Modules
 
         public void update(float dt)
         {
-            acceleration = throttle * throttleConst - velocity * dragConst - naturalDecel;
+            acceleration = throttle * throttleConst - velocity.X * dragConst - naturalDecel;
+            velocity += new Vector2(acceleration * dt, 0);
 
             if (Math.Abs(steer) - steerDecay * dt < 0)
             {
@@ -72,13 +75,25 @@ namespace Mooyash.Modules
             {
                 steer -= steerDecay * dt * Math.Sign(steer);
             }
-           
-            angle += steer * steerConst * dt;
-            velocity += acceleration * dt;
-            float scalar = velocity * dt + 0.5f * acceleration * dt * dt;
-            position += scalar * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
-            Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
+            float steerAngle = steer * steerConst;
+            float turnRad = kartLength / (float)Math.Sin(steerAngle);
+            // float backRad = frontRad * (float)Math.Cos(steerAngle);
+            float angularVelo;
+
+            if (steerAngle == 0)
+            {
+                angularVelo = 0;
+            }
+            else
+            {
+                angularVelo = velocity.X / turnRad;
+            }
+
+            position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
+            angle += angularVelo * dt;
+
+            //Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
