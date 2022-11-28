@@ -11,16 +11,14 @@ class Game
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
 
-    private static Stack<Screen> ScreenStack = new Stack<Screen>();
-
     bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-        Screen menu = MainMenu.loadMenu();
-        ScreenStack.Push(menu);
+        MainMenu.loadTextures();
+        
         
         
         // First mode is false (menu)
@@ -38,11 +36,18 @@ class Game
         }
         else
         {
-            //in the main menu, so check for user input and change the playing bool 
-            ScreenStack.Peek().DrawFrame(MainMenu.count());
+            //in the main menu, so check for user input and change the playing bool
+            if (MainMenu.count() > 99)
+            {
+                MainMenu.getScreens().Peek().DrawAnimation(MainMenu.count());
+            } else
+            {
+                MainMenu.getScreens().Peek().DrawScreen();
+            }
+            
             //temporary: if(ScreenStack.Peek().getButton(0).isMouseClicked() || ScreenStack.Peek().getButton(0).isClickedKey())
             //if this is true, set bool to true
-            if (ScreenStack.Peek().getButton(0).isMouseClicked(MouseButton.Left))
+            if (MainMenu.getScreens().Peek().getButton(0).isMouseClicked(MouseButton.Left))
             { 
                 playing  = true;
             }

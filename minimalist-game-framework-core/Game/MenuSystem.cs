@@ -9,11 +9,9 @@ namespace Mooyash.Services
         private static Texture[] loads = new Texture[100];
         private static Vector2[] loadPositions = new Vector2[100];
         private static Vector2[] sizes;
-
-        private static Screen loadFrame;
         private static Stack<Screen> ScreenStack;
 
-        public static Screen loadMenu()
+        public static void loadTextures()
         {
             for (int i = 1; i <= 100; i++)
             {
@@ -21,10 +19,14 @@ namespace Mooyash.Services
                 loadPositions[i - 1] = new Vector2(20, 45);
             }
 
+            ScreenStack.Push(new Screen(Engine.LoadTexture("TitleScreen.png"), Vector2.Zero, null));
+            ScreenStack.Push(new Screen(loads, loadPositions, null, null));
+            
+
+
             //will initialize this with actual buttons when the title screen is finished
-            button[] menuButtons = new button[1] { new button(Vector2.Zero, 320, 180) };
-            //update the button locations/array when we finish the title screen, that way we can move on if the play clicks something
-            return new Screen(loads, loadPositions, sizes, menuButtons);
+            //button[] menuButtons = new button[1] { new button(Vector2.Zero, 320, 180) };
+     
         }
 
         public static void updateMenu()
@@ -32,7 +34,7 @@ namespace Mooyash.Services
             frameCount++;
             if (frameCount > 99)
             {
-                frameCount = 0;
+                ScreenStack.Pop();
             }
         }
 
@@ -40,6 +42,12 @@ namespace Mooyash.Services
         {
             return frameCount;
         }
+
+        public static Stack<Screen> getScreens()
+        {
+            return ScreenStack;
+        }
+
     }
 
 
@@ -108,6 +116,14 @@ namespace Mooyash.Services
         private Vector2[] sizes;
         private button[] buttons;
 
+
+        public Screen(Texture texture, Vector2 position, button button)
+        {
+            textures = new Texture[] { texture };
+            positions = new Vector2[] { position };
+            buttons = new button[] { button };
+        }
+
         public Screen(Texture[] textures, Vector2[] positions, Vector2[] sizes, button[] buttons)
         {
             this.textures = textures;
@@ -116,11 +132,18 @@ namespace Mooyash.Services
             this.buttons = buttons;
         }
 
-        public void DrawScreen(int frameCount)
+        
+
+        public void DrawAnimation(int frameCount)
         {
 
             Engine.DrawTexture(textures[frameCount], positions[frameCount]);
             
+        }
+
+        public void DrawScreen()
+        {
+            Engine.DrawTexture(textures[0], positions[0]);
         }
 
         public button[] getAllButtons()
