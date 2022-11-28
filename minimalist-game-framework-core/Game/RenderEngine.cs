@@ -37,6 +37,16 @@ namespace Mooyash.Services
             sin = (float)Math.Sin(angle);
             cos = (float)Math.Cos(angle);
         }
+
+        public void followKart(Kart kart)
+        {
+            position = kart.position;
+            angle = kart.angle;
+            sin = (float) Math.Sin(angle);
+            cos = (float) Math.Cos(angle);
+
+            height = 25;
+        }
     }
 
     public static class RenderEngine

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SDL2;
 using Mooyash.Modules;
 using Mooyash.Services;
 
@@ -7,21 +8,30 @@ class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
+    public static bool debugging;
 
     public Dictionary<string, GameObject> gameObjects;
-    public string[] allObjects;
 
     bool playing; // (saves 31 bits of overhead yay)
-    bool debugging;
+    
+    public float speed = 1f;
+    public static IntPtr joystick;
+
+    Kart player;
 
     public Game()
     {
         // Initialize game objects
+        PhysicsEngine.init();
+        player = new Kart();
+        gameObjects = new Dictionary<string, GameObject>();
+        gameObjects.Add("player", player);
+        
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
         playing = true; // SET TO FALSE LATER
-        debugging = true; // set true for diagnostics
+        debugging = false; // set true for diagnostics
 
         RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 25, Math.PI/2, 20);
     }
@@ -67,6 +77,10 @@ class Game
             //  rendering handled by rendering engine
 
             RenderEngine.drawPerTrack(Track.genTrack);
+            player.updateInput();
+            player.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+
+            RenderEngine.camera.followKart(player);
         }
         else
         {
