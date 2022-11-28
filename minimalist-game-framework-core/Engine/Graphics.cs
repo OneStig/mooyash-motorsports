@@ -86,9 +86,9 @@ static partial class Engine
     {
         DrawPrimitiveSetup(polygon.color);
 
-        SDL.SDL_Point[] points = polygon.points;
+        Vector2[] points = polygon.points;
 
-        int[] xBucket = new int[points[polygon.xMax].x - points[polygon.xMin].x + 1];
+        int[] xBucket = new int[(int)points[polygon.xMax].X - (int)points[polygon.xMin].X + 1];
 
         for (int i = 0; i < xBucket.Length; i++)
         {
@@ -98,26 +98,26 @@ static partial class Engine
         for (int i = 0; i < points.Length; i++)
         {
             int ia = (i + 1) % points.Length;
-            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[ia].x, points[ia].y);
+            SDL.SDL_RenderDrawLine(Renderer, (int)points[i].X, (int)points[i].Y, (int)points[ia].X, (int)points[ia].Y);
 
-            if (points[i].x == points[ia].x)
+            if (points[i].X == points[ia].X)
             {
                 continue;
             }
 
-            double m = (points[i].y * 1.0 - points[ia].y * 1.0) / (points[i].x * 1.0 - points[ia].x * 1.0);
-            double b = m * points[i].x * -1 + points[i].y;
+            double m = (points[i].Y * 1.0 - points[ia].Y * 1.0) / (points[i].X * 1.0 - points[ia].X * 1.0);
+            double b = m * points[i].X * -1 + points[i].Y;
 
             int start, end;
-            if (points[i].x < points[ia].x)
+            if (points[i].X < points[ia].X)
             {
-                start = points[i].x;
-                end = points[ia].x - 1;
+                start = (int)points[i].X;
+                end = (int)points[ia].X - 1;
             }
             else
             {
-                start = points[ia].x + 1;
-                end = points[i].x;
+                start = (int)points[ia].X + 1;
+                end = (int)points[i].X;
             }
 
             start = Math.Max(0, start);
@@ -129,18 +129,18 @@ static partial class Engine
 
                 SDL.SDL_RenderDrawPoint(Renderer, x, y);
 
-                if (xBucket[x - points[polygon.xMin].x] == Int32.MinValue)
+                if (xBucket[x - (int)points[polygon.xMin].X] == Int32.MinValue)
                 {
-                    xBucket[x - points[polygon.xMin].x] = y;
+                    xBucket[x - (int)points[polygon.xMin].X] = y;
                 }
                 else
                 {
-                    SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - points[polygon.xMin].x]);
+                    SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - (int)points[polygon.xMin].X]);
                 }
             }
         }
 
-        SDL.SDL_RenderDrawLine(Renderer, points[0].x, points[0].y, points[points.Length - 1].x, points[points.Length - 1].y);
+        SDL.SDL_RenderDrawLine(Renderer, (int)points[0].X, (int)points[0].Y, (int)points[points.Length - 1].X, (int)points[points.Length - 1].Y);
     }
 
     // ======================================================================================

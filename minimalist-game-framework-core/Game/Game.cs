@@ -49,7 +49,8 @@ class Game
         // First mode is false (menu)
         playing = false;
         curPoly = new Polygon(new Vector2[0], colors[cc]);
-        curTrack = new Track(new List<Polygon>(), new List<Polygon>());
+        //curTrack = new Track(new List<Polygon>(), new List<Polygon>());
+        curTrack = Track.genTrack;
     }
 
     public void Update()
@@ -77,7 +78,7 @@ class Game
 
             for (int i = 0; i < curPoly.points.Length; i++)
             {
-                Engine.DrawLine(new Vector2(curPoly.points[i].x, curPoly.points[i].y), new Vector2(curPoly.points[(i + 1) % curPoly.points.Length].x, curPoly.points[(i + 1) % curPoly.points.Length].y), Color.HotPink);
+                Engine.DrawLine(new Vector2(curPoly.points[i].X, curPoly.points[i].Y), new Vector2(curPoly.points[(i + 1) % curPoly.points.Length].X, curPoly.points[(i + 1) % curPoly.points.Length].Y), Color.HotPink);
             }
 
             //List<PointF> firstPoints = new List<PointF>();
@@ -117,7 +118,7 @@ class Game
 
                 for (int i = 0; i < curPoly.points.Length; i++)
                 {
-                    cpy[i] = new Vector2(curPoly.points[i].x, curPoly.points[i].y);
+                    cpy[i] = new Vector2(curPoly.points[i].X, curPoly.points[i].Y);
                 }
 
                 cpy[curPoly.points.Length] = new Vector2(Engine.MousePosition.X, Engine.MousePosition.Y);
@@ -170,7 +171,7 @@ class Game
                 raw += "new float[] {";
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].x;
+                    raw += p.points[i].X;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -182,7 +183,7 @@ class Game
 
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].y;
+                    raw += p.points[i].Y;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -202,7 +203,7 @@ class Game
                 raw += "new float[] {";
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].x;
+                    raw += p.points[i].X;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -214,7 +215,7 @@ class Game
 
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].y;
+                    raw += p.points[i].Y;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
