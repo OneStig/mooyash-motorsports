@@ -8,11 +8,12 @@ class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
+    public static bool debugging;
 
     public Dictionary<string, GameObject> gameObjects;
 
     bool playing; // (saves 31 bits of overhead yay)
-    bool debugging;
+    
     public float speed = 1f;
     public static IntPtr joystick;
     //int lasta = 0;

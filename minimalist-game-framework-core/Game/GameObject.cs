@@ -27,7 +27,8 @@ namespace Mooyash.Modules
         public bool stunned;
 
         private readonly float throttleConst = 500;
-        private readonly float steerConst = 30f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
+        private readonly float steerConst = 40f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
+        private readonly float steerLimit = 0.001f; // reduces maximum steering angle at higher speeds
         private readonly float dragConst = 1;
         private readonly float naturalDecel = 1;
 
@@ -76,7 +77,7 @@ namespace Mooyash.Modules
                 steer -= steerDecay * dt * Math.Sign(steer);
             }
 
-            float steerAngle = steer * steerConst;
+            float steerAngle = steer * steerConst / (steerLimit * velocity.X + 1);
             float turnRad = kartLength / (float)Math.Sin(steerAngle);
             // float backRad = frontRad * (float)Math.Cos(steerAngle);
             float angularVelo;
@@ -93,7 +94,8 @@ namespace Mooyash.Modules
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
             angle += angularVelo * dt;
 
-            //Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
+
+            Console.WriteLine("throt: " + steerAngle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
