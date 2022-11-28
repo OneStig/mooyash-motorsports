@@ -47,11 +47,11 @@ namespace Mooyash.Modules
             steer = 0;
             if (Engine.GetKeyHeld(Key.W))
             {
-                throttle = 1f;
+                throttle = 1;
             }
             if (Engine.GetKeyHeld(Key.S))
             {
-                throttle = -1f;
+                throttle = -1;
             }
             if (Engine.GetKeyHeld(Key.A))
             {
@@ -66,7 +66,18 @@ namespace Mooyash.Modules
         public void update(float dt)
         {
             acceleration = throttle * throttleConst - velocity.X * dragConst - naturalDecel;
+
+            if (Math.Abs(acceleration) < 0.1)
+            {
+                acceleration = 0;
+            }
+
             velocity += new Vector2(acceleration * dt, 0);
+
+            if (Math.Abs(velocity.X) < 0.005)
+            {
+                velocity = new Vector2(0, 0);
+            }
 
             if (Math.Abs(steer) - steerDecay * dt < 0)
             {
@@ -95,7 +106,7 @@ namespace Mooyash.Modules
             angle += angularVelo * dt;
 
 
-            Console.WriteLine("throt: " + steerAngle + " velo: " + velocity / 100f + " accel: " + acceleration);
+            Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
