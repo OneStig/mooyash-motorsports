@@ -38,15 +38,14 @@ namespace Mooyash.Services
             cos = (float)Math.Cos(angle);
         }
 
-        public void followKart(Kart kart, float offsetBack, float offsetUp)
+        public void followKart(Kart kart)
         {
+            position = kart.position;
             angle = kart.angle;
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
-            position = kart.position - offsetBack * new Vector2(cos, sin);
-
-            height = offsetUp;
+            height = 25;
         }
     }
 

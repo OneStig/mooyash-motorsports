@@ -80,7 +80,7 @@ class Game
             player.updateInput();
             player.update(Math.Min(Engine.TimeDelta, 1f / 60f));
 
-            RenderEngine.camera.followKart(player, 25, 25);
+            RenderEngine.camera.followKart(player);
         }
         else
         {
