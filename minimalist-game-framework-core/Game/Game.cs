@@ -18,6 +18,8 @@ class Game
     public Font courier = Engine.LoadFont("cour.ttf", 24);
     public Font courSm = Engine.LoadFont("cour.ttf", 15);
 
+    public static float scaleFactor = 10f;
+
     Color[] colors = new Color[]
     {
         new Color(255, 255, 255),
@@ -171,7 +173,7 @@ class Game
                 raw += "new float[] {";
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].X;
+                    raw += scaleFactor * p.points[i].X;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -183,7 +185,7 @@ class Game
 
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].Y;
+                    raw += scaleFactor * p.points[i].Y;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -203,7 +205,7 @@ class Game
                 raw += "new float[] {";
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].X;
+                    raw += scaleFactor * p.points[i].X;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -215,7 +217,7 @@ class Game
 
                 for (int i = 0; i < p.points.Length; i++)
                 {
-                    raw += p.points[i].Y;
+                    raw += scaleFactor * p.points[i].Y;
                     if (i != p.points.Length - 1)
                     {
                         raw += ", ";
@@ -229,7 +231,7 @@ class Game
 
             raw += "});";
 
-            File.WriteAllText("GeneratedTrack.json", raw);
+            File.WriteAllText("GeneratedTrack.txt", raw);
         }
 
         if (Engine.GetKeyDown(Key.NumRow1))
@@ -282,12 +284,12 @@ class Game
 
         for (int x = 0; x < 16; x++)
         {
-            Engine.DrawString("" + (int)(x * 100), new Vector2(x * 100, 880), new Color(255, 255, 255), courSm);
+            Engine.DrawString((int)(x * scaleFactor) + "m", new Vector2(x * 100, 880), new Color(255, 255, 255), courSm);
         }
 
         for (int y = 0; y < 9; y++)
         {
-            Engine.DrawString("" + (int)(y * 100), new Vector2(20, y * 100), new Color(255, 255, 255), courSm);
+            Engine.DrawString((int)(y * scaleFactor) + "m", new Vector2(20, y * 100), new Color(255, 255, 255), courSm);
         }
     }
 }
