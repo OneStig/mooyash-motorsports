@@ -7,6 +7,8 @@ namespace Mooyash.Services
     {
         public Vector2 position;
         public float height;
+        public Vector2 follow; //x = followBack, y = followUp
+
         public double hfov { get; private set; } //in radians
         public double angle { get; private set; } //0 = positive x, pi/2 = positive y
         public float screen { get; private set; } //how far (in cm) the screen is in front of camera
@@ -17,9 +19,10 @@ namespace Mooyash.Services
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
 
-        public Camera(Vector2 position, double angle, float height, double hfov, float screen)
+        public Camera(Vector2 position, Vector2 follow, double angle, float height, double hfov, float screen)
         {
             this.position = position;
+            this.follow = follow;
             this.angle = angle;
             this.height = height;
             this.hfov = hfov;
@@ -40,12 +43,13 @@ namespace Mooyash.Services
 
         public void followKart(Kart kart)
         {
-            position = kart.position;
             angle = kart.angle;
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
-            height = 25;
+            position = kart.position - new Vector2(cos, sin) * follow.X;
+
+            height = follow.Y;
         }
     }
 
@@ -77,7 +81,7 @@ namespace Mooyash.Services
             result.Y = result.Y * camera.scale;
             //convert to MGF coordinate system
             result.X += Game.Resolution.X / 2;
-            result.Y = Game.Resolution.Y/2 - result.Y;
+            result.Y = Game.Resolution.Y / 2 - result.Y;
             return result;
         }
 
@@ -106,7 +110,7 @@ namespace Mooyash.Services
                 botCut &= (temp.points[i].Y < camera.screen);
                 splice |= (temp.points[i].Y < camera.screen);
             }
-            if(leftCut || rightCut || botCut) { return; }
+            if (leftCut || rightCut || botCut) { return; }
             if (splice)
             {
                 temp.splice(camera.screen);
@@ -129,6 +133,27 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+        }
+
+        public static void drawPlayer()
+        {
+            Vector2[] offsets = new Vector2[]
+            {
+                new Vector2(-50, 50),
+                new Vector2(-25, 70),
+                new Vector2(25, 70),
+                new Vector2(50, 50),
+                new Vector2(50, -50),
+                new Vector2(-50, -50)
+            };
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                offsets[i] = offsets[i].Rotated(Game.player.angle / (float)Math.PI * 180 - 90);
+                offsets[i] += Game.player.position;
+            }
+
+            drawPerPolygon(new Polygon(offsets, Color.Turquoise));
         }
     }
 }
