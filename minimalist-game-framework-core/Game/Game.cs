@@ -17,7 +17,7 @@ class Game
     public float speed = 1f;
     public static IntPtr joystick;
 
-    Kart player;
+    public static Kart player;
 
     public Game()
     {
@@ -76,9 +76,11 @@ class Game
             //  physics handled by physics engine
             //  rendering handled by rendering engine
 
+            float physicsdt = Math.Min(Engine.TimeDelta, 1f / 60f);
+
             RenderEngine.drawPerTrack(Track.genTrack);
-            player.updateInput();
-            player.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+            player.updateInput(physicsdt);
+            player.update(physicsdt);
 
             RenderEngine.camera.followKart(player);
         }

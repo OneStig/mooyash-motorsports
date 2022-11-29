@@ -17,6 +17,9 @@ namespace Mooyash.Services
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
 
+        private readonly float followHeight = 100;
+        private readonly float trailDistance = 300;
+
         public Camera(Vector2 position, double angle, float height, double hfov, float screen)
         {
             this.position = position;
@@ -40,12 +43,13 @@ namespace Mooyash.Services
 
         public void followKart(Kart kart)
         {
-            position = kart.position;
             angle = kart.angle;
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
-            height = 25;
+            position = kart.position - new Vector2(cos, sin) * trailDistance;
+
+            height = followHeight;
         }
     }
 
@@ -129,6 +133,24 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+
+            Vector2[] offsets = new Vector2[]
+            {
+                new Vector2(-50, 50),
+                new Vector2(-25, 70),
+                new Vector2(25, 70),
+                new Vector2(50, 50),
+                new Vector2(50, -50),
+                new Vector2(-50, -50)
+            };
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                offsets[i] = offsets[i].Rotated(Game.player.angle / (float)Math.PI * 180 - 90);
+                offsets[i] += Game.player.position;
+            }
+
+            drawPerPolygon(new Polygon(offsets, Color.Turquoise));
         }
     }
 }
