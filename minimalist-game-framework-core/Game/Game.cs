@@ -33,7 +33,7 @@ class Game
         playing = true; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 25, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()
@@ -77,12 +77,14 @@ class Game
             //  rendering handled by rendering engine
 
             float physicsdt = Math.Min(Engine.TimeDelta, 1f / 60f);
-
-            RenderEngine.drawPerTrack(Track.genTrack);
+            
             player.updateInput(physicsdt);
             player.update(physicsdt);
 
             RenderEngine.camera.followKart(player);
+
+            RenderEngine.drawPerTrack(Track.genTrack);
+            RenderEngine.drawPlayer();
         }
         else
         {
