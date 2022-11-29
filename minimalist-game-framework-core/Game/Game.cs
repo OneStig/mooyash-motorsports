@@ -10,6 +10,8 @@ class Game
 
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
+    public float time;
+    public Font font = Engine.LoadFont("arial.ttf", 17);
 
     bool playing; // (saves 31 bits of overhead yay)
     bool debugging;
@@ -59,6 +61,10 @@ class Game
                 RenderEngine.camera.height -= 1;
             }
         }
+        time += Engine.TimeDelta;
+        String timer = time + "";
+        timer = timer.Substring(0, 5);
+        Engine.DrawString(timer, new Vector2(280, 15), Color.White, font, TextAlignment.Right);
         
         if (playing)
         {
