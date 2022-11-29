@@ -153,7 +153,10 @@ namespace Mooyash.Services
                 offsets[i] += Game.player.position;
             }
 
-            drawPerPolygon(new Polygon(offsets, Color.Turquoise));
+            // drawPerPolygon(new Polygon(offsets, Color.Turquoise));
+
+            Vector2 screenPlayer = project(rotate(Game.player.position));
+            Engine.DrawTexture(Game.player.textures[Game.player.curTex], new Vector2(-15, -16) + screenPlayer);
         }
     }
 }

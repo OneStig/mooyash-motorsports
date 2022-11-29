@@ -54,11 +54,11 @@ class Game
             }
             if (Engine.GetKeyHeld(Key.A))
             {
-                RenderEngine.camera.changeAngle(-0.02);
+                RenderEngine.camera.changeAngle(-0.01);
             }
             if (Engine.GetKeyHeld(Key.D))
             {
-                RenderEngine.camera.changeAngle(0.02);
+                RenderEngine.camera.changeAngle(0.01);
             }
             if (Engine.GetKeyHeld(Key.Up))
             {

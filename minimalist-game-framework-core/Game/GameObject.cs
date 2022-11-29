@@ -8,12 +8,14 @@ namespace Mooyash.Modules
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
+        public int curTex;
         public Texture[] textures;
 
         public GameObject()
         {
             position = new Vector2();
             angle = 0;
+            curTex = 0;
             // need to add hitbox and textures later
         }
     }
@@ -33,7 +35,7 @@ namespace Mooyash.Modules
         private readonly float naturalDecel = 1; //constant deceleration
 
         //determines turning
-        private readonly float steerConst = 30f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
+        private readonly float steerConst = 20f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
         private readonly float steerLimit = 0.001f; // reduces maximum steering angle at higher speeds
         private readonly float kartLength = 100f; // length of wheel base from back to front axle
 
@@ -48,6 +50,12 @@ namespace Mooyash.Modules
         public Kart() : base()
         {
             velocity = new Vector2(0, 0);
+            textures = new Texture[3];
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                textures[i] = Engine.LoadTexture("player_" + i + ".png");
+            }
         }
 
         private float decay(float value, float constant, float dt)
@@ -90,6 +98,19 @@ namespace Mooyash.Modules
             else
             {
                 steer = decay(steer, steerDecay, dt);
+            }
+
+            if (steer < -0.2)
+            {
+                curTex = 1;
+            }
+            else if (steer > 0.2)
+            {
+                curTex = 2;
+            }
+            else
+            {
+                curTex = 0;
             }
         }
 
