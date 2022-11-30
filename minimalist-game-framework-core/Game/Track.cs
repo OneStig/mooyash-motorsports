@@ -78,11 +78,11 @@ namespace Mooyash.Modules
             }
             foreach (Polygon p in interactable) 
             {
-                if(!p.isConvex()) { return false; }
+                if (!p.isConvex()) { return false; }
             }
-            foreach(Polygon p in visual) 
+            foreach (Polygon p in visual)
             {
-                if(!p.isConvex()) { return false; }
+                if (!p.isConvex()) { return false; }
             }
             return true;
         }

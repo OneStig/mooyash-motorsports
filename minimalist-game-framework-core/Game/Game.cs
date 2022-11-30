@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SDL2;
 using Mooyash.Modules;
@@ -23,7 +23,7 @@ class Game
         playing = true; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), Math.PI/2, 25, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()
@@ -44,11 +44,11 @@ class Game
             }
             if (Engine.GetKeyHeld(Key.A))
             {
-                RenderEngine.camera.changeAngle(-0.02);
+                RenderEngine.camera.changeAngle(-0.01);
             }
             if (Engine.GetKeyHeld(Key.D))
             {
-                RenderEngine.camera.changeAngle(0.02);
+                RenderEngine.camera.changeAngle(0.01);
             }
             if (Engine.GetKeyHeld(Key.Up))
             {
@@ -68,6 +68,8 @@ class Game
 
             RenderEngine.drawPerTrack(Track.defaultTrack);
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+            RenderEngine.camera.followKart(player);
+            RenderEngine.drawPlayer();
         }
         else
         {
