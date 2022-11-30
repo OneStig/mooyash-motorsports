@@ -10,23 +10,13 @@ class Game
     public static readonly Vector2 Resolution = new Vector2(320, 180);
     public static bool debugging;
 
-    public Dictionary<string, GameObject> gameObjects;
-
     bool playing; // (saves 31 bits of overhead yay)
-    
-    public float speed = 1f;
-    public static IntPtr joystick;
-
-    Kart player;
 
     public Game()
     {
         // Initialize game objects
         PhysicsEngine.init();
-        player = new Kart();
-        gameObjects = new Dictionary<string, GameObject>();
-        gameObjects.Add("player", player);
-        
+
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
@@ -42,7 +32,7 @@ class Game
         {
             System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
             //Console.WriteLine(1 / Engine.TimeDelta);
-            Console.WriteLine(Track.genTrack.isConvex());
+            // Console.WriteLine(Track.genTrack.isConvex());
 
             if (Engine.GetKeyHeld(Key.W))
             {
@@ -76,11 +66,8 @@ class Game
             //  physics handled by physics engine
             //  rendering handled by rendering engine
 
-            RenderEngine.drawPerTrack(Track.genTrack);
-            player.updateInput();
-            player.update(Math.Min(Engine.TimeDelta, 1f / 60f));
-
-            RenderEngine.camera.followKart(player);
+            RenderEngine.drawPerTrack(Track.defaultTrack);
+            PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
         }
         else
         {
