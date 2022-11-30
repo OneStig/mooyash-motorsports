@@ -57,6 +57,9 @@ namespace Mooyash.Services
     {
         public static Camera camera;
 
+        // for debugging
+        private static bool drawhitboxes = false;
+
         public static Vector2 rotate(Vector2 input)
         {
             Vector2 temp;
@@ -137,26 +140,26 @@ namespace Mooyash.Services
 
         public static void drawPlayer()
         {
-            Vector2[] offsets = new Vector2[]
+            if (drawhitboxes)
             {
-                new Vector2(-50, 50),
-                new Vector2(-25, 70),
-                new Vector2(25, 70),
-                new Vector2(50, 50),
-                new Vector2(50, -50),
-                new Vector2(-50, -50)
-            };
+                Vector2[] offsets = new Vector2[12];
 
-            for (int i = 0; i < offsets.Length; i++)
-            {
-                offsets[i] = offsets[i].Rotated(Game.player.angle / (float)Math.PI * 180 - 90);
-                offsets[i] += Game.player.position;
+                for (int i = 0; i < offsets.Length; i++)
+                {
+                    float dist = i * 2f / offsets.Length * (float)Math.PI;
+                    offsets[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist)) * 40;
+
+                    offsets[i] = offsets[i].Rotated(Game.player.angle / (float)Math.PI * 180 - 90);
+                    offsets[i] += Game.player.position;
+                }
+
+                drawPerPolygon(new Polygon(offsets, new Color(0, 0, 0, 100)));
             }
 
-            // drawPerPolygon(new Polygon(offsets, Color.Turquoise));
-
             Vector2 screenPlayer = project(rotate(Game.player.position));
-            Engine.DrawTexture(Game.player.textures[Game.player.curTex], new Vector2(-15, -16) + screenPlayer);
+
+            screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
+            Engine.DrawTexture(Game.player.textures[Game.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
     }
 }

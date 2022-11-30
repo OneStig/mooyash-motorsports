@@ -50,7 +50,8 @@ namespace Mooyash.Modules
         public Kart() : base()
         {
             velocity = new Vector2(0, 0);
-            textures = new Texture[3];
+            textures = new Texture[5];
+            position = new Vector2(1500, 2000);
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -99,19 +100,6 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
             }
-
-            if (steer < -0.2)
-            {
-                curTex = 1;
-            }
-            else if (steer > 0.2)
-            {
-                curTex = 2;
-            }
-            else
-            {
-                curTex = 0;
-            }
         }
 
         public void update(float dt)
@@ -155,7 +143,28 @@ namespace Mooyash.Modules
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
             angle += angularVelo * dt;
 
-            Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
+            if (angularVelo < -0.8)
+            {
+                curTex = 3;
+            }
+            else if (angularVelo > 0.8)
+            {
+                curTex = 4;
+            }
+            else if (angularVelo < -0.3)
+            {
+                curTex = 1;
+            }
+            else if (angularVelo > 0.3)
+            {
+                curTex = 2;
+            }
+            else
+            {
+                curTex = 0;
+            }
+
+            // Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
