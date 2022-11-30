@@ -132,6 +132,10 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+            foreach (Polygon p in t.collidable)
+            {
+                drawPerPolygon(p);
+            }
             foreach (Polygon p in t.visual)
             {
                 drawPerPolygon(p);
