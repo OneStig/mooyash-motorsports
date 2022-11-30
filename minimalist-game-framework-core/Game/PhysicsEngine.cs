@@ -18,7 +18,7 @@ namespace Mooyash.Services
 
         public static void update(float dt)
         {
-            player.updateInput();
+            player.updateInput(dt);
             player.update(dt);
 
             RenderEngine.camera.followKart(player);

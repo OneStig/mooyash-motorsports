@@ -68,7 +68,7 @@ class Game
 
             RenderEngine.drawPerTrack(Track.defaultTrack);
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
-            RenderEngine.camera.followKart(player);
+            RenderEngine.camera.followKart(PhysicsEngine.player);
             RenderEngine.drawPlayer();
         }
         else

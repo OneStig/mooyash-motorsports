@@ -153,17 +153,17 @@ namespace Mooyash.Services
                     float dist = i * 2f / offsets.Length * (float)Math.PI;
                     offsets[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist)) * 40;
 
-                    offsets[i] = offsets[i].Rotated(Game.player.angle / (float)Math.PI * 180 - 90);
-                    offsets[i] += Game.player.position;
+                    offsets[i] = offsets[i].Rotated(PhysicsEngine.player.angle / (float)Math.PI * 180 - 90);
+                    offsets[i] += PhysicsEngine.player.position;
                 }
 
                 drawPerPolygon(new Polygon(offsets, new Color(0, 0, 0, 100)));
             }
 
-            Vector2 screenPlayer = project(rotate(Game.player.position));
+            Vector2 screenPlayer = project(rotate(PhysicsEngine.player.position));
 
             screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
-            Engine.DrawTexture(Game.player.textures[Game.player.curTex], new Vector2(-15, -24)+ screenPlayer);
+            Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
     }
 }
