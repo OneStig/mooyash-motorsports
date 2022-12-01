@@ -11,7 +11,8 @@ class Game
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
     public float time;
-    public Font font = Engine.LoadFont("arial.ttf", 17);
+    public int laps = 1;
+    public Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17);
 
     bool playing; // (saves 31 bits of overhead yay)
     bool debugging;
@@ -62,9 +63,14 @@ class Game
             }
         }
         time += Engine.TimeDelta;
-        String timer = time + "";
-        timer = timer.Substring(0, 5);
-        Engine.DrawString(timer, new Vector2(280, 15), Color.White, font, TextAlignment.Right);
+        String timer = "0" + (int) time / 60 + "." + time % 60;
+        if (time % 60 < 10)
+        {
+            timer = "0" + (int) time / 60 + ".0" + time % 60;
+        }
+        timer = timer.Substring(0, 8);
+        Engine.DrawString(timer, new Vector2(250, 15), Color.White, font);
+        Engine.DrawString("Lap - " + laps, new Vector2(250, 30), Color.White, font);
         
         if (playing)
         {
