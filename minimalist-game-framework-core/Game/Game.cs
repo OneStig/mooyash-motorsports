@@ -52,7 +52,7 @@ class Game
         playing = false;
         curPoly = new Polygon(new Vector2[0], colors[cc]);
         //curTrack = new Track(new List<Polygon>(), new List<Polygon>());
-        curTrack = Track.genTrack;
+        curTrack = new Track(new List<Polygon>(), new List<PhysicsPolygon>(), new List<Polygon>(), new List<Vector2>(), new List<Tuple<Vector2, Vector2>>());
     }
 
     public void Update()
@@ -64,6 +64,11 @@ class Game
             //{
             //    Engine.DrawLine(new Vector2(p.points[i].x, p.points[i].y), new Vector2(p.points[(i + 1) % p.points.Length].x, p.points[(i + 1) % p.points.Length].y), Color.HotPink);
             //}
+        }
+
+        foreach (Polygon p in curTrack.collidable)
+        {
+            Engine.DrawConvexPolygon(p);
         }
 
         foreach (Polygon p in curTrack.visual)
@@ -133,7 +138,7 @@ class Game
         {
             if (curPoly.points != null && curPoly.points.Length >= 3)
             {
-                curTrack.interactable.Add(curPoly);
+                curTrack.interactable.Add(new PhysicsPolygon(curPoly.points, curPoly.color, cc));
 
                 curPoly = new Polygon(new Vector2[0], colors[cc]);
                 label = "Commit poly to interatable";
@@ -148,7 +153,16 @@ class Game
                 curPoly = new Polygon(new Vector2[0], colors[cc]);
                 label = "Commit poly to visual";
             }
+        }
 
+        if (Engine.GetKeyDown(Key.T))
+        {
+            if (curPoly.points != null && curPoly.points.Length >= 3)
+            {
+                curTrack.collidable.Add(curPoly);
+                curPoly = new Polygon(new Vector2[0], colors[cc]);
+                label = "Commit poly to collidable";
+            }
         }
 
         if (Engine.GetKeyDown(Key.W))
@@ -167,7 +181,7 @@ class Game
             string raw = "public static readonly Track genTrack = new Track(\n";
             raw += "new List<Polygon>() {\n";
 
-            foreach (Polygon p in curTrack.interactable)
+            foreach (Polygon p in curTrack.collidable)
             {
                 raw += "new Polygon(";
                 raw += "new float[] {";
@@ -194,6 +208,38 @@ class Game
 
 
                 raw += "}, new Color" + p.color.ToString() + "),\n";
+
+            }
+
+            raw += "},\n new List<PhysicsPolygon> () {\n";
+
+            foreach (PhysicsPolygon p in curTrack.interactable)
+            {
+                raw += "new Polygon(";
+                raw += "new float[] {";
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += scaleFactor * p.points[i].X;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "},\nnew float[] {";
+
+                for (int i = 0; i < p.points.Length; i++)
+                {
+                    raw += scaleFactor * p.points[i].Y;
+                    if (i != p.points.Length - 1)
+                    {
+                        raw += ", ";
+                    }
+                }
+
+
+                raw += "}, new Color" + p.color.ToString() + ", " + p.id + ")\n";
 
             }
 
@@ -227,6 +273,12 @@ class Game
 
                 raw += "}, new Color" + p.color.ToString() + "),\n";
 
+            }
+            raw += "}, new List<Vector2>() {";
+
+            foreach (Vector2 tv in curTrack.splines)
+            {
+                raw += "\nnew Vector2" + tv + ",";
             }
 
             raw += "});";
