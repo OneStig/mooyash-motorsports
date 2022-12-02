@@ -26,6 +26,7 @@ class Game
         player = new Kart();
         gameObjects = new Dictionary<string, GameObject>();
         gameObjects.Add("player", player);
+        player.position = new Vector2(1500,2000);
         
         // Load textures into static member of various GameObjects
 
@@ -33,7 +34,7 @@ class Game
         playing = true; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()
