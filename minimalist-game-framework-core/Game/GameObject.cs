@@ -8,12 +8,14 @@ namespace Mooyash.Modules
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
+        public int curTex;
         public Texture[] textures;
 
         public GameObject()
         {
             position = new Vector2();
             angle = 0;
+            curTex = 0;
             // need to add hitbox and textures later
         }
     }
@@ -50,6 +52,13 @@ namespace Mooyash.Modules
         public Kart() : base()
         {
             velocity = new Vector2(0, 0);
+            textures = new Texture[5];
+            position = new Vector2(4500, 0);
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                textures[i] = Engine.LoadTexture("player_" + i + ".png");
+            }
         }
 
         private float decay(float value, float constant, float dt)
@@ -161,7 +170,28 @@ namespace Mooyash.Modules
             angle += angularVelo * dt;
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
-            Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
+            if (angularVelo < -0.8)
+            {
+                curTex = 3;
+            }
+            else if (angularVelo > 0.8)
+            {
+                curTex = 4;
+            }
+            else if (angularVelo < -0.3)
+            {
+                curTex = 1;
+            }
+            else if (angularVelo > 0.3)
+            {
+                curTex = 2;
+            }
+            else
+            {
+                curTex = 0;
+            }
+
+            // Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
