@@ -23,6 +23,35 @@ namespace Mooyash.Services
 
             RenderEngine.camera.followKart(player);
         }
+        
+        //tests if line segments p and q intersect
+        public static bool TestLineLine(Vector2 p1, Vector2 p2, Vector2 q1, Vector2 q2)
+        {
+            int o = Math.Sign(Vector2.Cross(p2 - p1, q1 - p1));
+
+            if(o == Math.Sign(Vector2.Cross(p2 - p1, q2 - p1)) || Math.Sign(Vector2.Cross(q2 - q1, p1 - q1)) == Math.Sign(Vector2.Cross(q2 - q1, p2 - q1)))
+            {
+                //if all points are colinear
+                if(o == 0 && Math.Max(p1.X, p2.X) > Math.Min(q1.X, q2.X) && Math.Max(q1.X, q2.X) > Math.Min(p1.X, p2.X))
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        //tests if a point is within a physics polygon
+        public static bool TestPointPoly(Vector2 point, PhysicsPolygon poly)
+        {
+            return poly.findArea(point) == poly.area;
+        }
+
+        //tests if the path of a circle will intersect line
+        public static bool TestCircleLine(Vector2 c1, Vector2 c2, float r, Vector2 p1, Vector2 p2)
+        {
+            return true;
+        }
     }
 }
 

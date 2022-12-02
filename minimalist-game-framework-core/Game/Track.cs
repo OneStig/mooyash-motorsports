@@ -91,10 +91,23 @@ namespace Mooyash.Modules
     public class PhysicsPolygon : Polygon
     {
         public int id; // 0 = track, 1 = grass, 2 = dirt
+        public float area;
 
         public PhysicsPolygon(float[] xVals, float[] yVals, Color color, int id) : base(xVals, yVals, color)
         {
             this.id = id;
+            findArea(points[0]);
+        }
+
+        public float findArea(Vector2 point)
+        {
+            area = 0;
+            for (int i = 0; i < vertices - 1; i++)
+            {
+                area += (float)Math.Abs(0.5 * Vector2.Cross(points[i] - point, points[i + 1] - point));
+            }
+            area += (float) Math.Abs(0.5 * Vector2.Cross(points[vertices - 1] - point, points[0] - point));
+            return area;
         }
     }
 }
