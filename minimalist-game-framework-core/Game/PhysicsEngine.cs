@@ -8,18 +8,29 @@ namespace Mooyash.Services
     {
         public static Dictionary<string, GameObject> gameObjects;
         public static Kart player;
+        public static int lapCount;
 
         public static void init()
         {
             player = new Kart();
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
+            lapCount = 0;
         }
 
         public static void update(float dt)
         {
+            Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
+
             player.updateInput(dt);
             player.update(dt);
+            
+            // This checks for crossing on every frame, probably needs to be optimized later
+            if (TestLineLine(pastPos, player.position, Track.defaultTrack.checkpoints[0].Item1, Track.defaultTrack.checkpoints[0].Item2))
+            {
+                lapCount++;
+                Console.WriteLine(lapCount);
+            }
 
             RenderEngine.camera.followKart(player);
         }
