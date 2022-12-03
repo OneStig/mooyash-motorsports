@@ -17,7 +17,7 @@ class Game
     {
         // Initialize game objects
         // Load textures into static member of various GameObjects
-        MainMenu.loadTextures();
+        MenuSystem.loadTextures();
         
         
         
@@ -36,22 +36,11 @@ class Game
         }
         else
         {
-            //in the main menu, so check for user input and change the playing bool
-            if (MainMenu.count() > 99)
+            bool temp = MenuSystem.UpdateMenu();
+            if (temp)
             {
-                MainMenu.getScreens().Peek().DrawAnimation(MainMenu.count());
-            } else
-            {
-                MainMenu.getScreens().Peek().DrawScreen();
+                playing = true;
             }
-            
-            //temporary: if(ScreenStack.Peek().getButton(0).isMouseClicked() || ScreenStack.Peek().getButton(0).isClickedKey())
-            //if this is true, set bool to true
-            if (MainMenu.getScreens().Peek().getButton(0).isMouseClicked(MouseButton.Left))
-            { 
-                playing  = true;
-            }
-            MainMenu.updateMenu();
         }
     }
 }
