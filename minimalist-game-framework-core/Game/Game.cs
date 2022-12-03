@@ -16,14 +16,14 @@ class Game
     {
         // Initialize game objects
         PhysicsEngine.init();
-
+        
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
         playing = true; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
+        RenderEngine.camera = new Camera(new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
     }
 
     public void Update()

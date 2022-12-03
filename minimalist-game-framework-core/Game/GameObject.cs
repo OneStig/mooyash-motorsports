@@ -24,15 +24,17 @@ namespace Mooyash.Modules
     {
         public Vector2 velocity;
         public float acceleration;
+        //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
         public bool stunned;
-        public bool reverse = false;
+        public bool braking;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
         private readonly float dragConst = 1; //deceleration based on velocity
         private readonly float naturalDecel = 1; //constant deceleration
+        private readonly float brakeConst = 300; //deceleration due to braking
 
         //determines turning
         private readonly float steerConst = 20f * (float)Math.PI / 180f; // MAXIMUM steering angle in radians
@@ -73,15 +75,30 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
-            reverse = false;
+            braking = false;
             if (Engine.GetKeyHeld(Key.W))
             {
-                throttle = Math.Min(1, throttle + tInputScale * dt);
+                if(velocity.X < 0)
+                {
+                    throttle = 0;
+                    braking = true;
+                }
+                else
+                {
+                    throttle = Math.Min(1, throttle + tInputScale * dt);
+                }
             }
             else if (Engine.GetKeyHeld(Key.S))
             {
-                //HOW ARE WE HANDLING BRAKE AND REVERSE?
-                throttle = Math.Max(-0.5f, throttle - tInputScale * dt);
+                if(velocity.X > 0)
+                {
+                    throttle = 0;
+                    braking = true;
+                }
+                else
+                {
+                    throttle = Math.Max(-0.5f, throttle - tInputScale * dt);
+                }
             }
             else
             {
@@ -104,7 +121,18 @@ namespace Mooyash.Modules
 
         public void update(float dt)
         {
-            float tempA = throttle * throttleConst - velocity.X * dragConst - naturalDecel;
+            //acceleration due to drag and friction
+            float tempA = -velocity.X * dragConst - Math.Sign(velocity.X) * naturalDecel;
+            if (braking)
+            {
+                //acceleration due to braking
+                tempA += -Math.Sign(velocity.X) * brakeConst;
+            }
+            else
+            {
+                //acceleration due to throttle
+                tempA += throttle * throttleConst;
+            }
             //if acceleration and tempA have opposite signs
             if (Math.Sign(acceleration)*Math.Sign(tempA) == -1)
             {
@@ -126,10 +154,10 @@ namespace Mooyash.Modules
                 velocity = new Vector2(tempV, 0);
             }
 
+            float angularVelo;
             float steerAngle = steer * steerConst / (steerLimit * Math.Abs(velocity.X) + 1);
             float turnRad = kartLength / (float)Math.Sin(steerAngle);
-            // float backRad = frontRad * (float)Math.Cos(steerAngle);
-            float angularVelo;
+            float backRad = turnRad * (float)Math.Cos(steerAngle);
 
             if (steerAngle == 0)
             {
@@ -139,9 +167,8 @@ namespace Mooyash.Modules
             {
                 angularVelo = velocity.X / turnRad;
             }
-
-            position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
             angle += angularVelo * dt;
+            position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
             if (angularVelo < -0.8)
             {

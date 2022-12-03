@@ -19,9 +19,8 @@ namespace Mooyash.Services
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
 
-        public Camera(Vector2 position, Vector2 follow, double angle, float height, double hfov, float screen)
+        public Camera(Vector2 follow, double angle, float height, double hfov, float screen)
         {
-            this.position = position;
             this.follow = follow;
             this.angle = angle;
             this.height = height;
