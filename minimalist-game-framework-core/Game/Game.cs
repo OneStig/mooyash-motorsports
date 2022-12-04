@@ -20,8 +20,8 @@ class Game
         // Load textures into static member of various GameObjects
 
         // First mode is false (menu)
-        playing = true; // SET TO FALSE LATER
-        debugging = false; // set true for diagnostics
+        playing = false; // SET TO FALSE LATER
+        debugging = true; // set true for diagnostics
 
         RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
     }
@@ -30,26 +30,11 @@ class Game
     {
         if (debugging)
         {
-            System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
-            //Console.WriteLine(1 / Engine.TimeDelta);
-            // Console.WriteLine(Track.genTrack.isConvex());
+            //System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
+            System.Diagnostics.Debug.WriteLine(PhysicsEngine.
+                TestCircleLine(new CirclePath(new Vector2(-8,5), new Vector2(5,-8), 5f), 
+                new Vector2(1,1), new Vector2(-1,-1)));
 
-            if (Engine.GetKeyHeld(Key.W))
-            {
-                RenderEngine.camera.position += new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
-            }
-            if (Engine.GetKeyHeld(Key.S))
-            {
-                RenderEngine.camera.position -= new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
-            }
-            if (Engine.GetKeyHeld(Key.A))
-            {
-                RenderEngine.camera.changeAngle(-0.01);
-            }
-            if (Engine.GetKeyHeld(Key.D))
-            {
-                RenderEngine.camera.changeAngle(0.01);
-            }
             if (Engine.GetKeyHeld(Key.Up))
             {
                 RenderEngine.camera.height += 1;
