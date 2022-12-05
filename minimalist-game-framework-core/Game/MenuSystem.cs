@@ -5,8 +5,10 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[3];
+        private static Screen[] ScreenStack = new Screen[2];
+
         private static int CurScreen = 0;
+
         public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
         public static List<string> Settings = new List<String>();
 
@@ -39,7 +41,6 @@ namespace Mooyash.Services
 
             ScreenStack[0] = new Screen(text0,posi0,size0,tons0);
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1);
-            ScreenStack[2] = ScreenStack[0];
  
         }
 
