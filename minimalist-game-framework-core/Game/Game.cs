@@ -63,14 +63,14 @@ class Game
             }
         }
         time += Engine.TimeDelta;
-        String timer = "0" + (int)time / 60 + "." + time % 60;
+        String timer = "0" + (int)time / 60 + "." + time % 60+"0";
         if (time % 60 < 10)
         {
-            timer = "0" + (int)time / 60 + ".0" + time % 60;
+            timer = "0" + (int)time / 60 + ".0" + time % 60 +"0";
         }
         timer = timer.Substring(0, 8);
         Engine.DrawString(timer, new Vector2(250, 15), Color.White, font);
-        Engine.DrawString("Lap - " + laps, new Vector2(250, 30), Color.White, font);
+        Engine.DrawString("Lap  " + laps, new Vector2(250, 30), Color.White, font);
         if (playing)
         {
             //  input handling
