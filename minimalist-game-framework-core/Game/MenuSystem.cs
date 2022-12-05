@@ -21,7 +21,7 @@ namespace Mooyash.Services
 
             Texture[] text0 = new Texture[] { menu };
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
-            Vector2[] size0 = new Vector2[] { new Vector2(50, 50)};
+            Vector2[] size0 = new Vector2[] { new Vector2(320, 180)};
             Dictionary<int, Button> tons0 = new Dictionary<int, Button>();
             tons0[0] = new Button(test, new Vector2(120, 10), new Vector2(60, 30), "Hello");
             tons0[1] = new Button(test, new Vector2(120, 60), new Vector2(60, 30), "World");
@@ -45,11 +45,11 @@ namespace Mooyash.Services
         {
             Screen cur = ScreenStack[CurScreen];
             cur.DrawScreen();
-            if (Engine.GetKeyDown(Key.W))
+            if (Engine.GetKeyDown(Key.W) || Engine.GetKeyDown(Key.Up))
             {
                 cur.Up();
             }
-            if (Engine.GetKeyDown(Key.S))
+            if (Engine.GetKeyDown(Key.S) || Engine.GetKeyDown(Key.Down))
             {
                 cur.Down();
             }
