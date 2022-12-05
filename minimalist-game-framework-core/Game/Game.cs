@@ -8,6 +8,9 @@ class Game
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
 
+    public static List<int> GameSettings;
+    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+
     public Dictionary<string, GameObject> gameObjects;
     public string[] allObjects;
 
@@ -33,6 +36,12 @@ class Game
             //  input handling
             //  physics handled by physics engine
             //  rendering handled by rendering engine
+
+            foreach(int i in GameSettings)
+            {
+                Engine.DrawString(i + "", new Vector2(10, 10 + i * 20), Color.AliceBlue, font);
+            }
+
         }
         else
         {
@@ -40,6 +49,7 @@ class Game
             if (temp)
             {
                 playing = true;
+                GameSettings = MenuSystem.GetSettings();
             }
         }
     }
