@@ -140,6 +140,8 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+
+            // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
         public static void drawPlayer()

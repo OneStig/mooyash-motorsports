@@ -56,7 +56,7 @@ namespace Mooyash.Modules
                     new Vector2(4500, -4500)
                 },
                 new List<Tuple<Vector2, Vector2>>() {
-                    new Tuple<Vector2, Vector2> (new Vector2(4000, 0), new Vector2(5000, 0))
+                    new Tuple<Vector2, Vector2> (new Vector2(4000, 0), new Vector2(2000, 0))
                 }
             );
         public Track(List<Polygon> collidable, List<PhysicsPolygon> interactable,
