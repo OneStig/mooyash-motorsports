@@ -37,11 +37,6 @@ class Game
             //  physics handled by physics engine
             //  rendering handled by rendering engine
 
-            foreach(int i in GameSettings)
-            {
-                Engine.DrawString(i + "", new Vector2(10, 10 + i * 20), Color.AliceBlue, font);
-            }
-
         }
         else
         {
