@@ -5,10 +5,12 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[3];
+        private static Screen[] ScreenStack = new Screen[2];
+
         private static int CurScreen = 0;
-        private static Dictionary<string, int> SettingtoID;
-        private static List<string> Settings = new List<String>();
+
+        public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
+        public static List<string> Settings = new List<String>();
 
         private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
 
@@ -16,8 +18,10 @@ namespace Mooyash.Services
         {
             Texture test = Engine.LoadTexture("R.jpg");
             Texture menu = Engine.LoadTexture("TitleScreen.png");
-                
 
+            SettingtoID["Hello"] = 1;
+            SettingtoID["World"] = 2;
+            SettingtoID["!"] = 3;
 
             Texture[] text0 = new Texture[] { menu };
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
@@ -32,12 +36,11 @@ namespace Mooyash.Services
             Vector2[] size1 = new Vector2[] { new Vector2(50, 50) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
             tons1[0] = new Button(menu, new Vector2(120, 10), new Vector2(60, 30), "Hello");
-            tons1[1] = new Button(menu, new Vector2(120, 60), new Vector2(60, 30), "World!");
+            tons1[1] = new Button(menu, new Vector2(120, 60), new Vector2(60, 30), "World");
             tons1[2] = new Button(menu, new Vector2(120, 120), new Vector2(60, 30), "!");
 
             ScreenStack[0] = new Screen(text0,posi0,size0,tons0);
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1);
-            ScreenStack[2] = ScreenStack[0];
  
         }
 
@@ -68,11 +71,17 @@ namespace Mooyash.Services
             return false;
         }
 
+        public static List<int> GetSettings()
+        {
+            List<int> ids = new List<int>();
+            foreach(string i in Settings)
+            {
+                ids.Add(SettingtoID[i]);
+            }
+            return ids;
+        }
+
     }
-
-
-
-   
 
 
     public class Screen
@@ -160,6 +169,8 @@ namespace Mooyash.Services
         private Vector2 size;
         private string func;
 
+        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+
         public Button(Texture texture, Vector2 position, Vector2 size)
         {
             this.texture = texture;
@@ -178,6 +189,7 @@ namespace Mooyash.Services
         public void DrawButton()
         {
             Engine.DrawTexture(texture, position, size: this.size);
+            Engine.DrawString(func, position, Color.AliceBlue, font,TextAlignment.Center);
         }
 
         public void DrawSelectedButton()
