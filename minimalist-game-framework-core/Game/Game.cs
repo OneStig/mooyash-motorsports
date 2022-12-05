@@ -20,15 +20,13 @@ class Game
     public Game()
     {
         // Initialize game objects
-        PhysicsEngine.init();
+        // PhysicsEngine.init();
         
         // Load textures into static member of various GameObjects
         MenuSystem.loadTextures();
         
-        
-        
         // First mode is false (menu)
-        playing = true; // SET TO FALSE LATER
+        playing = false; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
         RenderEngine.camera = new Camera(new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
@@ -86,6 +84,7 @@ class Game
             {
                 playing = true;
                 GameSettings = MenuSystem.GetSettings();
+                PhysicsEngine.init();
             }
         }
     }

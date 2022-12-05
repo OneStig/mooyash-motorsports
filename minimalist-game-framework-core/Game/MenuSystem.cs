@@ -169,6 +169,8 @@ namespace Mooyash.Services
         private Vector2 size;
         private string func;
 
+        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+
         public Button(Texture texture, Vector2 position, Vector2 size)
         {
             this.texture = texture;
@@ -187,6 +189,7 @@ namespace Mooyash.Services
         public void DrawButton()
         {
             Engine.DrawTexture(texture, position, size: this.size);
+            Engine.DrawString(func, position, Color.AliceBlue, font,TextAlignment.Center);
         }
 
         public void DrawSelectedButton()
