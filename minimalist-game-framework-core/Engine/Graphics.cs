@@ -82,11 +82,18 @@ static partial class Engine
     /// </summary>
     /// <param name="polygon">The bounds of the polygon.</param>
     /// <param name="color">The color of the polygon.</param>
+    /// 
     public static void DrawConvexPolygon(Polygon polygon)
     {
         DrawPrimitiveSetup(polygon.color);
 
-        SDL.SDL_Point[] points = polygon.points;
+        SDL.SDL_Point[] points = new SDL.SDL_Point[polygon.points.Length];
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            points[i].x = (int)Math.Round(polygon.points[i].X);
+            points[i].y = (int)Math.Round(polygon.points[i].Y);
+        }
 
         int[] xBucket = new int[points[polygon.xMax].x - points[polygon.xMin].x + 1];
 
