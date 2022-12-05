@@ -8,19 +8,25 @@ class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
+
+    public static List<int> GameSettings;
+    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+
     public static bool debugging;
+
 
     bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
         // Initialize game objects
-        PhysicsEngine.init();
+        // PhysicsEngine.init();
         
         // Load textures into static member of various GameObjects
-
+        MenuSystem.loadTextures();
+        
         // First mode is false (menu)
-        playing = true; // SET TO FALSE LATER
+        playing = false; // SET TO FALSE LATER
         debugging = false; // set true for diagnostics
 
         RenderEngine.camera = new Camera(new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
@@ -73,7 +79,13 @@ class Game
         }
         else
         {
-            //  handled by menu class
+            bool temp = MenuSystem.UpdateMenu();
+            if (temp)
+            {
+                playing = true;
+                GameSettings = MenuSystem.GetSettings();
+                PhysicsEngine.init();
+            }
         }
     }
 }
