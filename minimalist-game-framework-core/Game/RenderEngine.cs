@@ -19,17 +19,14 @@ namespace Mooyash.Services
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
 
-        public Camera(Vector2 position, Vector2 follow, double angle, float height, double hfov, float screen)
+        //don't use camera until callling followKart
+        public Camera(Vector2 follow, float height, double hfov, float screen)
         {
-            this.position = position;
             this.follow = follow;
-            this.angle = angle;
             this.height = height;
             this.hfov = hfov;
             this.screen = screen;
 
-            sin = (float) Math.Sin(angle);
-            cos = (float) Math.Cos(angle);
             hslope = (float) Math.Tan(hfov / 2);
             scale = Game.Resolution.X / (float)(2 * screen * hslope);
         }
@@ -166,6 +163,16 @@ namespace Mooyash.Services
 
             screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
             Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
+        }
+
+        public static void drawUI()
+        {
+            drawPlayer();
+        }
+
+        public static void drawObjects()
+        {
+            //TO DO
         }
     }
 }

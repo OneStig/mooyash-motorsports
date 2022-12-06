@@ -10,6 +10,7 @@ namespace Mooyash.Services
         public static Kart player;
         public static int lapCount;
         public static int lapDisplay;
+        public static Track track;
 
         public static void init()
         {
@@ -27,35 +28,54 @@ namespace Mooyash.Services
             player.updateInput(dt);
             player.update(dt);
             
-            // This checks for crossing on every frame, probably needs to be optimized later
-            if (TestLineLine(pastPos, player.position, Track.defaultTrack.checkpoints[0].Item1, Track.defaultTrack.checkpoints[0].Item2))
+            //This checks for crossing on every frame, probably needs to be optimized later
+            //Checks if player crosses the finish line
+            if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
             {
-                if (pastPos.Y < player.position.Y) {
+                if (Vector2.Dot(pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                {
                     lapCount++;
                 }
                 else
                 {
-                    lapCount = Math.Max(lapCount - 1, lapDisplay - 1);
+                    lapCount = lapDisplay - 1;
                 }
-
                 lapDisplay = Math.Max(lapDisplay, lapCount);
             }
 
             RenderEngine.camera.followKart(player);
         }
 
+        public static int GetPhysicsID(Vector2 position)
+        {
+            for(int i = track.interactable.Count - 1; i >= 0; i--)
+            {
+                if(TestPointPoly(position, track.interactable[i]))
+                {
+                    return track.interactable[i].id;
+                }
+            }
+            return -1;
+        }
+
         //OPTIMIZATION: Should be faster to directly calculate instead of using Vector2 methods
+        //OPTIMIZATION: I could remove some edge cases (e.g., point-point, intersect by edge)
         //tests if line segments p and q intersect
         public static bool TestLineLine(Vector2 p1, Vector2 p2, Vector2 q1, Vector2 q2)
         {
-            int o = Math.Sign(Vector2.Cross(p2 - p1, q1 - p1));
+            int oq1 = Math.Sign(Vector2.Cross(p2 - p1, q1 - p1));
+            int op1 = Math.Sign(Vector2.Cross(q2 - q1, p1 - q1));
 
-            if (o == Math.Sign(Vector2.Cross(p2 - p1, q2 - p1)) ||
-                Math.Sign(Vector2.Cross(q2 - q1, p1 - q1)) == Math.Sign(Vector2.Cross(q2 - q1, p2 - q1)))
+            if (oq1 == Math.Sign(Vector2.Cross(p2 - p1, q2 - p1)) ||
+                op1 == Math.Sign(Vector2.Cross(q2 - q1, p2 - q1)))
             {
                 //if all points are colinear
-                if (o == 0 && Math.Max(p1.X, p2.X) > Math.Min(q1.X, q2.X) && Math.Max(q1.X, q2.X) > Math.Min(p1.X, p2.X))
+                if (op1 == 0 && oq1 == 0 && Math.Max(p1.X, p2.X) >= Math.Min(q1.X, q2.X) && Math.Max(q1.X, q2.X) >= Math.Min(p1.X, p2.X))
                 {
+                    if(p1.Equals(p2) && q1.Equals(q2))
+                    {
+                        return p1.Equals(q1);
+                    }
                     return true;
                 }
                 return false;
@@ -66,7 +86,18 @@ namespace Mooyash.Services
         //tests if a point is within a physics polygon
         public static bool TestPointPoly(Vector2 point, PhysicsPolygon poly)
         {
-            return poly.findArea(point) == poly.area;
+            bool odd = false;
+            for(int i = 0; i < poly.points.Length - 1; i++)
+            {
+                odd ^= TestLineHorRay(poly.points[i], poly.points[i+1], point);
+            }
+            return odd ^ TestLineHorRay(poly.points[poly.points.Length - 1], poly.points[0], point);
+        }
+
+        //tests if line segment p intersects the horizontal (pointing right) ray from r
+        public static bool TestLineHorRay(Vector2 p1, Vector2 p2, Vector2 r)
+        {
+            return p1.Y <= r.Y && r.Y <= p2.Y && p1.X + (p2.X - p1.X) * (r.Y - p1.Y) / (p2.Y - p1.Y) >= r.X;
         }
 
         //tests if the path of a circle (with radius r from c1 to c2) will intersect segment p
@@ -98,9 +129,8 @@ namespace Mooyash.Services
         //tests if the path of a circle a intersects the path of a circle b
         public static bool TestCircleCircle(CirclePath a, CirclePath b)
         {
-            Vector2 radiusA = (b.c1 - b.c2).Normalized().Rotated(90);
-            Vector2 radiusB = (a.c1 - a.c2).Normalized().Rotated(90);
-            return TestCircleLine(a, b.c1 + b.r * radiusB, b.c2 + b.r * radiusB) || TestCircleLine(a, b.c1 - b.r * radiusB, b.c2 - b.r * radiusB);
+            //TODO!
+            return false;
         }
 
         //tests if a static circle c intersects a line segment p

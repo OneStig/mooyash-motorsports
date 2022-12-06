@@ -16,24 +16,26 @@ class Game
     {
         // Initialize game objects
         PhysicsEngine.init();
+        Track.LoadTracks();
 
         // Load textures into static member of various GameObjects
 
-        // First mode is false (menu)
-        playing = false; // SET TO FALSE LATER
-        debugging = true; // set true for diagnostics
+        //set playing to false
+        playing = false;
 
-        RenderEngine.camera = new Camera(new Vector2(125, -30), new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
+        //DEBUGGING
+        playing = true; // SET TO FALSE LATER
+        debugging = true; // set true for diagnostics
+        PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
+        RenderEngine.camera = new Camera(new Vector2(300,100), 25, Math.PI/2, 20);
     }
 
     public void Update()
     {
         if (debugging)
         {
-            //System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
-            System.Diagnostics.Debug.WriteLine(PhysicsEngine.
-                TestCircleLine(new CirclePath(new Vector2(-8,5), new Vector2(5,-8), 5f), 
-                new Vector2(1,1), new Vector2(-1,-1)));
+            System.Diagnostics.Debug.WriteLine("LAP COUNT: " + PhysicsEngine.lapCount + "LAP DISPLAY: " + PhysicsEngine.lapDisplay + " POSITION: " + PhysicsEngine.player.position);
+            System.Diagnostics.Debug.WriteLine(PhysicsEngine.GetPhysicsID(PhysicsEngine.player.position));
 
             if (Engine.GetKeyHeld(Key.Up))
             {
@@ -49,12 +51,13 @@ class Game
         {
             //  input handling
             //  physics handled by physics engine
-            //  rendering handled by rendering engine
-
-            RenderEngine.drawPerTrack(Track.defaultTrack);
+            //  rendering handled by rendering engine            
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+
             RenderEngine.camera.followKart(PhysicsEngine.player);
-            RenderEngine.drawPlayer();
+            RenderEngine.drawPerTrack(PhysicsEngine.track);
+            RenderEngine.drawUI();
+            RenderEngine.drawObjects();
         }
         else
         {

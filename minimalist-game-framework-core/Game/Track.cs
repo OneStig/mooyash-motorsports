@@ -11,9 +11,43 @@ namespace Mooyash.Modules
 
         public List<Vector2> splines;
 
-        public List<Tuple<Vector2, Vector2>> checkpoints;
+        //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
+        public Tuple<Vector2, Vector2, bool> finish;
 
-        public static Track defaultTrack = new Track(
+        public static List<Track> tracks = new List<Track>();
+
+        public Track(List<Polygon> collidable, List<PhysicsPolygon> interactable,
+            List<Polygon> visual, List<Vector2> splines,
+            Tuple<Vector2, Vector2, bool> finish)
+        {
+            this.collidable = collidable;
+            this.interactable = interactable;
+            this.visual = visual;
+            this.splines = splines;
+            this.finish = finish;
+        }
+
+        public bool isConvex()
+        {
+            foreach (Polygon p in collidable)
+            {
+                if (!p.isConvex()) { return false; }
+            }
+            foreach (Polygon p in interactable) 
+            {
+                if (!p.isConvex()) { return false; }
+            }
+            foreach (Polygon p in visual)
+            {
+                if (!p.isConvex()) { return false; }
+            }
+            return true;
+        }
+
+        public static void LoadTracks()
+        {
+            tracks.Add(
+                new Track(
                 new List<Polygon>() {
                     new Polygon(
                         new float[] { -5000, 5000, 5000, -5000},
@@ -55,59 +89,18 @@ namespace Mooyash.Modules
                     new Vector2(4500, 4500),
                     new Vector2(4500, -4500)
                 },
-                new List<Tuple<Vector2, Vector2>>() {
-                    new Tuple<Vector2, Vector2> (new Vector2(4000, 0), new Vector2(2000, 0))
-                }
-            );
-        public Track(List<Polygon> collidable, List<PhysicsPolygon> interactable,
-            List<Polygon> visual, List<Vector2> splines,
-            List<Tuple<Vector2, Vector2>> checkpoints)
-        {
-            this.collidable = collidable;
-            this.interactable = interactable;
-            this.visual = visual;
-            this.splines = splines;
-            this.checkpoints = checkpoints;
-        }
-
-        public bool isConvex()
-        {
-            foreach (Polygon p in collidable)
-            {
-                if (!p.isConvex()) { return false; }
-            }
-            foreach (Polygon p in interactable) 
-            {
-                if (!p.isConvex()) { return false; }
-            }
-            foreach (Polygon p in visual)
-            {
-                if (!p.isConvex()) { return false; }
-            }
-            return true;
+                new Tuple<Vector2, Vector2, bool>(new Vector2(4000, 0), new Vector2(2000, 0), true)
+            ));
         }
     }
 
     public class PhysicsPolygon : Polygon
     {
-        public int id; // 0 = track, 1 = grass, 2 = dirt
-        public float area;
+        public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
         public PhysicsPolygon(float[] xVals, float[] yVals, Color color, int id) : base(xVals, yVals, color)
         {
             this.id = id;
-            area = findArea(points[0]);
-        }
-
-        public float findArea(Vector2 point)
-        {
-            float tempArea = 0;
-            for (int i = 0; i < vertices - 1; i++)
-            {
-                tempArea += (float)Math.Abs(0.5 * Vector2.Cross(points[i] - point, points[i + 1] - point));
-            }
-            tempArea += (float) Math.Abs(0.5 * Vector2.Cross(points[vertices - 1] - point, points[0] - point));
-            return tempArea;
         }
     }
 }
