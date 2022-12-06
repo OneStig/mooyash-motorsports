@@ -9,8 +9,10 @@ class Game
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
 
+    public float time;
+
     public static List<int> GameSettings;
-    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17);
 
     public static bool debugging;
 
@@ -76,6 +78,16 @@ class Game
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
             RenderEngine.camera.followKart(PhysicsEngine.player);
             RenderEngine.drawPlayer();
+
+            time += Engine.TimeDelta;
+            String timer = "0" + (int)time / 60 + "." + time % 60 + "000";
+            if(time % 60 < 10)
+            {
+                timer = "0" + (int)time / 60 + ".0" + time % 60 + "000";
+            }
+            timer = timer.Substring(0, 8);
+            Engine.DrawString(timer, new Vector2(250, 5), Color.White, font);
+
         }
         else
         {

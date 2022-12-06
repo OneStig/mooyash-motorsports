@@ -12,36 +12,33 @@ namespace Mooyash.Services
         public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
         public static List<string> Settings = new List<String>();
 
-        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
-
         public static void loadTextures()
         {
-            Texture test = Engine.LoadTexture("R.jpg");
-            Texture menu = Engine.LoadTexture("TitleScreen.png");
+            Texture menu = Engine.LoadTexture("fallengong.png");
+            Texture menuNoGong = Engine.LoadTexture("fallinggong.png");
 
-            SettingtoID["Hello"] = 1;
-            SettingtoID["World"] = 2;
-            SettingtoID["!"] = 3;
+            SettingtoID["play"] = 1;
+            SettingtoID["map1"] = 2;
+            SettingtoID["map2"] = 3;
+            SettingtoID["map3"] = 4;
 
             Texture[] text0 = new Texture[] { menu };
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
             Vector2[] size0 = new Vector2[] { new Vector2(320, 180)};
             Dictionary<int, Button> tons0 = new Dictionary<int, Button>();
-            tons0[0] = new Button(test, new Vector2(120, 10), new Vector2(60, 30), "Hello");
-            tons0[1] = new Button(test, new Vector2(120, 60), new Vector2(60, 30), "World");
-            tons0[2] = new Button(test, new Vector2(120, 120), new Vector2(60, 30), "!");
+            tons0[0] = new Button(Color.Black, new Vector2(120, 100), new Vector2(80, 30), "play");
+            ScreenStack[0] = new Screen(text0,posi0,size0,tons0,0);
 
-            Texture[] text1 = new Texture[] { test };
+            Texture[] text1 = new Texture[] { menuNoGong };
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size1 = new Vector2[] { new Vector2(50, 50) };
+            Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(menu, new Vector2(120, 10), new Vector2(60, 30), "Hello");
-            tons1[1] = new Button(menu, new Vector2(120, 60), new Vector2(60, 30), "World");
-            tons1[2] = new Button(menu, new Vector2(120, 120), new Vector2(60, 30), "!");
-
-            ScreenStack[0] = new Screen(text0,posi0,size0,tons0);
+            tons1[0] = new Button(Color.Black, new Vector2(135, 60), new Vector2(50, 30), "map1");
+            tons1[1] = new Button(Color.Black, new Vector2(135, 90), new Vector2(50, 30), "map2");
+            tons1[2] = new Button(Color.Black, new Vector2(135, 120), new Vector2(50, 30), "map3");
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1);
- 
+
+
         }
 
         public static bool UpdateMenu()
@@ -64,7 +61,7 @@ namespace Mooyash.Services
                     CurScreen++;
                     if(CurScreen >= ScreenStack.Length)
                     {
-                        return true;
+                        return true; //create new way to move on
                     }
                 }
             }
@@ -76,7 +73,7 @@ namespace Mooyash.Services
             List<int> ids = new List<int>();
             foreach(string i in Settings)
             {
-                ids.Add(SettingtoID[i]);
+                 ids.Add(SettingtoID[i]);
             }
             return ids;
         }
@@ -105,6 +102,15 @@ namespace Mooyash.Services
             this.positions = positions;
             this.sizes = sizes;
             this.buttons = buttons;
+        }
+
+        public Screen(Texture[] textures, Vector2[] positions, Vector2[] sizes, Dictionary<int, Button> buttons, int curButton)
+        {
+            this.textures = textures;
+            this.positions = positions;
+            this.sizes = sizes;
+            this.buttons = buttons;
+            this.curButton = curButton;
         }
 
         public void DrawScreen()
@@ -164,38 +170,39 @@ namespace Mooyash.Services
 
     public class Button
     {
-        private Texture texture;
         private Vector2 position;
         private Vector2 size;
         private string func;
+        private Color color;
 
-        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 18);
 
-        public Button(Texture texture, Vector2 position, Vector2 size)
+        public Button(Color color, Vector2 position, Vector2 size)
         {
-            this.texture = texture;
             this.position = position;
             this.size = size;
+            this.color = color;
         }
 
-        public Button(Texture texture, Vector2 position, Vector2 size, string func)
+        public Button(Color color, Vector2 position, Vector2 size, string func)
         {
-            this.texture = texture;
             this.position = position;
             this.size = size;
             this.func = func;
+            this.color = color;
         }
 
         public void DrawButton()
         {
-            Engine.DrawTexture(texture, position, size: this.size);
-            Engine.DrawString(func, position, Color.AliceBlue, font,TextAlignment.Center);
+            Engine.DrawRectSolid(new Bounds2(position.X, position.Y, size.X, size.Y), color);
+            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+Game.Resolution.Y/22), Color.White, font, TextAlignment.Center);
         }
 
         public void DrawSelectedButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position.X-5, position.Y-5, size.X+10, size.Y+10), Color.AliceBlue);
-            DrawButton();
+            Engine.DrawRectSolid(new Bounds2(position.X, position.Y, size.X, size.Y), Color.AliceBlue);
+            Engine.DrawRectSolid(new Bounds2(position.X+2, position.Y+2, size.X-4, size.Y-4), color);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + Game.Resolution.Y / 22), Color.White, font, TextAlignment.Center);
         }
 
         public string Function()
