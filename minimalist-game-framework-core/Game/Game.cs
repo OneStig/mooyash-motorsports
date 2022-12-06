@@ -8,24 +8,26 @@ class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
+
+    public static List<int> GameSettings;
+    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+
     public static bool debugging;
+
 
     bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
-        // Initialize game objects
-        PhysicsEngine.init();
+        // Load textures
+        MenuSystem.loadTextures();
         Track.LoadTracks();
-
-        // Load textures into static member of various GameObjects
-
+        
         //set playing to false
         playing = false;
 
         //DEBUGGING
-        playing = true; // SET TO FALSE LATER
-        debugging = true; // set true for diagnostics
+        debugging = false; // set true for diagnostics
         PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
         RenderEngine.camera = new Camera(new Vector2(300,100), 25, Math.PI/2, 20);
     }
@@ -34,10 +36,6 @@ class Game
     {
         if (debugging)
         {
-            System.Diagnostics.Debug.WriteLine("LAP COUNT: " + PhysicsEngine.lapCount + "LAP DISPLAY: " + PhysicsEngine.lapDisplay + " POSITION: " + PhysicsEngine.player.position);
-            System.Diagnostics.Debug.WriteLine(PhysicsEngine.GetPhysicsID(PhysicsEngine.player.position));
-            //System.Diagnostics.Debug.WriteLine(PhysicsEngine.TestPointPoly(new Vector2(-0.4f,0), new PhysicsPolygon(new float[] {-1, 0, 1 }, new float[] {-1, 1, -1 }, Color.AliceBlue, 0) ));
-
             if (Engine.GetKeyHeld(Key.Up))
             {
                 RenderEngine.camera.height += 1;
@@ -62,7 +60,12 @@ class Game
         }
         else
         {
-            //  handled by menu class
+            if (MenuSystem.UpdateMenu())
+            {
+                playing = true;
+                GameSettings = MenuSystem.GetSettings();
+                PhysicsEngine.init();
+            }
         }
     }
 }
