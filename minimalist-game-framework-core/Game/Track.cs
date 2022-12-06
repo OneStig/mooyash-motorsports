@@ -71,7 +71,7 @@ namespace Mooyash.Modules
                     new PhysicsPolygon(
                         new float[] { -4000, 4000, 4000, -4000},
                         new float[] { 4000, 4000, -4000, -4000},
-                        Color.LightSlateGray, 1
+                        Color.LightSlateGray, 0
                     )
                 },
 

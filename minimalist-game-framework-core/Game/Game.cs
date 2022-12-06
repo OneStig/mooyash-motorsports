@@ -36,6 +36,7 @@ class Game
         {
             System.Diagnostics.Debug.WriteLine("LAP COUNT: " + PhysicsEngine.lapCount + "LAP DISPLAY: " + PhysicsEngine.lapDisplay + " POSITION: " + PhysicsEngine.player.position);
             System.Diagnostics.Debug.WriteLine(PhysicsEngine.GetPhysicsID(PhysicsEngine.player.position));
+            //System.Diagnostics.Debug.WriteLine(PhysicsEngine.TestPointPoly(new Vector2(-0.4f,0), new PhysicsPolygon(new float[] {-1, 0, 1 }, new float[] {-1, 1, -1 }, Color.AliceBlue, 0) ));
 
             if (Engine.GetKeyHeld(Key.Up))
             {

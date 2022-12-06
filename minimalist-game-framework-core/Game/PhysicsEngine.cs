@@ -97,7 +97,18 @@ namespace Mooyash.Services
         //tests if line segment p intersects the horizontal (pointing right) ray from r
         public static bool TestLineHorRay(Vector2 p1, Vector2 p2, Vector2 r)
         {
-            return p1.Y <= r.Y && r.Y <= p2.Y && p1.X + (p2.X - p1.X) * (r.Y - p1.Y) / (p2.Y - p1.Y) >= r.X;
+            if(Math.Min(p1.Y, p2.Y) <= r.Y && r.Y <= Math.Max(p1.Y, p2.Y))
+            {
+                if(p1.Y == p2.Y)
+                {
+                    return Math.Max(p1.X, p2.X) >= r.X;
+                }
+                else
+                {
+                    return p1.X + (p2.X - p1.X) * (r.Y - p1.Y) / (p2.Y - p1.Y) >= r.X;
+                }
+            }
+            return false;
         }
 
         //tests if the path of a circle (with radius r from c1 to c2) will intersect segment p
