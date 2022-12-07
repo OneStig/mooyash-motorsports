@@ -88,6 +88,12 @@ class Game
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, font);
 
+            if (Engine.GetKeyDown(Key.Escape))
+            {
+                playing = false;
+            }
+                
+
         }
         else
         {

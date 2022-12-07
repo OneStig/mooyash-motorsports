@@ -5,7 +5,7 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[2];
+        private static Screen[] ScreenStack = new Screen[3];
 
         private static int CurScreen = 0;
 
@@ -21,6 +21,8 @@ namespace Mooyash.Services
             SettingtoID["map1"] = 2;
             SettingtoID["map2"] = 3;
             SettingtoID["map3"] = 4;
+            SettingtoID["replay"] = 5;
+            SettingtoID["return"] = 6;
 
             Texture[] text0 = new Texture[] { menu };
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
@@ -33,23 +35,35 @@ namespace Mooyash.Services
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(Color.Black, new Vector2(135, 60), new Vector2(50, 30), "map1");
-            tons1[1] = new Button(Color.Black, new Vector2(135, 90), new Vector2(50, 30), "map2");
-            tons1[2] = new Button(Color.Black, new Vector2(135, 120), new Vector2(50, 30), "map3");
-            ScreenStack[1] = new Screen(text1, posi1, size1, tons1);
+            tons1[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1");
+            tons1[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2");
+            tons1[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3");
+            
+            ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
 
+            Texture[] text2 = new Texture[] { menuNoGong };
+            Vector2[] posi2 = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] size2 = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> tons2 = new Dictionary<int, Button>();
+            tons2[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay");
+            tons2[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return");
+            
+
+            ScreenStack[2] = new Screen(text2, posi2, size2, tons2, 0);
+            
 
         }
 
         public static bool UpdateMenu()
         {
+          
             Screen cur = ScreenStack[CurScreen];
             cur.DrawScreen();
-            if (Engine.GetKeyDown(Key.W) || Engine.GetKeyDown(Key.Up))
+            if (Engine.GetKeyDown(Key.W) || Engine.GetKeyDown(Key.Up) || Engine.GetKeyDown(Key.Left) || Engine.GetKeyDown(Key.A))
             {
                 cur.Up();
             }
-            if (Engine.GetKeyDown(Key.S) || Engine.GetKeyDown(Key.Down))
+            if (Engine.GetKeyDown(Key.S) || Engine.GetKeyDown(Key.Down) || Engine.GetKeyDown(Key.Right) || Engine.GetKeyDown(Key.D))
             {
                 cur.Down();
             }
@@ -59,10 +73,27 @@ namespace Mooyash.Services
                 {
                     Settings.Add(cur.Select());
                     CurScreen++;
-                    if(CurScreen >= ScreenStack.Length)
+                    if(CurScreen == 3)
                     {
+                        Dictionary<int, Button> buttons = cur.getButton();
+                        for (int i = 0; i < buttons.Count; i++)
+                        {
+                            if (buttons[i].Function().Equals("replay"))
+                            {
+                                CurScreen = 1;
+                            } 
+                            if (buttons[i].Function().Equals("return"))
+                            {
+                                CurScreen = 0;
+                            }
+                        }
+                    }
+                    if(CurScreen >= 2)
+                    {
+                        
                         return true; //create new way to move on
                     }
+
                 }
             }
             return false;
@@ -166,6 +197,10 @@ namespace Mooyash.Services
             return " ";
         }
 
+        public Dictionary<int, Button> getButton()
+        {
+            return buttons;
+        }
     }
 
     public class Button
