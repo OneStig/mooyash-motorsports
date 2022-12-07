@@ -11,6 +11,8 @@ namespace Mooyash.Services
         public static int lapCount;
         public static int lapDisplay;
         public static Track track;
+        //COLLIDABLE POLYGON CLASS WITH THIS IN IT - and bounds?
+        public static float collisionFactor = 0.1f;
 
         //Item 1 is for quadratic drag, Item2 is for linear drag
         public static Tuple<float,float>[] terrainConsts = new Tuple<float,float>[] {
@@ -41,15 +43,15 @@ namespace Mooyash.Services
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
-            float finalAngle = 0;
+            Vector2 finalVel = new Vector2();
             Vector2 cur;
             Vector2 next;
             CirclePath c = new CirclePath(pastPos, player.position, player.radius);
 
             if(c.c2.X >= 4950)
             {
-                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + " POS: " + player.position + " RAD: " +  player.radius);
-                System.Diagnostics.Debug.WriteLine(TestCircleLine(c, new Vector2(5000, -5000), new Vector2(5000, 5000)));
+                //System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + " POS: " + player.position + " RAD: " +  player.radius);
+                //System.Diagnostics.Debug.WriteLine(TestCircleLine(c, new Vector2(5000, -5000), new Vector2(5000, 5000)));
             }
 
             //Handles collisions between player and walls of polygon
@@ -76,10 +78,11 @@ namespace Mooyash.Services
                         float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
                         System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
                         System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
-                        if (norm1 < minCollision*(norm1-norm2))
+                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c2 - 2 * norm2 * norm;
+                            finalPos = c.c2 + (1 - collisionFactor) * (1 - minCollision) * (c.c1 - c.c2) - collisionFactor * norm2 * norm;
+                            finalVel = collisionFactor * (player.velocity - Vector2.Dot(player.velocity, norm) * norm); 
                             //finalAngle = (float) ((2 * Vector2.Angle(norm) - player.angle + 3*Math.PI) % (2*Math.PI));
                         }
                     }
@@ -89,10 +92,9 @@ namespace Mooyash.Services
             if(minCollision != 1)
             {
                 System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
-                player.velocity.X /= 10;
-                player.position = finalPos - player.velocity.X * new Vector2((float) Math.Sin(player.angle), (float) Math.Cos(player.angle));
-                //player.angle = finalAngle;
-                player.velocity.X /= 10;
+                System.Diagnostics.Debug.WriteLine("V: " + player.velocity + " NEW V: " + finalVel);
+                player.position = finalPos;
+                player.velocity = finalVel;
             }
             
             //This checks for crossing on every frame, probably needs to be optimized later
@@ -112,7 +114,7 @@ namespace Mooyash.Services
 
             RenderEngine.camera.followKart(player);
         }
-
+         
         public static int GetPhysicsID(Vector2 position)
         {
             //Should implement bounding box idea
