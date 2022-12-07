@@ -73,24 +73,20 @@ namespace Mooyash.Services
                 {
                     Settings.Add(cur.Select());
                     CurScreen++;
-                    if(CurScreen == 3)
+                    if(CurScreen >= 3)
                     {
-                        Dictionary<int, Button> buttons = cur.getButton();
-                        for (int i = 0; i < buttons.Count; i++)
+                        String select = cur.Select();
+                        if (select.Equals("replay"))
                         {
-                            if (buttons[i].Function().Equals("replay"))
-                            {
-                                CurScreen = 1;
-                            } 
-                            if (buttons[i].Function().Equals("return"))
-                            {
-                                CurScreen = 0;
-                            }
+                            CurScreen = 1;
+                        }
+                        if (select.Equals("return"))
+                        {
+                            CurScreen = 0;
                         }
                     }
                     if(CurScreen >= 2)
                     {
-                        
                         return true; //create new way to move on
                     }
 
