@@ -12,6 +12,10 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
 
+        //Item 1 is for quadratic drag, Item2 is for linear drag
+        public static Tuple<float,float>[] terrainConsts = new Tuple<float,float>[] {
+            new Tuple<float, float>(1,1), new Tuple<float, float>(1.5f,1.5f), new Tuple<float, float>(2,2)};
+
         public static void init()
         {
             player = new Kart();
@@ -26,7 +30,70 @@ namespace Mooyash.Services
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
             player.updateInput(dt);
-            player.update(dt);
+            int id = GetPhysicsID(player.position);
+            if(id == -1)
+            {
+                //FIX LATER
+                player = new Kart();
+                id = GetPhysicsID(player.position);
+            }
+            player.update(dt, terrainConsts[id]);
+
+            float minCollision = 1;
+            Vector2 finalPos = new Vector2();
+            float finalAngle = 0;
+            Vector2 cur;
+            Vector2 next;
+            CirclePath c = new CirclePath(pastPos, player.position, player.radius);
+
+            if(c.c2.X >= 4950)
+            {
+                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + " POS: " + player.position + " RAD: " +  player.radius);
+                System.Diagnostics.Debug.WriteLine(TestCircleLine(c, new Vector2(5000, -5000), new Vector2(5000, 5000)));
+            }
+
+            //Handles collisions between player and walls of polygon
+            //Should implement bounding box idea
+            foreach(Polygon p in track.collidable)
+            {
+                for(int i = 0; i < p.vertices; i++)
+                {
+                    //if p has the same point twice in a row, this fails
+                    cur = p.points[i];
+                    next = p.points[(i+1) % p.vertices]; 
+                    if(cur.Equals(next))
+                    {
+                        throw new Exception("Polygon cannot have same point twice in a row");
+                    }
+                    if(TestCircleLine(c, cur, next))
+                    {
+                        System.Diagnostics.Debug.WriteLine("CUR: " + cur + " NEXT: " + next);
+                        //OPTIMIZE: This is an expensive computation, we should be able to replace divisions with multiplications?
+                        //OPTIMIZE: This is (kinda) recalculating norm
+                        //EXCEPTION: What if cross is 0? - shouldn't happen though
+                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
+                        float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
+                        float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
+                        System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
+                        System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
+                        if (norm1 < minCollision*(norm1-norm2))
+                        {
+                            minCollision = norm1 / (norm1 - norm2);
+                            finalPos = c.c2 - 2 * norm2 * norm;
+                            //finalAngle = (float) ((2 * Vector2.Angle(norm) - player.angle + 3*Math.PI) % (2*Math.PI));
+                        }
+                    }
+                }
+            }
+
+            if(minCollision != 1)
+            {
+                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
+                player.velocity.X /= 10;
+                player.position = finalPos - player.velocity.X * new Vector2((float) Math.Sin(player.angle), (float) Math.Cos(player.angle));
+                //player.angle = finalAngle;
+                player.velocity.X /= 10;
+            }
             
             //This checks for crossing on every frame, probably needs to be optimized later
             //Checks if player crosses the finish line
@@ -48,6 +115,7 @@ namespace Mooyash.Services
 
         public static int GetPhysicsID(Vector2 position)
         {
+            //Should implement bounding box idea
             for(int i = track.interactable.Count - 1; i >= 0; i--)
             {
                 if(TestPointPoly(position, track.interactable[i]))
@@ -114,8 +182,9 @@ namespace Mooyash.Services
         //tests if the path of a circle (with radius r from c1 to c2) will intersect segment p
         public static bool TestCircleLine(CirclePath c, Vector2 p1, Vector2 p2)
         {
-            Vector2 radius = (c.c2 - c.c1).Normalized();
-            return TestLineLine(c.c1 - c.r * radius, c.c2 + c.r * radius, p1, p2) ||
+            Vector2 norm = c.r * (p2 - p1).Rotated(90).Normalized();
+            return TestLineLine(c.c1 - norm, c.c2 + norm, p1, p2) ||
+                TestLineLine(c.c1 + norm, c.c2 - norm, p1, p2) ||
                 TestPointCircle(c, p1) || TestPointCircle(c, p2);
         }
 

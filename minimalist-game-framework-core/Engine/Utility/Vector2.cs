@@ -71,6 +71,16 @@ public struct Vector2
         return a.X * b.X + a.Y * b.Y;
     }
 
+    //-pi/2 <= angle < 3pi/2
+    public static float Angle(Vector2 v)
+    {
+        if(v.X == 0)
+        {
+            return (float) Math.PI / 2 * Math.Sign(v.Y);
+        }
+        return (float)(Math.Atan(v.Y / v.X) + Math.PI * Math.Sign(v.X));
+    }
+
     /// <summary>
     /// Returns the Z component of the cross product of two vectors.
     /// </summary>
