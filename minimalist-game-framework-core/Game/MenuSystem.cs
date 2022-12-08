@@ -31,6 +31,7 @@ namespace Mooyash.Services
             tons0[0] = new Button(Color.Black, new Vector2(120, 100), new Vector2(80, 30), "play");
             ScreenStack[0] = new Screen(text0,posi0,size0,tons0,0);
 
+            
             Texture[] text1 = new Texture[] { menuNoGong };
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
