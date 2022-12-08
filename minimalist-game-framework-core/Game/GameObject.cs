@@ -23,8 +23,7 @@ namespace Mooyash.Modules
     public class Kart : GameObject
     {
         public Vector2 velocity;
-        public Vector2 acceleration;
-        public Vector2 dir;
+        public float acceleration;
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
@@ -36,8 +35,7 @@ namespace Mooyash.Modules
         private readonly float throttleConst = 1200; //multiplies throttle
         private readonly float linDragConst = 0.5f; //deceleration linearly based on velocity
         private readonly float quadDragConst = 0.002f; //deceleration quadratically based on velocity
-        private readonly float kinDecel = 1; //kinetic friction
-        private readonly float statDecel = 1; //static friction
+        private readonly float naturalDecel = 1; //constant deceleration
         private readonly float brakeConst = 300; //deceleration due to braking
 
         //determines turning
@@ -59,7 +57,6 @@ namespace Mooyash.Modules
             textures = new Texture[5];
             position = new Vector2(4500, 0);
             radius = 50f;
-            dir = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -128,41 +125,50 @@ namespace Mooyash.Modules
         public void update(float dt, Tuple<float, float> terrainConst)
         {
             //acceleration due to drag (quadratic) and friction
-            acceleration = -velocity.Length() * terrainConst.Item1 * quadDragConst * velocity
-                - terrainConst.Item2 * linDragConst * velocity
-                - kinDecel * velocity.Normalized();
+            float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
+                - velocity.X * terrainConst.Item2 * linDragConst 
+                - Math.Sign(velocity.X) * naturalDecel;
             if (braking)
             {
                 //acceleration due to braking
-                acceleration -= brakeConst * velocity.Normalized();
+                tempA += -Math.Sign(velocity.X) * brakeConst;
             }
             else
             {
                 //acceleration due to throttle
-                acceleration += throttle * throttleConst * dir;
+                tempA += throttle * throttleConst;
             }
             //static friction
             if(velocity.X == 0)
             {
-                if(acceleration.Length() <= statDecel)
+                if(Math.Abs(tempA) <= naturalDecel)
                 {
-                    acceleration = new Vector2(0,0);
+                    tempA = 0;
                 }
                 else
                 {
-                    acceleration -= statDecel * acceleration.Normalized();
+                    tempA -= Math.Sign(tempA) * naturalDecel;
                 }
             }
+            //if acceleration and tempA have opposite signs
+            if (Math.Sign(acceleration)*Math.Sign(tempA) == -1)
+            {
+                acceleration = 0;
+            }
+            else
+            {
+                acceleration = tempA;
+            }
 
-            Vector2 tempV = velocity + acceleration * dt;
-            //if velocity and tempV are in opposite directions
-            if (Vector2.Dot(tempV, velocity) < 0)
+            float tempV = velocity.X + acceleration * dt;
+            //if velocity and tempV have opposite signs
+            if (Math.Sign(velocity.X)*Math.Sign(tempV) == -1)
             {
                 velocity = new Vector2(0, 0);
             }
             else
             {
-                velocity = tempV;
+                velocity = new Vector2(tempV, 0);
             }
 
             float angularVelo;
@@ -179,10 +185,7 @@ namespace Mooyash.Modules
                 angularVelo = velocity.X / turnRad;
             }
             angle += angularVelo * dt;
-            float deltaAngle = -angularVelo * dt * 180f / (float)Math.PI;
-            dir = dir.Rotated(deltaAngle);
-            velocity = velocity.Rotated(deltaAngle);
-            position += velocity * dt;
+            position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
             if (angularVelo < -0.8)
             {
