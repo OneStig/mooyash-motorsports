@@ -12,7 +12,7 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
         //COLLIDABLE POLYGON CLASS WITH THIS IN IT - and bounds?
-        public static float collisionFactor = 1f;
+        public static float collisionFactor = 0.1f;
 
         //Item 1 is for quadratic drag, Item2 is for linear drag
         public static Tuple<float,float>[] terrainConsts = new Tuple<float,float>[] {
@@ -69,15 +69,15 @@ namespace Mooyash.Services
                     }
                     if(TestCircleLine(c, cur, next))
                     {
-                        //System.Diagnostics.Debug.WriteLine("CUR: " + cur + " NEXT: " + next);
+                        System.Diagnostics.Debug.WriteLine("CUR: " + cur + " NEXT: " + next);
                         //OPTIMIZE: This is an expensive computation, we should be able to replace divisions with multiplications?
                         //OPTIMIZE: This is (kinda) recalculating norm
                         //EXCEPTION: What if cross is 0? - shouldn't happen though
                         Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
                         float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
                         float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        //System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
-                        //System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
+                        System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
+                        System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
                         if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);

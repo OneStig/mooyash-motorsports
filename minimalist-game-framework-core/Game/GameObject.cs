@@ -84,7 +84,7 @@ namespace Mooyash.Modules
             braking = false;
             if (Engine.GetKeyHeld(Key.W))
             {
-                if(Vector2.Dot(velocity, dir) < 0)
+                if(velocity.X < 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -96,7 +96,7 @@ namespace Mooyash.Modules
             }
             else if (Engine.GetKeyHeld(Key.S))
             {
-                if(Vector2.Dot(velocity, dir) > 0)
+                if(velocity.X > 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -128,12 +128,6 @@ namespace Mooyash.Modules
         public void update(float dt, Tuple<float, float> terrainConst)
         {
             //acceleration due to drag (quadratic) and friction
-
-            if (Engine.GetKeyDown(Key.P))
-            {
-                int a = 0;
-            }
-
             acceleration = -velocity.Length() * terrainConst.Item1 * quadDragConst * velocity
                 - terrainConst.Item2 * linDragConst * velocity
                 - kinDecel * velocity.Normalized();
@@ -147,8 +141,8 @@ namespace Mooyash.Modules
                 //acceleration due to throttle
                 acceleration += throttle * throttleConst * dir;
             }
-            //static friction)
-            if(velocity.Length() == 0)
+            //static friction
+            if(velocity.X == 0)
             {
                 if(acceleration.Length() <= statDecel)
                 {
@@ -172,8 +166,9 @@ namespace Mooyash.Modules
             }
 
             float angularVelo;
-            float steerAngle = steer * steerConst / (steerLimit * Math.Abs(Vector2.Dot(velocity, dir)) + 1);
+            float steerAngle = steer * steerConst / (steerLimit * Math.Abs(velocity.X) + 1);
             float turnRad = kartLength / (float)Math.Sin(steerAngle);
+            float backRad = turnRad * (float)Math.Cos(steerAngle);
 
             if (steerAngle == 0)
             {
@@ -181,7 +176,7 @@ namespace Mooyash.Modules
             }
             else
             {
-                angularVelo = Vector2.Dot(velocity, dir) / turnRad;
+                angularVelo = velocity.X / turnRad;
             }
             angle += angularVelo * dt;
             float deltaAngle = -angularVelo * dt * 180f / (float)Math.PI;
