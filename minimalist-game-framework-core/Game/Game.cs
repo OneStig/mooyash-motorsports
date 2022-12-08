@@ -91,6 +91,7 @@ class Game
             if (Engine.GetKeyDown(Key.Escape))
             {
                 playing = false;
+                time = 0;
             }
                 
 
