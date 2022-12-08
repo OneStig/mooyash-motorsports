@@ -67,7 +67,7 @@ namespace Mooyash.Services
             {
                 cur.Down();
             }
-            if (Engine.GetKeyDown(Key.Space))
+            if (Engine.GetKeyDown(Key.Return))
             {
                 if (!cur.Select().Equals(" "))
                 {
