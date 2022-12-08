@@ -154,7 +154,6 @@ namespace Mooyash.Services
         }
 
         //tests if a point is within a physics polygon
-        //WARNING: You can be on a right (or top or bottom) edge, but not a left edge
         public static bool TestPointPoly(Vector2 point, PhysicsPolygon poly)
         {
             bool odd = false;
