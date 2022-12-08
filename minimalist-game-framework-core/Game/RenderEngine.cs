@@ -125,6 +125,8 @@ namespace Mooyash.Services
 
         public static void drawPerTrack(Track t)
         {
+            Engine.DrawRectSolid(new Bounds2(Vector2.Zero, Game.Resolution), Color.SkyBlue);
+
             foreach (Polygon p in t.interactable)
             {
                 drawPerPolygon(p);
