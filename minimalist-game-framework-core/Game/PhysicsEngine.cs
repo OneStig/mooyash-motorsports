@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -76,10 +77,10 @@ namespace Mooyash.Services
                         float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
                         System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
                         System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
-                        if (norm1 < minCollision*(norm1-norm2))
+                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c2 - 2 * norm2 * norm;
+                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
                             //finalAngle = (float) ((2 * Vector2.Angle(norm) - player.angle + 3*Math.PI) % (2*Math.PI));
                         }
                     }
@@ -89,10 +90,10 @@ namespace Mooyash.Services
             if(minCollision != 1)
             {
                 System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
-                player.velocity.X /= 10;
-                player.position = finalPos - player.velocity.X * new Vector2((float) Math.Sin(player.angle), (float) Math.Cos(player.angle));
+                player.position = finalPos;
                 //player.angle = finalAngle;
-                player.velocity.X /= 10;
+                player.velocity.X = collideVel(player.velocity.X);
+                player.throttle = 0;
             }
             
             //This checks for crossing on every frame, probably needs to be optimized later
@@ -111,6 +112,12 @@ namespace Mooyash.Services
             }
 
             RenderEngine.camera.followKart(player);
+        }
+
+        //determines velocity after collision
+        public static float collideVel(float velocityI)
+        {
+            //STEVE PLS HELP
         }
 
         public static int GetPhysicsID(Vector2 position)

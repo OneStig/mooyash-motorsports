@@ -56,7 +56,7 @@ namespace Mooyash.Modules
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
             position = new Vector2(4500, 0);
-            radius = 50f;
+            radius = 38f;
 
             for (int i = 0; i < textures.Length; i++)
             {
