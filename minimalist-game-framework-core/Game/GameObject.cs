@@ -212,8 +212,17 @@ namespace Mooyash.Modules
             {
                 velocity = tempV;
             }
-            float dAngle = Vector2.Dot(velocity, dir) * dt * curvature;
-            angle += Vector2.Dot(velocity, dir) * dt * curvature;
+
+            float dAngle;
+            if(velocity.Length() == 0)
+            {
+                dAngle = 0;
+            }
+            else
+            {
+                dAngle = (float) Math.Atan(dt * Vector2.Dot(velocity, dir) * Vector2.Dot(velocity, dir) * curvature / velocity.Length());
+            }
+            angle += dAngle;
             dir = dir.Rotated(-dAngle * (float) (180/(2*Math.PI)) );
 
             position += velocity * dt;
