@@ -92,8 +92,8 @@ namespace Mooyash.Services
                 System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
                 player.position = finalPos;
                 //player.angle = finalAngle;
-                player.velocity.X = collideVel(player.velocity.X);
-                player.throttle = 0;
+                player.velocity.X = -player.velocity.X * 0.75f;
+                player.throttle /= 2;
             }
             
             //This checks for crossing on every frame, probably needs to be optimized later
@@ -112,12 +112,6 @@ namespace Mooyash.Services
             }
 
             RenderEngine.camera.followKart(player);
-        }
-
-        //determines velocity after collision
-        public static float collideVel(float velocityI)
-        {
-            //STEVE PLS HELP
         }
 
         public static int GetPhysicsID(Vector2 position)
