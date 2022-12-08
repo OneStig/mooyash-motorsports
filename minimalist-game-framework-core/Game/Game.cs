@@ -98,8 +98,7 @@ class Game
         }
         else
         {
-            bool temp = MenuSystem.UpdateMenu();
-            if (temp)
+            if (MenuSystem.UpdateMenu())
             {
                 playing = true;
                 GameSettings = MenuSystem.GetSettings();

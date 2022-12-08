@@ -5,7 +5,7 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[3];
+        private static Screen[] ScreenStack = new Screen[6];
 
         private static int CurScreen = 0;
 
@@ -18,39 +18,81 @@ namespace Mooyash.Services
             Texture menuNoGong = Engine.LoadTexture("fallinggong.png");
 
             SettingtoID["play"] = 1;
-            SettingtoID["map1"] = 2;
-            SettingtoID["map2"] = 3;
-            SettingtoID["map3"] = 4;
-            SettingtoID["replay"] = 5;
-            SettingtoID["return"] = 6;
 
+            SettingtoID["TimeTrial"] = 2;
+            SettingtoID["GrandPrix"] = 3;
+
+            SettingtoID["50cc"] = 4;
+            SettingtoID["100cc"] = 5;
+
+            SettingtoID["yourmom"] = 6;
+            SettingtoID["suyash"] = 7;
+
+            SettingtoID["map1"] = 8;
+            SettingtoID["map2"] = 9;
+            SettingtoID["map3"] = 10;
+
+            SettingtoID["replay"] = 11;
+            SettingtoID["return"] = 12;
+
+            //play mode cc character map return
+
+            //play
             Texture[] text0 = new Texture[] { menu };
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
             Vector2[] size0 = new Vector2[] { new Vector2(320, 180)};
             Dictionary<int, Button> tons0 = new Dictionary<int, Button>();
             tons0[0] = new Button(Color.Black, new Vector2(120, 100), new Vector2(80, 30), "play");
-            ScreenStack[0] = new Screen(text0,posi0,size0,tons0,0);
+            ScreenStack[0] = new Screen(text0, posi0, size0, tons0, 0);
 
-            
+            //mode
             Texture[] text1 = new Texture[] { menuNoGong };
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1");
-            tons1[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2");
-            tons1[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3");
-            
+            tons1[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "TimeTrial");
+            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "GrandPrix");
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
 
+            //cc
             Texture[] text2 = new Texture[] { menuNoGong };
             Vector2[] posi2 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size2 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons2 = new Dictionary<int, Button>();
-            tons2[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay");
-            tons2[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return");
+            tons2[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "50cc");
+            tons2[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "100cc");
+            ScreenStack[2] = new Screen(text2, posi2, size2, tons2, 0);
+
+            //character
+            Texture[] text3 = new Texture[] { menuNoGong };
+            Vector2[] posi3 = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] size3 = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> tons3 = new Dictionary<int, Button>();
+            tons3[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "yourmom");
+            tons3[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "suyash");
+            ScreenStack[3] = new Screen(text3, posi3, size3, tons3, 0);
+
+            //map
+            Texture[] text4 = new Texture[] { menuNoGong };
+            Vector2[] posi4 = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] size4 = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> tons4 = new Dictionary<int, Button>();
+            tons4[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1");
+            tons4[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2");
+            tons4[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3");
+            
+            ScreenStack[4] = new Screen(text4, posi4, size4, tons4, 0);
+
+            //return
+            Texture[] text5 = new Texture[] { menuNoGong };
+            Vector2[] posi5 = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] size5 = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> tons5 = new Dictionary<int, Button>();
+            tons5[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay");
+            tons5[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return");
             
 
-            ScreenStack[2] = new Screen(text2, posi2, size2, tons2, 0);
+            ScreenStack[5] = new Screen(text5, posi5, size5, tons5, 0);
             
 
         }
@@ -70,27 +112,23 @@ namespace Mooyash.Services
             }
             if (Engine.GetKeyDown(Key.Return))
             {
-                if (!cur.Select().Equals(" "))
+                Settings.Add(cur.Select());
+                CurScreen++;
+                if(CurScreen >= 5)
                 {
-                    Settings.Add(cur.Select());
-                    CurScreen++;
-                    if(CurScreen >= 3)
+                    String select = cur.Select();
+                    if (select.Equals("replay"))
                     {
-                        String select = cur.Select();
-                        if (select.Equals("replay"))
-                        {
-                            CurScreen = 1;
-                        }
-                        if (select.Equals("return"))
-                        {
-                            CurScreen = 0;
-                        }
+                        CurScreen = 4;
                     }
-                    if(CurScreen >= 2)
+                    if (select.Equals("return"))
                     {
-                        return true; //create new way to move on
+                        CurScreen = 5;
                     }
-
+                }
+                if(CurScreen >= 5)
+                {
+                    return true; //create new way to move on
                 }
             }
             return false;
