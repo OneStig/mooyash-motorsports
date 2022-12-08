@@ -7,9 +7,11 @@ namespace Mooyash.Modules
     {
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
-        public Polygon hitbox;
         public int curTex;
         public Texture[] textures;
+
+        //public Polygon hitbox;
+
 
         public GameObject()
         {
@@ -28,9 +30,14 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
-        public float radius;
-        public bool stunned;
         public bool braking;
+
+        //for collisions
+        public float radius;
+        //norm is for if you're skating along a wall
+        public Nullable<Vector2> norm;
+
+        //public bool stunned;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -60,6 +67,7 @@ namespace Mooyash.Modules
             position = new Vector2(4500, 0);
             radius = 50f;
             dir = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+            norm = null;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -127,13 +135,12 @@ namespace Mooyash.Modules
 
         public void update(float dt, Tuple<float, float> terrainConst)
         {
-            //acceleration due to drag (quadratic) and friction
-
-            if (Engine.GetKeyDown(Key.P))
+            if(Engine.GetKeyDown(Key.P))
             {
                 int a = 0;
             }
 
+            //acceleration due to drag (quadratic) and friction
             acceleration = -velocity.Length() * terrainConst.Item1 * quadDragConst * velocity
                 - terrainConst.Item2 * linDragConst * velocity
                 - kinDecel * velocity.Normalized();
@@ -147,7 +154,8 @@ namespace Mooyash.Modules
                 //acceleration due to throttle
                 acceleration += throttle * throttleConst * dir;
             }
-            //static friction)
+
+            //static friction - NEEDS TO BE ADJUSTED FOR DRIFTING?
             if(velocity.Length() == 0)
             {
                 if(acceleration.Length() <= statDecel)
@@ -157,6 +165,40 @@ namespace Mooyash.Modules
                 else
                 {
                     acceleration -= statDecel * acceleration.Normalized();
+                }
+            }
+
+            /*
+            float angularVelo;
+            float steerAngle = steer * steerConst / (steerLimit * Math.Abs(Vector2.Dot(velocity, dir)) + 1);
+            float turnRad = kartLength / (float)Math.Sin(steerAngle);
+
+            if (steerAngle == 0)
+            {
+                angularVelo = 0;
+            }
+            else
+            {
+                angularVelo = Vector2.Dot(velocity, dir) / turnRad;
+            }
+            
+            angle += angularVelo * dt;
+            float deltaAngle = -angularVelo * dt * 180f / (float)Math.PI;
+            dir = dir.Rotated(deltaAngle);
+            velocity = velocity.Rotated(deltaAngle);
+            position += velocity * dt;
+            */
+            
+            //ACTUALLY FIGURE OUT PHYSICS
+            float curvature = (float)(2 * Math.Sin(steer * steerConst / 2)) / kartLength;
+            acceleration += Vector2.Dot(velocity, dir)*Vector2.Dot(velocity, dir)*curvature * dir.Rotated(90);
+
+            if(norm != null)
+            {
+                float dot = Vector2.Dot(acceleration, (Vector2) norm);
+                if(dot < 0)
+                {
+                    acceleration -= dot * (Vector2) norm;
                 }
             }
 
@@ -170,25 +212,17 @@ namespace Mooyash.Modules
             {
                 velocity = tempV;
             }
+            float dAngle = Vector2.Dot(velocity, dir) * dt * curvature;
+            angle += Vector2.Dot(velocity, dir) * dt * curvature;
+            dir = dir.Rotated(-dAngle * (float) (180/(2*Math.PI)) );
 
-            float angularVelo;
-            float steerAngle = steer * steerConst / (steerLimit * Math.Abs(Vector2.Dot(velocity, dir)) + 1);
-            float turnRad = kartLength / (float)Math.Sin(steerAngle);
-
-            if (steerAngle == 0)
-            {
-                angularVelo = 0;
-            }
-            else
-            {
-                angularVelo = Vector2.Dot(velocity, dir) / turnRad;
-            }
-            angle += angularVelo * dt;
-            float deltaAngle = -angularVelo * dt * 180f / (float)Math.PI;
-            dir = dir.Rotated(deltaAngle);
-            velocity = velocity.Rotated(deltaAngle);
             position += velocity * dt;
 
+            chooseTexture(curvature);
+        }
+
+        public void chooseTexture(float angularVelo)
+        {
             if (angularVelo < -0.8)
             {
                 curTex = 3;
@@ -209,8 +243,6 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
-
-            // Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
