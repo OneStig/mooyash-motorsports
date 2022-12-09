@@ -19,13 +19,13 @@ namespace Mooyash.Services
 
             SettingtoID["play"] = 1;
 
-            SettingtoID["TimeTrial"] = 2;
-            SettingtoID["GrandPrix"] = 3;
+            SettingtoID["timetrial"] = 2;
+            SettingtoID["grandprix"] = 3;
 
             SettingtoID["50cc"] = 4;
             SettingtoID["100cc"] = 5;
 
-            SettingtoID["yourmom"] = 6;
+            SettingtoID["william"] = 6;
             SettingtoID["suyash"] = 7;
 
             SettingtoID["map1"] = 8;
@@ -50,8 +50,8 @@ namespace Mooyash.Services
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "TimeTrial");
-            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "GrandPrix");
+            tons1[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "timetrial");
+            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "prandprix");
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
 
             //cc
@@ -68,7 +68,7 @@ namespace Mooyash.Services
             Vector2[] posi3 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size3 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons3 = new Dictionary<int, Button>();
-            tons3[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "yourmom");
+            tons3[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "william");
             tons3[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "suyash");
             ScreenStack[3] = new Screen(text3, posi3, size3, tons3, 0);
 
