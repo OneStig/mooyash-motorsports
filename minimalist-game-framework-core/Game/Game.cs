@@ -21,43 +21,27 @@ class Game
 
     public Game()
     {
-        // Initialize game objects
-        // PhysicsEngine.init();
-        
-        // Load textures into static member of various GameObjects
+        // Load textures
         MenuSystem.loadTextures();
+        Track.LoadTracks();
         
-        // First mode is false (menu)
-        playing = false; // SET TO FALSE LATER
-        debugging = false; // set true for diagnostics
+        //set playing to false
+        playing = false;
 
-        RenderEngine.camera = new Camera(new Vector2(300,100), Math.PI/2, 25, Math.PI/2, 20);
+        //DEBUGGING
+        debugging = true; // set true for diagnostics
+        PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
+        RenderEngine.camera = new Camera(new Vector2(300,100), 25, Math.PI/2, 20);
     }
 
     public void Update()
     {
-        if (debugging)
+        if (debugging && playing)
         {
-            System.Diagnostics.Debug.WriteLine(1 / Engine.TimeDelta);
-            //Console.WriteLine(1 / Engine.TimeDelta);
-            // Console.WriteLine(Track.genTrack.isConvex());
-
-            if (Engine.GetKeyHeld(Key.W))
-            {
-                RenderEngine.camera.position += new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
-            }
-            if (Engine.GetKeyHeld(Key.S))
-            {
-                RenderEngine.camera.position -= new Vector2(RenderEngine.camera.cos, RenderEngine.camera.sin);
-            }
-            if (Engine.GetKeyHeld(Key.A))
-            {
-                RenderEngine.camera.changeAngle(-0.01);
-            }
-            if (Engine.GetKeyHeld(Key.D))
-            {
-                RenderEngine.camera.changeAngle(0.01);
-            }
+            //System.Diagnostics.Debug.WriteLine(PhysicsEngine.TestCircleLine(
+                //new CirclePath(new Vector2(4946.457f, 106.707f), new Vector2(4951.442f, 109.4627f), 50),
+                //new Vector2(5000,-5000), new Vector2(5000,5000)));
+            System.Diagnostics.Debug.WriteLine("POSITION: " + PhysicsEngine.player.position + " FPS: " + 1 / Engine.TimeDelta);
             if (Engine.GetKeyHeld(Key.Up))
             {
                 RenderEngine.camera.height += 1;
@@ -72,12 +56,14 @@ class Game
         {
             //  input handling
             //  physics handled by physics engine
-            //  rendering handled by rendering engine
-
-            RenderEngine.drawPerTrack(Track.defaultTrack);
+            //  rendering handled by rendering engine            
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+
             RenderEngine.camera.followKart(PhysicsEngine.player);
+            RenderEngine.drawPerTrack(PhysicsEngine.track);
             RenderEngine.drawPlayer();
+            RenderEngine.drawUI();
+            RenderEngine.drawObjects();
 
             time += Engine.TimeDelta;
             String timer = "0" + (int)time / 60 + "." + time % 60 + "000";
@@ -93,8 +79,6 @@ class Game
                 playing = false;
                 time = 0;
             }
-                
-
         }
         else
         {

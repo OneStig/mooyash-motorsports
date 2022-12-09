@@ -27,12 +27,14 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+        public float radius;
         public bool stunned;
         public bool braking;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
-        private readonly float dragConst = 1; //deceleration based on velocity
+        private readonly float linDragConst = 0.5f; //deceleration linearly based on velocity
+        private readonly float quadDragConst = 0.002f; //deceleration quadratically based on velocity
         private readonly float naturalDecel = 1; //constant deceleration
         private readonly float brakeConst = 300; //deceleration due to braking
 
@@ -54,6 +56,7 @@ namespace Mooyash.Modules
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
             position = new Vector2(4500, 0);
+            radius = 32f;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -119,10 +122,12 @@ namespace Mooyash.Modules
             }
         }
 
-        public void update(float dt)
+        public void update(float dt, Tuple<float, float> terrainConst)
         {
-            //acceleration due to drag and friction
-            float tempA = -velocity.X * dragConst - Math.Sign(velocity.X) * naturalDecel;
+            //acceleration due to drag (quadratic) and friction
+            float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
+                - velocity.X * terrainConst.Item2 * linDragConst 
+                - Math.Sign(velocity.X) * naturalDecel;
             if (braking)
             {
                 //acceleration due to braking
@@ -132,6 +137,18 @@ namespace Mooyash.Modules
             {
                 //acceleration due to throttle
                 tempA += throttle * throttleConst;
+            }
+            //static friction
+            if(velocity.X == 0)
+            {
+                if(Math.Abs(tempA) <= naturalDecel)
+                {
+                    tempA = 0;
+                }
+                else
+                {
+                    tempA -= Math.Sign(tempA) * naturalDecel;
+                }
             }
             //if acceleration and tempA have opposite signs
             if (Math.Sign(acceleration)*Math.Sign(tempA) == -1)
