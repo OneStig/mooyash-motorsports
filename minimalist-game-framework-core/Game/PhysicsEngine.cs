@@ -34,7 +34,6 @@ namespace Mooyash.Services
             int id = GetPhysicsID(player.position);
             if(id == -1)
             {
-                //FIX LATER
                 player = new Kart();
                 id = GetPhysicsID(player.position);
             }
@@ -86,7 +85,7 @@ namespace Mooyash.Services
             //Checks if player crosses the finish line
             if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
             {
-                if (Vector2.Dot(pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
                 {
                     lapCount++;
                 }
