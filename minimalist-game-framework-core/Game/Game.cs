@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SDL2;
 using Mooyash.Modules;
 using Mooyash.Services;
 
@@ -27,7 +26,7 @@ class Game
         playing = false;
 
         //DEBUGGING
-        debugging = true; // set true for diagnostics
+        debugging = false; // set true for diagnostics
         PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
         RenderEngine.camera = new Camera(new Vector2(300,100), 25, Math.PI/2, 20);
     }
@@ -36,10 +35,6 @@ class Game
     {
         if (debugging && playing)
         {
-            //System.Diagnostics.Debug.WriteLine(PhysicsEngine.TestCircleLine(
-                //new CirclePath(new Vector2(4946.457f, 106.707f), new Vector2(4951.442f, 109.4627f), 50),
-                //new Vector2(5000,-5000), new Vector2(5000,5000)));
-            System.Diagnostics.Debug.WriteLine("POSITION: " + PhysicsEngine.player.position + " FPS: " + 1 / Engine.TimeDelta);
             if (Engine.GetKeyHeld(Key.Up))
             {
                 RenderEngine.camera.height += 1;

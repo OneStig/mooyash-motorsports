@@ -13,9 +13,9 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
 
-        //Item 1 is for quadratic drag, Item2 is for linear drag
-        public static Tuple<float,float>[] terrainConsts = new Tuple<float,float>[] {
-            new Tuple<float, float>(1,1), new Tuple<float, float>(1.5f,1.5f), new Tuple<float, float>(2,2)};
+        //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
+        public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
+            new Tuple<float, float, float>(1,1,1), new Tuple<float, float, float>(2,2,2), new Tuple<float, float, float>(3,3,3)};
 
         public static void init()
         {
@@ -42,16 +42,9 @@ namespace Mooyash.Services
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
-            float finalAngle = 0;
             Vector2 cur;
             Vector2 next;
             CirclePath c = new CirclePath(pastPos, player.position, player.radius);
-
-            if(c.c2.X >= 4950)
-            {
-                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + " POS: " + player.position + " RAD: " +  player.radius);
-                System.Diagnostics.Debug.WriteLine(TestCircleLine(c, new Vector2(5000, -5000), new Vector2(5000, 5000)));
-            }
 
             //Handles collisions between player and walls of polygon
             //Should implement bounding box idea
@@ -68,20 +61,15 @@ namespace Mooyash.Services
                     }
                     if(TestCircleLine(c, cur, next))
                     {
-                        System.Diagnostics.Debug.WriteLine("CUR: " + cur + " NEXT: " + next);
-                        //OPTIMIZE: This is an expensive computation, we should be able to replace divisions with multiplications?
                         //OPTIMIZE: This is (kinda) recalculating norm
                         //EXCEPTION: What if cross is 0? - shouldn't happen though
                         Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
                         float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
                         float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
-                        System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
                         if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);
                             finalPos = c.c1 + minCollision * (c.c2 - c.c1);
-                            //finalAngle = (float) ((2 * Vector2.Angle(norm) - player.angle + 3*Math.PI) % (2*Math.PI));
                         }
                     }
                 }
@@ -89,9 +77,7 @@ namespace Mooyash.Services
 
             if(minCollision != 1)
             {
-                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
                 player.position = finalPos;
-                //player.angle = finalAngle;
                 player.velocity.X = -player.velocity.X * 0.75f;
                 player.throttle /= 2;
             }

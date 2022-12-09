@@ -122,12 +122,12 @@ namespace Mooyash.Modules
             }
         }
 
-        public void update(float dt, Tuple<float, float> terrainConst)
+        public void update(float dt, Tuple<float, float, float> terrainConst)
         {
             //acceleration due to drag (quadratic) and friction
             float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
                 - velocity.X * terrainConst.Item2 * linDragConst 
-                - Math.Sign(velocity.X) * naturalDecel;
+                - Math.Sign(velocity.X) * terrainConst.Item3 * naturalDecel;
             if (braking)
             {
                 //acceleration due to braking
@@ -141,13 +141,13 @@ namespace Mooyash.Modules
             //static friction
             if(velocity.X == 0)
             {
-                if(Math.Abs(tempA) <= naturalDecel)
+                if(Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
                 {
                     tempA = 0;
                 }
                 else
                 {
-                    tempA -= Math.Sign(tempA) * naturalDecel;
+                    tempA -= Math.Sign(tempA) * terrainConst.Item3 * naturalDecel;
                 }
             }
             //if acceleration and tempA have opposite signs
@@ -174,7 +174,6 @@ namespace Mooyash.Modules
             float angularVelo;
             float steerAngle = steer * steerConst / (steerLimit * Math.Abs(velocity.X) + 1);
             float turnRad = kartLength / (float)Math.Sin(steerAngle);
-            float backRad = turnRad * (float)Math.Cos(steerAngle);
 
             if (steerAngle == 0)
             {
@@ -187,6 +186,11 @@ namespace Mooyash.Modules
             angle += angularVelo * dt;
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
+            chooseTexture(angularVelo);
+        }
+
+        public void chooseTexture(float angularVelo)
+        {
             if (angularVelo < -0.8)
             {
                 curTex = 3;
@@ -207,8 +211,6 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
-
-            // Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
