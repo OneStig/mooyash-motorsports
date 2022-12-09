@@ -89,6 +89,8 @@ namespace Mooyash.Modules
                     new Vector2(4500, 4500),
                     new Vector2(4500, -4500)
                 },
+
+                //bool is true if the correct direction across the line is (Item2-Item1) rotated 90 degrees clockwise
                 new Tuple<Vector2, Vector2, bool>(new Vector2(4000, 0), new Vector2(2000, 0), true)
             ));
         }
