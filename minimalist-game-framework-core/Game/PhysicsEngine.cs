@@ -28,6 +28,14 @@ namespace Mooyash.Services
 
         public static void update(float dt)
         {
+            if (lapDisplay > 3)
+            {
+                Game.playing = false;
+                RenderEngine.finalTime = RenderEngine.time;
+                MenuSystem.SetFinalTime(RenderEngine.finalTime);
+                RenderEngine.time = 0;
+            }
+
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
             player.updateInput(dt);
