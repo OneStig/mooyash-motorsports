@@ -8,13 +8,15 @@ class Game
     public static readonly string Title = "Mooyash Motorsport";
     public static readonly Vector2 Resolution = new Vector2(320, 180);
 
+    
+
     public static List<int> GameSettings;
-    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+    public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17);
 
     public static bool debugging;
 
 
-    bool playing; // (saves 31 bits of overhead yay)
+    public static bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
@@ -54,8 +56,15 @@ class Game
 
             RenderEngine.camera.followKart(PhysicsEngine.player);
             RenderEngine.drawPerTrack(PhysicsEngine.track);
-            RenderEngine.drawUI();
+            RenderEngine.drawPlayer();
             RenderEngine.drawObjects();
+            RenderEngine.drawUI();
+
+            //if (Engine.GetKeyDown(Key.Escape))
+            //{
+            //    playing = false;
+            //    time = 0;
+            //}
         }
         else
         {
