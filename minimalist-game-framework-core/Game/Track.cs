@@ -1,10 +1,32 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Mooyash.Modules
 {
+    public class TrackLoader
+    {
+        public Vector2 startPos;
+        public float startAngle;
+
+        public Vector2[][] collidable;
+        public Vector2[][] interactable;
+        public Vector2[][] visual;
+
+        public Color[] collidableColor;
+        public Color[] interactableColor;
+        public Color[] visualColor;
+
+        public Vector2[] splines;
+        public Tuple<Vector2, Vector2> checkpoint;
+    }
+
     public class Track
     {
+        public Vector2 startPos;
+        public float startAngle;
+
         public List<Polygon> collidable;
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
@@ -14,7 +36,7 @@ namespace Mooyash.Modules
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
 
-        public static List<Track> tracks = new List<Track>();
+        public static Track[] tracks;
 
         public Track(List<Polygon> collidable, List<PhysicsPolygon> interactable,
             List<Polygon> visual, List<Vector2> splines,
@@ -46,53 +68,69 @@ namespace Mooyash.Modules
 
         public static void LoadTracks()
         {
-            tracks.Add(
-                new Track(
-                new List<Polygon>() {
-                    new Polygon(
-                        new float[] { -5000, 5000, 5000, -5000},
-                        new float[] { 5000, 5000, -5000, -5000},
-                        new Color(0, 0, 0, 0)
-                    ),
+            tracks = new Track[1];
 
-                    new Polygon(
-                        new float[] { -2000, 2000, 2000, -2000},
-                        new float[] { 2000, 2000, -2000, -2000},
-                        Color.Yellow
-                    )
-                },
+            for (int j = 0; j < tracks.Length; j++)
+            {
+                string test = File.ReadAllText("Assets/Track" + j + ".json");
+                TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(test);
 
-                new List<PhysicsPolygon>() {
-                    new PhysicsPolygon(
-                        new float[] { -5000, 5000, 5000, -5000},
-                        new float[] { 5000, 5000, -5000, -5000},
-                        Color.LawnGreen, 1
-                    ),
-                    new PhysicsPolygon(
-                        new float[] { -4000, 4000, 4000, -4000},
-                        new float[] { 4000, 4000, -4000, -4000},
-                        Color.LightSlateGray, 0
-                    )
-                },
+                float sf = 10f;
+                // apply sf
 
-                new List<Polygon>() {
-                    new Polygon(
-                        new float[] { -1000, 0, 1000},
-                        new float[] { -1000, 1000, -1000},
-                        Color.White
-                    )
-                },
+                for (int i = 0; i < loaded.collidable.Length; i++)
+                {
+                    for (int k = 0; k < loaded.collidable[i].Length; k++)
+                    {
+                        loaded.collidable[i][k] *= sf;
+                    }
+                }
 
-                new List<Vector2>() {
-                    new Vector2(-4500, -4500),
-                    new Vector2(-4500, 4500),
-                    new Vector2(4500, 4500),
-                    new Vector2(4500, -4500)
-                },
+                for (int i = 0; i < loaded.interactable.Length; i++)
+                {
+                    for (int k = 0; k < loaded.interactable[i].Length; k++)
+                    {
+                        loaded.interactable[i][k] *= sf;
+                    }
+                }
 
-                //bool is true if the correct direction across the line is (Item2-Item1) rotated 90 degrees clockwise
-                new Tuple<Vector2, Vector2, bool>(new Vector2(4000, 0), new Vector2(2000, 0), true)
-            ));
+                for (int i = 0; i < loaded.visual.Length; i++)
+                {
+                    for (int k = 0; k < loaded.visual[i].Length; k++)
+                    {
+                        loaded.visual[i][k] *= sf;
+                    }
+                }
+
+
+                List<Polygon> collidable = new List<Polygon>();
+
+                for (int i = 0; i < loaded.collidable.Length; i++)
+                {
+                    collidable.Add(new Polygon(loaded.collidable[i], loaded.collidableColor[i]));
+                }
+
+                List<PhysicsPolygon> interactable = new List<PhysicsPolygon>();
+
+                for (int i = 0; i < loaded.interactable.Length; i++)
+                {
+                    interactable.Add(new PhysicsPolygon(loaded.interactable[i], loaded.interactableColor[i], 0));
+                }
+
+                List<Polygon> visual = new List<Polygon>();
+
+                for (int i = 0; i < loaded.visual.Length; i++)
+                {
+                    visual.Add(new Polygon(loaded.visual[i], loaded.visualColor[i]));
+                }
+
+                tracks[j] = new Track(collidable, interactable, visual, new List<Vector2>(),
+                    new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
+
+                tracks[j].startPos = loaded.startPos;
+                tracks[j].startAngle = loaded.startAngle;
+            }
+            
         }
     }
 
@@ -101,6 +139,11 @@ namespace Mooyash.Modules
         public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
         public PhysicsPolygon(float[] xVals, float[] yVals, Color color, int id) : base(xVals, yVals, color)
+        {
+            this.id = id;
+        }
+
+        public PhysicsPolygon(Vector2[] points, Color color, int id) : base(points, color)
         {
             this.id = id;
         }

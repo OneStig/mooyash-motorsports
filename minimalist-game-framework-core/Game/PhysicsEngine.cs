@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -22,6 +21,8 @@ namespace Mooyash.Services
             player = new Kart();
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
+            player.position = track.startPos;
+            player.angle = track.startAngle;
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
         }
@@ -40,12 +41,15 @@ namespace Mooyash.Services
 
             player.updateInput(dt);
             int id = GetPhysicsID(player.position);
+
             if(id == -1)
             {
                 player = new Kart();
                 id = GetPhysicsID(player.position);
             }
+
             player.update(dt, terrainConsts[id]);
+
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
