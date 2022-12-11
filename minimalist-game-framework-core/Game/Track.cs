@@ -114,7 +114,18 @@ namespace Mooyash.Modules
 
                 for (int i = 0; i < loaded.interactable.Length; i++)
                 {
-                    interactable.Add(new PhysicsPolygon(loaded.interactable[i], loaded.interactableColor[i], 0));
+                    int type = 0;
+
+                    if (loaded.interactableColor[i].R == 124)
+                    {
+                        type = 1;
+                    }
+                    else if (loaded.interactableColor[i].R == 244)
+                    {
+                        type = 2;
+                    }
+
+                    interactable.Add(new PhysicsPolygon(loaded.interactable[i], loaded.interactableColor[i], type));
                 }
 
                 List<Polygon> visual = new List<Polygon>();
