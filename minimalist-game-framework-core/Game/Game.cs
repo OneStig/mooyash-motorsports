@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Mooyash.Modules;
 using Mooyash.Services;
+using SDL2;
 
 class Game
 {
@@ -20,6 +21,9 @@ class Game
 
     public Game()
     {
+        Engine.Fullscreen = true;
+        SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
         // Load textures
         MenuSystem.loadTextures();
         Track.LoadTracks();
