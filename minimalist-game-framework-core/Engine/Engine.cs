@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 
 static partial class Engine
 {
-    private static IntPtr Window;
-    private static bool Fullscreen;
+    public static IntPtr Window;
+    public static bool Fullscreen;
     private static Texture RenderTarget;
     private static Game Game;
 
@@ -34,7 +34,7 @@ static partial class Engine
         }
         catch
         {
-            Console.WriteLine("MACS ARE SIMPLY BETTER");
+            // Console.WriteLine("MACS ARE SIMPLY BETTER");
         }
         
 
@@ -141,7 +141,7 @@ static partial class Engine
             PollEvents();
 
             // Toggle between windowed and fullscreen mode when Alt+Enter is pressed:
-            if (GetKeyDown(Key.Return) && (GetKeyHeld(Key.LeftAlt) || GetKeyHeld(Key.RightAlt)))
+            if (GetKeyDown(Key.Escape))
             {
                 Fullscreen = !Fullscreen;
                 SDL.SDL_SetWindowFullscreen(Window, Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
