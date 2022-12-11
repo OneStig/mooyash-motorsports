@@ -40,6 +40,10 @@
     <None Remove="README.md" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
 </Project>
