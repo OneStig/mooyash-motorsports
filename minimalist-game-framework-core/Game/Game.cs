@@ -22,12 +22,15 @@ class Game
 
     Color[] colors = new Color[]
     {
-        new Color(255, 255, 255),
-        new Color(155, 118, 83),
-        new Color(31, 109, 4),
+        Color.SlateGray,
+        Color.LawnGreen,
+        Color.SandyBrown,
+        Color.Black,
+        Color.White,
         Color.Red,
+        Color.Yellow,
         Color.Blue,
-        Color.Gray
+        Color.Magenta,
     };
 
     string label = "";
@@ -53,17 +56,58 @@ class Game
         curPoly = new Polygon(new Vector2[0], colors[cc]);
         //curTrack = new Track(new List<Polygon>(), new List<Polygon>());
         curTrack = new Track(new List<Polygon>(), new List<PhysicsPolygon>(), new List<Polygon>(), new List<Vector2>(), new List<Tuple<Vector2, Vector2>>());
+
+        //TrackLoader test = new TrackLoader();
+        //test.startPos = new Vector2(1, 2);
+
+        //string txt = JsonConvert.SerializeObject(test, Formatting.Indented);
+        //File.WriteAllText("gentrack.json", txt);
+
+        try
+        {
+            string test = File.ReadAllText("Assets/gentrack.json");
+            TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(test);
+
+            List<Polygon> collidable = new List<Polygon>();
+
+            for (int i = 0; i < loaded.collidable.Length; i++)
+            {
+                collidable.Add(new Polygon(loaded.collidable[i], loaded.collidableColor[i]));
+            }
+
+            List<PhysicsPolygon> interactable = new List<PhysicsPolygon>();
+
+            for (int i = 0; i < loaded.interactable.Length; i++)
+            {
+                interactable.Add(new PhysicsPolygon(loaded.interactable[i], loaded.interactableColor[i], 0));
+            }
+
+            List<Polygon> visual = new List<Polygon>();
+
+            for (int i = 0; i < loaded.visual.Length; i++)
+            {
+                visual.Add(new Polygon(loaded.visual[i], loaded.visualColor[i]));
+            }
+
+            curTrack = new Track(collidable, interactable, visual, new List<Vector2>(), new List<Tuple<Vector2, Vector2>>());
+        }
+        catch
+        {
+            Console.WriteLine("nothing to load");
+        }
     }
 
     public void Update()
     {
+        float inc = 25f;
+
+        if (Engine.GetKeyHeld(Key.O))
+        {
+            inc = 10f;
+        }
+
         foreach (Polygon p in curTrack.interactable) {
             Engine.DrawConvexPolygon(p);
-
-            //for (int i = 0; i < p.points.Length; i++)
-            //{
-            //    Engine.DrawLine(new Vector2(p.points[i].x, p.points[i].y), new Vector2(p.points[(i + 1) % p.points.Length].x, p.points[(i + 1) % p.points.Length].y), Color.HotPink);
-            //}
         }
 
         foreach (Polygon p in curTrack.collidable)
@@ -74,6 +118,19 @@ class Game
         foreach (Polygon p in curTrack.visual)
         {
             Engine.DrawConvexPolygon(p);
+        }
+
+        if (Engine.GetKeyHeld(Key.P))
+        {
+            for (int i = 0; i < Game.Resolution.X; i += (int)inc)
+            {
+                Engine.DrawLine(new Vector2(i, 0), new Vector2(i, Game.Resolution.Y), Color.Cyan);
+            }
+
+            for (int j = 0; j < Game.Resolution.Y; j += (int)inc)
+            {
+                Engine.DrawLine(new Vector2(0, j), new Vector2(Game.Resolution.X, j), Color.Cyan);
+            }
         }
 
         if (curPoly.points != null)
@@ -87,36 +144,20 @@ class Game
             {
                 Engine.DrawLine(new Vector2(curPoly.points[i].X, curPoly.points[i].Y), new Vector2(curPoly.points[(i + 1) % curPoly.points.Length].X, curPoly.points[(i + 1) % curPoly.points.Length].Y), Color.HotPink);
             }
-
-            //List<PointF> firstPoints = new List<PointF>();
-
-            //foreach (SDL.SDL_Point a in curPoly.points)
-            //{
-            //    firstPoints.Add(new PointF(a.x, a.y));
-            //}
-
-            //List<List<PointF>> spliced = PolygonTriangulator.Triangulate(firstPoints, true);
-
-            //foreach (List<PointF> l in spliced)
-            //{
-            //    Vector2[] tmInput = new Vector2[l.Count];
-            //    int tc = 0;
-
-            //    foreach (PointF triPoint in l)
-            //    {
-            //        tmInput[tc++] = new Vector2(triPoint.X, triPoint.Y);
-            //    }
-
-            //    Polygon tp = new Polygon(tmInput, curPoly.color);
-            //    Engine.DrawConvexPolygon(tp);
-            //}
         }
 
         if (Engine.GetMouseButtonDown(MouseButton.Left))
         {
+            Vector2 mpos = Engine.MousePosition;
+
+            if (Engine.GetKeyHeld(Key.P))
+            {
+                mpos = new Vector2((float)Math.Round(mpos.X / inc) * inc, (float)Math.Round(mpos.Y / inc) * inc);
+            }
+
             if (curPoly.points == null)
             {
-                curPoly = new Polygon(new Vector2[] { new Vector2(Engine.MousePosition.X, Engine.MousePosition.Y) }, colors[cc]);
+                curPoly = new Polygon(new Vector2[] { mpos }, colors[cc]);
                 label = "started new polygon";
             }
             else
@@ -128,7 +169,7 @@ class Game
                     cpy[i] = new Vector2(curPoly.points[i].X, curPoly.points[i].Y);
                 }
 
-                cpy[curPoly.points.Length] = new Vector2(Engine.MousePosition.X, Engine.MousePosition.Y);
+                cpy[curPoly.points.Length] = mpos;
 
                 curPoly = new Polygon(cpy, curPoly.color);
             }
@@ -177,113 +218,39 @@ class Game
             Console.WriteLine("Saved new track file");
             label = "saved to track file";
             // string raw = JsonConvert.SerializeObject(curTrack, Formatting.None);
+            TrackLoader tst = new TrackLoader();
+            tst.startPos = new Vector2(0, 0);
+            tst.startAngle = 0f;
 
-            string raw = "public static readonly Track genTrack = new Track(\n";
-            raw += "new List<Polygon>() {\n";
-
-            foreach (Polygon p in curTrack.collidable)
+            tst.collidable = new Vector2[curTrack.collidable.Count][];
+            tst.collidableColor = new Color[curTrack.collidable.Count];
+            for (int i = 0; i < curTrack.collidable.Count; i++)
             {
-                raw += "new Polygon(";
-                raw += "new float[] {";
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].X;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "},\nnew float[] {";
-
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].Y;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "}, new Color" + p.color.ToString() + "),\n";
-
+                tst.collidable[i] = curTrack.collidable[i].points;
+                tst.collidableColor[i] = curTrack.collidable[i].color;
             }
 
-            raw += "},\n new List<PhysicsPolygon> () {\n";
-
-            foreach (PhysicsPolygon p in curTrack.interactable)
+            tst.interactable = new Vector2[curTrack.interactable.Count][];
+            tst.interactableColor = new Color[curTrack.interactable.Count];
+            for (int i = 0; i < curTrack.interactable.Count; i++)
             {
-                raw += "new Polygon(";
-                raw += "new float[] {";
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].X;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "},\nnew float[] {";
-
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].Y;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "}, new Color" + p.color.ToString() + ", " + p.id + ")\n";
-
+                tst.interactable[i] = curTrack.interactable[i].points;
+                tst.interactableColor[i] = curTrack.interactable[i].color;
             }
 
-            raw += "},\n new List<Polygon> () {\n";
-
-            foreach (Polygon p in curTrack.visual)
+            tst.visual = new Vector2[curTrack.visual.Count][];
+            tst.visualColor = new Color[curTrack.visual.Count];
+            for (int i = 0; i < curTrack.visual.Count; i++)
             {
-                raw += "new Polygon(";
-                raw += "new float[] {";
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].X;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "},\nnew float[] {";
-
-                for (int i = 0; i < p.points.Length; i++)
-                {
-                    raw += scaleFactor * p.points[i].Y;
-                    if (i != p.points.Length - 1)
-                    {
-                        raw += ", ";
-                    }
-                }
-
-
-                raw += "}, new Color" + p.color.ToString() + "),\n";
-
-            }
-            raw += "}, new List<Vector2>() {";
-
-            foreach (Vector2 tv in curTrack.splines)
-            {
-                raw += "\nnew Vector2" + tv + ",";
+                tst.visual[i] = curTrack.visual[i].points;
+                tst.visualColor[i] = curTrack.visual[i].color;
             }
 
-            raw += "});";
+            tst.splines = new Vector2[] { new Vector2(0, 0) };
+            tst.checkpoint = new Tuple<Vector2, Vector2>(Vector2.Zero, Vector2.Zero);
 
-            File.WriteAllText("GeneratedTrack.txt", raw);
+            string txt = JsonConvert.SerializeObject(tst, Formatting.Indented);
+            File.WriteAllText("gentrack.json", txt);
         }
 
         if (Engine.GetKeyDown(Key.NumRow1))
@@ -309,6 +276,18 @@ class Game
         else if (Engine.GetKeyDown(Key.NumRow6))
         {
             cc = 5;
+        }
+        else if (Engine.GetKeyDown(Key.NumRow7))
+        {
+            cc = 6;
+        }
+        else if (Engine.GetKeyDown(Key.NumRow8))
+        {
+            cc = 7;
+        }
+        else if (Engine.GetKeyDown(Key.NumRow9))
+        {
+            cc = 8;
         }
 
         if (playing)
