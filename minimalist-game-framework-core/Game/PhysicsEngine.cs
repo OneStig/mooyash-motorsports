@@ -12,6 +12,9 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
 
+        public static float time;
+        public static float finalTime;
+
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
             new Tuple<float, float, float>(1,1,1), new Tuple<float, float, float>(2,2,2), new Tuple<float, float, float>(3,3,3)};
@@ -19,7 +22,7 @@ namespace Mooyash.Services
         public static void init()
         {
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(1200*(Game.GameSettings[2]+1));
+            player = new Kart(2400 * (Game.GameSettings[2]+1));
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
             player.position = track.startPos;
@@ -33,10 +36,12 @@ namespace Mooyash.Services
             if (lapDisplay > 3)
             {
                 Game.playing = false;
-                RenderEngine.finalTime = RenderEngine.time;
-                MenuSystem.SetFinalTime(RenderEngine.finalTime);
-                RenderEngine.time = 0;
+                finalTime = time;
+                MenuSystem.SetFinalTime(finalTime);
+                time = 0;
             }
+
+            time += dt;
 
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
