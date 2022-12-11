@@ -51,12 +51,12 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        public Kart() : base()
+        public Kart(float throttleConst) : base()
         {
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
-            position = new Vector2(4500, 0);
-            radius = 32f;
+            radius = 24f;
+            this.throttleConst = throttleConst;
 
             for (int i = 0; i < textures.Length; i++)
             {
