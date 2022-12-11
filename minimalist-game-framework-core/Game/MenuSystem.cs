@@ -51,7 +51,7 @@ namespace Mooyash.Services
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
             tons1[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "timetrial", Color.White);
-            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "prandprix", Color.White);
+            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "grandprix", Color.White);
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
 
             //cc
@@ -125,7 +125,7 @@ namespace Mooyash.Services
                     }
                     if (select.Equals("return"))
                     {
-                        CurScreen = 5;
+                        CurScreen = 0;
                     }
                 }
                 if(CurScreen >= 5)
