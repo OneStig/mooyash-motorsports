@@ -5,7 +5,7 @@ namespace Mooyash.Services
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[6];
+        private static Screen[] ScreenStack = new Screen[7];
 
         private static int CurScreen = 0;
 
@@ -17,23 +17,24 @@ namespace Mooyash.Services
             Texture menu = Engine.LoadTexture("fallengong.png");
             Texture menuNoGong = Engine.LoadTexture("fallinggong.png");
 
-            SettingtoID["play"] = 1;
+            SettingtoID["play"] = 0;
 
-            SettingtoID["timetrial"] = 2;
-            SettingtoID["grandprix"] = 3;
+            SettingtoID["timetrial"] = 0;
+            SettingtoID["grandprix"] = 1;
 
-            SettingtoID["50cc"] = 4;
-            SettingtoID["100cc"] = 5;
+            SettingtoID["50cc"] = 0;
+            SettingtoID["100cc"] = 1;
 
-            SettingtoID["william"] = 6;
-            SettingtoID["suyash"] = 7;
+            SettingtoID["william"] = 0;
+            SettingtoID["suyash"] = 1;
 
-            SettingtoID["map1"] = 8;
-            SettingtoID["map2"] = 9;
-            SettingtoID["map3"] = 10;
+            SettingtoID["map1"] = 0;
+            SettingtoID["map2"] = 1;
+            SettingtoID["map3"] = 2;
 
-            SettingtoID["replay"] = 11;
-            SettingtoID["return"] = 12;
+            SettingtoID["replay"] = 0;
+            SettingtoID["return"] = 1;
+            SettingtoID["credits"] = 2;
 
             //play mode cc character map return
 
@@ -42,7 +43,7 @@ namespace Mooyash.Services
             Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
             Vector2[] size0 = new Vector2[] { new Vector2(320, 180)};
             Dictionary<int, Button> tons0 = new Dictionary<int, Button>();
-            tons0[0] = new Button(Color.Black, new Vector2(120, 100), new Vector2(80, 30), "play", Color.White);
+            tons0[0] = new Button(Color.Black, new Vector2(120, 90), new Vector2(80, 30), "play", Color.White);
             ScreenStack[0] = new Screen(text0, posi0, size0, tons0, 0);
 
             //mode
@@ -50,8 +51,8 @@ namespace Mooyash.Services
             Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
             Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "timetrial", Color.White);
-            tons1[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "prandprix", Color.White);
+            tons1[0] = new Button(Color.Black, new Vector2(45, 60), new Vector2(100, 30), "timetrial", Color.White);
+            tons1[1] = new Button(Color.Black, new Vector2(175, 60), new Vector2(100, 30), "grandprix", Color.White);
             ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
 
             //cc
@@ -90,12 +91,28 @@ namespace Mooyash.Services
             Dictionary<int, Button> tons5 = new Dictionary<int, Button>();
             tons5[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay", Color.White);
             tons5[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return", Color.White);
-
-            tons5[2] = new Button(new Color(0,0,0,0), new Vector2(145, 30), new Vector2(20, 20), "", Color.Black);
+            tons5[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "credits", Color.White);
+                //score
+                tons5[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.Black);
             
-
             ScreenStack[5] = new Screen(text5, posi5, size5, tons5, 0);
-            
+
+            //credits
+            Texture[] text6 = new Texture[] { menuNoGong };
+            Vector2[] posi6 = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] size6 = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> tons6 = new Dictionary<int, Button>();
+            tons6[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "replay", Color.White);
+            tons6[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "return", Color.White);
+
+            tons6[2] = new Button(new Color(0, 0, 0, 0), new Vector2(175,10), new Vector2(1,1), "attribution - mario kart 1992", Color.Black);
+            tons6[3] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 35), new Vector2(1, 1), "created by - steven h sebastian k ", Color.Black);
+            tons6[4] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 60), new Vector2(1, 1), "william g suyash m and davis y", Color.Black);
+            tons6[5] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 85), new Vector2(1, 1), "special thanks to - andrew martz", Color.Black);
+            tons6[6] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 110), new Vector2(1, 1), "and mrs. kankelborg", Color.Black);
+
+            ScreenStack[6] = new Screen(text6, posi6, size6, tons6, 0);
+
 
         }
 
@@ -114,9 +131,14 @@ namespace Mooyash.Services
             }
             if (Engine.GetKeyDown(Key.Return))
             {
-                Settings.Add(cur.Select());
+                if(CurScreen < 5)
+                {
+                    Settings.Add(cur.Select());
+                }
+
                 CurScreen++;
-                if(CurScreen >= 5)
+
+                if (CurScreen >= 5)
                 {
                     String select = cur.Select();
                     if (select.Equals("replay"))
@@ -125,11 +147,20 @@ namespace Mooyash.Services
                     }
                     if (select.Equals("return"))
                     {
-                        CurScreen = 5;
+                        CurScreen = 0;
+                    }
+                    if (select.Equals("credits"))
+                    {
+                        CurScreen = 6;
                     }
                 }
-                if(CurScreen >= 5)
+
+                if(CurScreen == 5)
                 {
+                    for(int i = 0; i < ScreenStack.Length; i++)
+                    {
+                        ScreenStack[i].resetSelected();
+                    }
                     return true; //create new way to move on
                 }
             }
@@ -157,6 +188,11 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
             Dictionary<int, Button> buttons = ScreenStack[CurScreen].getButton();
             buttons[buttons.Count - 1].Function(timer);
+        }
+
+        public static bool SettingsContain(string key)
+        {
+            return SettingtoID.ContainsKey(key);
         }
 
     }
@@ -228,6 +264,10 @@ namespace Mooyash.Services
 
         public void Down()
         {
+            if(curButton == buttons.Count-2 && buttons.Count == 4)
+            {
+                return;
+            }
             if(curButton < buttons.Count-1)
             {
                 curButton++;
@@ -250,6 +290,11 @@ namespace Mooyash.Services
         public Dictionary<int, Button> getButton()
         {
             return buttons;
+        }
+
+        public void resetSelected()
+        {
+            curButton = 0;
         }
     }
 
