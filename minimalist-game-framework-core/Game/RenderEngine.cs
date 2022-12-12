@@ -95,23 +95,9 @@ namespace Mooyash.Services
             }
 
             Polygon temp = new Polygon(tempPoints, p.color);
-            //used to check if polygon should be drawn and/or spliced
-            bool leftCut = true;
-            bool rightCut = true;
-            bool botCut = true;
-            bool splice = false;
 
-            for (int i = 0; i < temp.points.Length; i++)
-            {
-                temp.points[i] = rotate(temp.points[i]);
-                leftCut &= (camera.hslope * temp.points[i].Y + temp.points[i].X < 0);
-                rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
-                //technically, we could be more aggressive with botCut, but should be unnecessary
-                botCut &= (temp.points[i].Y < camera.screen);
-                splice |= (temp.points[i].Y < camera.screen);
-            }
-            if (leftCut || rightCut || botCut) { return; }
-            if (splice)
+            if (!testDraw(temp)) { return; }
+            if (testSplice(temp))
             {
                 temp.splice(camera.screen);
             }
@@ -139,8 +125,49 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+            foreach (TextureObj o in t.textureObjs)
+            {
+                drawTextureObj(o);
+            }
+        }
 
-            // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
+        public static bool testDraw(Polygon temp)
+        {
+            bool leftCut = true;
+            bool rightCut = true;
+            bool botCut = true;
+            for (int i = 0; i < temp.points.Length; i++)
+            {
+                temp.points[i] = rotate(temp.points[i]);
+                leftCut &= (camera.hslope * temp.points[i].Y + temp.points[i].X < 0);
+                rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
+                //technically, we could be more aggressive with botCut, but should be unnecessary
+                botCut &= (temp.points[i].Y < camera.screen);
+            }
+            return !(leftCut || rightCut || botCut);
+        }
+
+        public static bool testSplice(Polygon temp)
+        {
+            bool splice = false;
+            for (int i = 0; i < temp.points.Length; i++)
+            {
+                splice |= (temp.points[i].Y < camera.screen);
+            }
+            return splice;
+        }
+
+        public static void drawTextureObj(TextureObj o)
+        {
+            Vector2 newP = rotate(o.pos);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0))
+            {
+                return;
+            }
+            Vector2 newSize = (camera.screen/newP.Y)*o.size;
+            newP = project(newP);
+            Engine.DrawResizableTexture(o.texture, new Bounds2(new Vector2(newP.X - newSize.X/2, newP.Y - newSize.Y), newSize));
         }
 
         public static void drawPlayer()

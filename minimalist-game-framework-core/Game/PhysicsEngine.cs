@@ -42,16 +42,9 @@ namespace Mooyash.Services
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
-            float finalAngle = 0;
             Vector2 cur;
             Vector2 next;
             CirclePath c = new CirclePath(pastPos, player.position, player.radius);
-
-            if(c.c2.X >= 4950)
-            {
-                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + " POS: " + player.position + " RAD: " +  player.radius);
-                System.Diagnostics.Debug.WriteLine(TestCircleLine(c, new Vector2(5000, -5000), new Vector2(5000, 5000)));
-            }
 
             //Handles collisions between player and walls of polygon
             //Should implement bounding box idea
@@ -68,8 +61,6 @@ namespace Mooyash.Services
                     }
                     if(TestCircleLine(c, cur, next))
                     {
-                        System.Diagnostics.Debug.WriteLine("CUR: " + cur + " NEXT: " + next);
-                        //OPTIMIZE: This is an expensive computation, we should be able to replace divisions with multiplications?
                         //OPTIMIZE: This is (kinda) recalculating norm
                         //EXCEPTION: What if cross is 0? - shouldn't happen though
                         Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
@@ -81,7 +72,6 @@ namespace Mooyash.Services
                         {
                             minCollision = norm1 / (norm1 - norm2);
                             finalPos = c.c1 + minCollision * (c.c2 - c.c1);
-                            //finalAngle = (float) ((2 * Vector2.Angle(norm) - player.angle + 3*Math.PI) % (2*Math.PI));
                         }
                     }
                 }
@@ -91,7 +81,6 @@ namespace Mooyash.Services
             {
                 System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
                 player.position = finalPos;
-                //player.angle = finalAngle;
                 player.velocity.X = -player.velocity.X * 0.75f;
                 player.throttle /= 2;
             }
@@ -211,6 +200,13 @@ namespace Mooyash.Services
         public static bool TestCircleCircle(CirclePath a, CirclePath b)
         {
             //TODO!
+            return false;
+        }
+
+        //Tests if path a intersects static circle at pos with radius rad
+        public static bool TestCircleStaticCircle(CirclePath a, Vector2 pos, float rad)
+        {
+            //TODO:
             return false;
         }
 

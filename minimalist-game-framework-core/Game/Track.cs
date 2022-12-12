@@ -8,6 +8,7 @@ namespace Mooyash.Modules
         public List<Polygon> collidable;
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
+        public List<TextureObj> textureObjs;
 
         public List<Vector2> splines;
 
@@ -18,13 +19,14 @@ namespace Mooyash.Modules
 
         public Track(List<Polygon> collidable, List<PhysicsPolygon> interactable,
             List<Polygon> visual, List<Vector2> splines,
-            Tuple<Vector2, Vector2, bool> finish)
+            Tuple<Vector2, Vector2, bool> finish, List<TextureObj> textureObjs)
         {
             this.collidable = collidable;
             this.interactable = interactable;
             this.visual = visual;
             this.splines = splines;
             this.finish = finish;
+            this.textureObjs =  textureObjs;
         }
 
         public bool isConvex()
@@ -89,8 +91,12 @@ namespace Mooyash.Modules
                     new Vector2(4500, 4500),
                     new Vector2(4500, -4500)
                 },
-                new Tuple<Vector2, Vector2, bool>(new Vector2(4000, 0), new Vector2(2000, 0), true)
-            ));
+                new Tuple<Vector2, Vector2, bool>(new Vector2(4000, 0), new Vector2(2000, 0), true),
+                new List<TextureObj>()
+                {
+                    new TextureObj(Engine.LoadResizableTexture("R.jpg",0,0,0,0), new Vector2(3000,0), new Vector2(1000,1000))
+                }
+            ));;
         }
     }
 
@@ -101,6 +107,22 @@ namespace Mooyash.Modules
         public PhysicsPolygon(float[] xVals, float[] yVals, Color color, int id) : base(xVals, yVals, color)
         {
             this.id = id;
+        }
+    }
+
+    public class TextureObj
+    {
+        public ResizableTexture texture;
+        public Vector2 pos;
+        public Vector2 size;
+        //for collisions
+        public float radius;
+
+        public TextureObj(ResizableTexture texture, Vector2 pos, Vector2 size)
+        {
+            this.texture = texture;
+            this.pos = pos;
+            this.size = size;
         }
     }
 }

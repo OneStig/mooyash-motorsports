@@ -174,7 +174,6 @@ namespace Mooyash.Modules
             float angularVelo;
             float steerAngle = steer * steerConst / (steerLimit * Math.Abs(velocity.X) + 1);
             float turnRad = kartLength / (float)Math.Sin(steerAngle);
-            float backRad = turnRad * (float)Math.Cos(steerAngle);
 
             if (steerAngle == 0)
             {
@@ -187,6 +186,11 @@ namespace Mooyash.Modules
             angle += angularVelo * dt;
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
+            chooseTexture(angularVelo);
+        }
+
+        public void chooseTexture(float angularVelo)
+        {
             if (angularVelo < -0.8)
             {
                 curTex = 3;
@@ -207,8 +211,6 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
-
-            // Console.WriteLine("throt: " + throttle + " velo: " + velocity / 100f + " accel: " + acceleration);
         }
     }
 
