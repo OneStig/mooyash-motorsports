@@ -147,6 +147,7 @@ namespace Mooyash.Services
                     }
                     if (select.Equals("return"))
                     {
+                        Settings.Clear();
                         CurScreen = 0;
                     }
                     if (select.Equals("credits"))
