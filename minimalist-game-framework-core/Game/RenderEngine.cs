@@ -53,6 +53,7 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
+        public static float renderDistance = 3000f;
 
         // for debugging
         private static bool drawhitboxes = false;
@@ -89,9 +90,29 @@ namespace Mooyash.Services
         {
             Vector2[] tempPoints = new Vector2[p.vertices];
 
-            for (int i = 0; i < p.vertices; i++)
+            if (PhysicsEngine.TestPointPoly(PhysicsEngine.player.position, p))
             {
-                tempPoints[i] = p.points[i];
+                for (int i = 0; i < p.vertices; i++)
+                {
+                    tempPoints[i] = p.points[i];
+                }
+            }
+            else
+            {
+                float minDist = float.MaxValue;
+
+                for (int i = 0; i < p.vertices; i++)
+                {
+                    tempPoints[i] = p.points[i];
+                    minDist = Math.Min(minDist, (float)Math.Sqrt(
+                        (p.points[i].X - PhysicsEngine.player.position.X) *
+                        (p.points[i].X - PhysicsEngine.player.position.X) +
+                        (p.points[i].Y - PhysicsEngine.player.position.Y) *
+                        (p.points[i].Y - PhysicsEngine.player.position.Y)
+                    ));
+                }
+
+                if (minDist > renderDistance) { return; }
             }
 
             Polygon temp = new Polygon(tempPoints, p.color);
@@ -120,6 +141,7 @@ namespace Mooyash.Services
             {
                 temp.points[i] = project(temp.points[i]);
             }
+
             Engine.DrawConvexPolygon(new Polygon(temp.points, temp.color));
         }
 

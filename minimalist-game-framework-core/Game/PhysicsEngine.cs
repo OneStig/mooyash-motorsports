@@ -159,7 +159,7 @@ namespace Mooyash.Services
         }
 
         //tests if a point is within a physics polygon
-        public static bool TestPointPoly(Vector2 point, PhysicsPolygon poly)
+        public static bool TestPointPoly(Vector2 point, Polygon poly)
         {
             bool odd = false;
             for(int i = 0; i < poly.points.Length - 1; i++)
