@@ -85,15 +85,15 @@ namespace Mooyash.Services
             ScreenStack[4] = new Screen(text4, posi4, size4, tons4, 0);
 
             //return
-            Texture[] text5 = new Texture[] { menuNoGong };
-            Vector2[] posi5 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size5 = new Vector2[] { new Vector2(320, 180) };
+            Texture[] text5 = new Texture[] {  };
+            Vector2[] posi5 = new Vector2[] {  };
+            Vector2[] size5 = new Vector2[] {  };
             Dictionary<int, Button> tons5 = new Dictionary<int, Button>();
             tons5[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay", Color.White);
             tons5[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return", Color.White);
             tons5[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "credits", Color.White);
                 //score
-                tons5[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.Black);
+                tons5[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.White);
             
             ScreenStack[5] = new Screen(text5, posi5, size5, tons5, 0);
 
@@ -120,6 +120,14 @@ namespace Mooyash.Services
         {
           
             Screen cur = ScreenStack[CurScreen];
+
+            if (CurScreen == 5)
+            {
+                RenderEngine.drawPerTrack(PhysicsEngine.track);
+                RenderEngine.drawPlayer();
+                RenderEngine.drawUI();
+            }
+
             cur.DrawScreen();
             if (Engine.GetKeyDown(Key.W) || Engine.GetKeyDown(Key.Up) || Engine.GetKeyDown(Key.Left) || Engine.GetKeyDown(Key.A))
             {
@@ -144,11 +152,13 @@ namespace Mooyash.Services
                     if (select.Equals("replay"))
                     {
                         CurScreen = 4;
+
                     }
                     if (select.Equals("return"))
                     {
                         Settings.Clear();
                         CurScreen = 0;
+                        Settings.Clear();
                     }
                     if (select.Equals("credits"))
                     {
