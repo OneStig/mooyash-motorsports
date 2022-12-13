@@ -90,29 +90,9 @@ namespace Mooyash.Services
         {
             Vector2[] tempPoints = new Vector2[p.vertices];
 
-            if (PhysicsEngine.TestPointPoly(PhysicsEngine.player.position, p))
+            for (int i = 0; i < p.vertices; i++)
             {
-                for (int i = 0; i < p.vertices; i++)
-                {
-                    tempPoints[i] = p.points[i];
-                }
-            }
-            else
-            {
-                float minDist = float.MaxValue;
-
-                for (int i = 0; i < p.vertices; i++)
-                {
-                    tempPoints[i] = p.points[i];
-                    minDist = Math.Min(minDist, (float)Math.Sqrt(
-                        (p.points[i].X - PhysicsEngine.player.position.X) *
-                        (p.points[i].X - PhysicsEngine.player.position.X) +
-                        (p.points[i].Y - PhysicsEngine.player.position.Y) *
-                        (p.points[i].Y - PhysicsEngine.player.position.Y)
-                    ));
-                }
-
-                if (minDist > renderDistance) { return; }
+                tempPoints[i] = p.points[i];
             }
 
             Polygon temp = new Polygon(tempPoints, p.color);
@@ -120,6 +100,7 @@ namespace Mooyash.Services
             bool leftCut = true;
             bool rightCut = true;
             bool botCut = true;
+            bool topCut = true;
             bool splice = false;
 
             for (int i = 0; i < temp.points.Length; i++)
@@ -129,9 +110,10 @@ namespace Mooyash.Services
                 rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
                 //technically, we could be more aggressive with botCut, but should be unnecessary
                 botCut &= (temp.points[i].Y < camera.screen);
+                topCut &= (temp.points[i].Y > renderDistance);
                 splice |= (temp.points[i].Y < camera.screen);
             }
-            if (leftCut || rightCut || botCut) { return; }
+            if (leftCut || rightCut || botCut || topCut) { return; }
             if (splice)
             {
                 temp.splice(camera.screen);
