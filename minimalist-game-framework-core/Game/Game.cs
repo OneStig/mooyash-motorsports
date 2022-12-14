@@ -106,6 +106,13 @@ class Game
             inc = 10f;
         }
 
+        Vector2 mpos = Engine.MousePosition;
+
+        if (Engine.GetKeyHeld(Key.P))
+        {
+            mpos = new Vector2((float)Math.Round(mpos.X / inc) * inc, (float)Math.Round(mpos.Y / inc) * inc);
+        }
+
         foreach (Polygon p in curTrack.interactable) {
             Engine.DrawConvexPolygon(p);
         }
@@ -148,12 +155,6 @@ class Game
 
         if (Engine.GetMouseButtonDown(MouseButton.Left))
         {
-            Vector2 mpos = Engine.MousePosition;
-
-            if (Engine.GetKeyHeld(Key.P))
-            {
-                mpos = new Vector2((float)Math.Round(mpos.X / inc) * inc, (float)Math.Round(mpos.Y / inc) * inc);
-            }
 
             if (curPoly.points == null)
             {
@@ -311,7 +312,7 @@ class Game
             dt = 0;
         }
 
-        Engine.DrawString("fps: " + fps + " " + label, new Vector2(400, 10), colors[cc], courier);
+        Engine.DrawString("fps: " + fps + " " + label + " " + mpos, new Vector2(400, 10), colors[cc], courier);
 
         for (int x = 0; x < 16; x++)
         {
