@@ -14,8 +14,8 @@ namespace Mooyash.Services
 
         public static void loadTextures()
         {
-            Texture menu = Engine.LoadTexture("fallengong.png");
-            Texture menuNoGong = Engine.LoadTexture("fallinggong.png");
+            Texture Menu = Engine.LoadTexture("fallengong.png");
+            Texture MenuWithoutLogo = Engine.LoadTexture("fallinggong.png");
 
             SettingtoID["play"] = 0;
 
@@ -39,79 +39,79 @@ namespace Mooyash.Services
             //play mode cc character map return
 
             //play
-            Texture[] text0 = new Texture[] { menu };
-            Vector2[] posi0 = new Vector2[] { new Vector2(0, 0)};
-            Vector2[] size0 = new Vector2[] { new Vector2(320, 180)};
-            Dictionary<int, Button> tons0 = new Dictionary<int, Button>();
-            tons0[0] = new Button(Color.Black, new Vector2(120, 90), new Vector2(80, 30), "play", Color.White);
-            ScreenStack[0] = new Screen(text0, posi0, size0, tons0, 0);
+            Texture[] MenuTextures = new Texture[] { Menu };
+            Vector2[] MenuTexturePositions = new Vector2[] { new Vector2(0, 0)};
+            Vector2[] MenuTextureSizes = new Vector2[] { new Vector2(320, 180)};
+            Dictionary<int, Button> MenuButtons = new Dictionary<int, Button>();
+            MenuButtons[0] = new Button(Color.Black, new Vector2(120, 90), new Vector2(80, 30), "play", Color.White);
+            ScreenStack[0] = new Screen(MenuTextures, MenuTexturePositions, MenuTextureSizes, MenuButtons, 0);
 
             //mode
-            Texture[] text1 = new Texture[] { menuNoGong };
-            Vector2[] posi1 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size1 = new Vector2[] { new Vector2(320, 180) };
-            Dictionary<int, Button> tons1 = new Dictionary<int, Button>();
-            tons1[0] = new Button(Color.Black, new Vector2(45, 60), new Vector2(100, 30), "timetrial", Color.White);
-            tons1[1] = new Button(Color.Black, new Vector2(175, 60), new Vector2(100, 30), "grandprix", Color.White);
-            ScreenStack[1] = new Screen(text1, posi1, size1, tons1, 0);
+            Texture[] GamemodeTextures = new Texture[] { MenuWithoutLogo };
+            Vector2[] GamemodeTexturePositions = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] GamemodeTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> GamemodeButtons = new Dictionary<int, Button>();
+            GamemodeButtons[0] = new Button(Color.Black, new Vector2(45, 60), new Vector2(100, 30), "timetrial", Color.White);
+            GamemodeButtons[1] = new Button(Color.Black, new Vector2(175, 60), new Vector2(100, 30), "grandprix", Color.White);
+            ScreenStack[1] = new Screen(GamemodeTextures, GamemodeTexturePositions, GamemodeTextureSizes, GamemodeButtons, 0);
 
             //cc
-            Texture[] text2 = new Texture[] { menuNoGong };
-            Vector2[] posi2 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size2 = new Vector2[] { new Vector2(320, 180) };
-            Dictionary<int, Button> tons2 = new Dictionary<int, Button>();
-            tons2[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "50cc", Color.White);
-            tons2[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "100cc", Color.White);
-            ScreenStack[2] = new Screen(text2, posi2, size2, tons2, 0);
+            Texture[] CCTextures = new Texture[] { MenuWithoutLogo };
+            Vector2[] CCTexturePositions = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] CCTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> CCButtons = new Dictionary<int, Button>();
+            CCButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "50cc", Color.White);
+            CCButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "100cc", Color.White);
+            ScreenStack[2] = new Screen(CCTextures, CCTexturePositions, CCTextureSizes, CCButtons, 0);
 
             //character
-            Texture[] text3 = new Texture[] { menuNoGong };
-            Vector2[] posi3 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size3 = new Vector2[] { new Vector2(320, 180) };
-            Dictionary<int, Button> tons3 = new Dictionary<int, Button>();
-            tons3[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "william", Color.White);
-            tons3[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "suyash", Color.White);
-            ScreenStack[3] = new Screen(text3, posi3, size3, tons3, 0);
+            Texture[] CharacterTextures = new Texture[] { MenuWithoutLogo };
+            Vector2[] CharacterTexturePosition = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] CharacterTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> CharacterButtons = new Dictionary<int, Button>();
+            CharacterButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "william", Color.White);
+            CharacterButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "suyash", Color.White);
+            ScreenStack[3] = new Screen(CharacterTextures, CharacterTexturePosition, CharacterTextureSizes, CharacterButtons, 0);
 
             //map
-            Texture[] text4 = new Texture[] { menuNoGong };
-            Vector2[] posi4 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size4 = new Vector2[] { new Vector2(320, 180) };
-            Dictionary<int, Button> tons4 = new Dictionary<int, Button>();
-            tons4[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1", Color.White);
-            tons4[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2", Color.White);
-            tons4[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3", Color.White);
+            Texture[] MapTextures = new Texture[] { MenuWithoutLogo };
+            Vector2[] MapTexturePositions = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] MapTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> MapButtons = new Dictionary<int, Button>();
+            MapButtons[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1", Color.White);
+            MapButtons[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2", Color.White);
+            MapButtons[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3", Color.White);
             
-            ScreenStack[4] = new Screen(text4, posi4, size4, tons4, 0);
+            ScreenStack[4] = new Screen(MapTextures, MapTexturePositions, MapTextureSizes, MapButtons, 0);
 
             //return
-            Texture[] text5 = new Texture[] {  };
-            Vector2[] posi5 = new Vector2[] {  };
-            Vector2[] size5 = new Vector2[] {  };
-            Dictionary<int, Button> tons5 = new Dictionary<int, Button>();
-            tons5[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay", Color.White);
-            tons5[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return", Color.White);
-            tons5[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "credits", Color.White);
+            Texture[] EndTextures = new Texture[] {  };
+            Vector2[] EndTexturePositions = new Vector2[] {  };
+            Vector2[] EndTextureSizes = new Vector2[] {  };
+            Dictionary<int, Button> EndButtons = new Dictionary<int, Button>();
+            EndButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "replay", Color.White);
+            EndButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return", Color.White);
+            EndButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "credits", Color.White);
                 //score
-                tons5[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.White);
+                EndButtons[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.White);
             
-            ScreenStack[5] = new Screen(text5, posi5, size5, tons5, 0);
+            ScreenStack[5] = new Screen(EndTextures, EndTexturePositions, EndTextureSizes, EndButtons, 0);
 
             //credits
-            Texture[] text6 = new Texture[] { menuNoGong };
-            Vector2[] posi6 = new Vector2[] { new Vector2(0, 0) };
-            Vector2[] size6 = new Vector2[] { new Vector2(320, 180) };
-            Dictionary<int, Button> tons6 = new Dictionary<int, Button>();
-            tons6[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "replay", Color.White);
-            tons6[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "return", Color.White);
+            Texture[] CreditTextures = new Texture[] { MenuWithoutLogo };
+            Vector2[] CreditTexturePositions = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] CreditTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> CreditButtons = new Dictionary<int, Button>();
+            CreditButtons[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "replay", Color.White);
+            CreditButtons[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "return", Color.White);
 
-            tons6[2] = new Button(new Color(0, 0, 0, 0), new Vector2(175,10), new Vector2(1,1), "attribution - mario kart 1992", Color.Black);
-            tons6[3] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 35), new Vector2(1, 1), "created by - steven h sebastian k ", Color.Black);
-            tons6[4] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 60), new Vector2(1, 1), "william g suyash m and davis y", Color.Black);
-            tons6[5] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 85), new Vector2(1, 1), "special thanks to - andrew martz", Color.Black);
-            tons6[6] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 110), new Vector2(1, 1), "and mrs. kankelborg", Color.Black);
+            CreditButtons[2] = new Button(new Color(0, 0, 0, 0), new Vector2(175,10), new Vector2(1,1), "attribution - mario kart 1992", Color.Black);
+            CreditButtons[3] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 35), new Vector2(1, 1), "created by - steven h sebastian k ", Color.Black);
+            CreditButtons[4] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 60), new Vector2(1, 1), "william g suyash m and davis y", Color.Black);
+            CreditButtons[5] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 85), new Vector2(1, 1), "special thanks to - andrew martz", Color.Black);
+            CreditButtons[6] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 110), new Vector2(1, 1), "and mrs. kankelborg", Color.Black);
 
-            ScreenStack[6] = new Screen(text6, posi6, size6, tons6, 0);
+            ScreenStack[6] = new Screen(CreditTextures, CreditTexturePositions, CreditTextureSizes, CreditButtons, 0);
 
 
         }
@@ -152,6 +152,7 @@ namespace Mooyash.Services
                     if (select.Equals("replay"))
                     {
                         CurScreen = 4;
+                        Settings.RemoveAt(Settings.Count-1);
 
                     }
                     if (select.Equals("return"))

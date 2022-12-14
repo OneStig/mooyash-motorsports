@@ -29,19 +29,21 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
+            time = 0;
         }
 
         public static void update(float dt)
         {
+
+            time += dt;
+
             if (lapDisplay > 3)
             {
+                lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
-                time = 0;
             }
-
-            time += dt;
 
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
