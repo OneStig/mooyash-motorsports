@@ -27,8 +27,8 @@ namespace Mooyash.Services
             gameObjects.Add("player", player);
             player.position = track.startPos;
             player.angle = track.startAngle;
-            lapCount = 1;
-            lapDisplay = 0; // e.g. Lap 1/3
+            lapCount = 0;
+            lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
         }
 
