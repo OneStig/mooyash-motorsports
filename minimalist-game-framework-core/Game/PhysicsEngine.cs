@@ -67,29 +67,35 @@ namespace Mooyash.Services
             CirclePath c = new CirclePath(pastPos, player.position, player.radius);
 
             //Handles collisions between player and walls of polygon
-            //Should implement bounding box idea
-            foreach(Polygon p in track.collidable)
+            //Should implement bounding box idea <- done?
+            foreach (Polygon p in track.collidable)
             {
-                for(int i = 0; i < p.vertices; i++)
+                if (p.points[p.xMin].X <= player.position.X + player.radius ||
+                    p.points[p.xMax].X >= player.position.X - player.radius ||
+                    p.points[p.yMin].Y <= player.position.Y + player.radius ||
+                    p.points[p.yMax].Y >= player.position.Y - player.radius)
                 {
-                    //if p has the same point twice in a row, this fails
-                    cur = p.points[i];
-                    next = p.points[(i+1) % p.vertices]; 
-                    if(cur.Equals(next))
+                    for (int i = 0; i < p.vertices; i++)
                     {
-                        throw new Exception("Polygon cannot have same point twice in a row");
-                    }
-                    if(TestCircleLine(c, cur, next))
-                    {
-                        //OPTIMIZE: This is (kinda) recalculating norm
-                        //EXCEPTION: What if cross is 0? - shouldn't happen though
-                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
-                        float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
-                        float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
+                        //if p has the same point twice in a row, this fails
+                        cur = p.points[i];
+                        next = p.points[(i + 1) % p.vertices];
+                        if (cur.Equals(next))
                         {
-                            minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
+                            throw new Exception("Polygon cannot have same point twice in a row");
+                        }
+                        if (TestCircleLine(c, cur, next))
+                        {
+                            //OPTIMIZE: This is (kinda) recalculating norm
+                            //EXCEPTION: What if cross is 0? - shouldn't happen though
+                            Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next - cur, c.c1 - cur)) * 90).Normalized();
+                            float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
+                            float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
+                            if (norm1 != norm2 && norm1 < minCollision * (norm1 - norm2))
+                            {
+                                minCollision = norm1 / (norm1 - norm2);
+                                finalPos = c.c1 + minCollision * (c.c2 - c.c1);
+                            }
                         }
                     }
                 }
@@ -122,7 +128,7 @@ namespace Mooyash.Services
 
         public static int GetPhysicsID(Vector2 position)
         {
-            //Should implement bounding box idea
+            // Checks bounding box before TestPointPoly
             for(int i = track.interactable.Count - 1; i >= 0; i--)
             {
                 if (track.interactable[i].points[track.interactable[i].xMin].X <= position.X &&

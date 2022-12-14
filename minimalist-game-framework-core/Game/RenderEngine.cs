@@ -88,6 +88,11 @@ namespace Mooyash.Services
 
         public static void drawPerPolygon(Polygon p)
         {
+            if (p.color.A == 0) // Don't waste time scanlining invisible colliders
+            {
+                return;
+            }
+
             Vector2[] tempPoints = new Vector2[p.vertices];
 
             for (int i = 0; i < p.vertices; i++)

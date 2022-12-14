@@ -108,6 +108,7 @@ namespace Mooyash.Modules
                 for (int i = 0; i < loaded.collidable.Length; i++)
                 {
                     collidable.Add(new Polygon(loaded.collidable[i], loaded.collidableColor[i]));
+                    collidable[i].calcMinMaxY();
                 }
 
                 List<PhysicsPolygon> interactable = new List<PhysicsPolygon>();
