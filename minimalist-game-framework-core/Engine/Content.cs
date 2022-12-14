@@ -117,7 +117,7 @@ public class Polygon
 {
     public Vector2[] points;
     public Color color;
-    public int xMin, xMax;
+    public int xMin, xMax, yMin, yMax;
     public int vertices;
 
     public Polygon(Vector2[] initial, Color color)
@@ -273,6 +273,26 @@ public class Polygon
             if (points[i].X > points[xMax].X)
             {
                 xMax = i;
+            }
+        }
+    }
+
+    public void calcMinMaxY()
+    {
+        vertices = points.Length;
+        yMin = 0;
+        yMax = 0;
+
+        for (int i = 0; i < vertices; i++)
+        {
+            if (points[i].Y < points[yMin].Y)
+            {
+                yMin = i;
+            }
+
+            if (points[i].Y > points[yMax].Y)
+            {
+                yMax = i;
             }
         }
     }

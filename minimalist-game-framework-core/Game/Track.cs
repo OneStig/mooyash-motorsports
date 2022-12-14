@@ -126,6 +126,8 @@ namespace Mooyash.Modules
                     }
 
                     interactable.Add(new PhysicsPolygon(loaded.interactable[i], loaded.interactableColor[i], type));
+
+                    interactable[i].calcMinMaxY();
                 }
 
                 List<Polygon> visual = new List<Polygon>();

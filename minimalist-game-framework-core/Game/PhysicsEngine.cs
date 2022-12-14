@@ -125,7 +125,11 @@ namespace Mooyash.Services
             //Should implement bounding box idea
             for(int i = track.interactable.Count - 1; i >= 0; i--)
             {
-                if(TestPointPoly(position, track.interactable[i]))
+                if (track.interactable[i].points[track.interactable[i].xMin].X <= position.X &&
+                    track.interactable[i].points[track.interactable[i].xMax].X >= position.X &&
+                    track.interactable[i].points[track.interactable[i].yMin].Y <= position.Y &&
+                    track.interactable[i].points[track.interactable[i].yMax].Y >= position.Y &&
+                    TestPointPoly(position, track.interactable[i]))
                 {
                     return track.interactable[i].id;
                 }
