@@ -12,6 +12,9 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
 
+        //Tuple<int,int> gives row and column
+        public static Dictionary<Tuple<int, int>, Tuple<List<DynamicObj>, List<StaticObj>>> partitions; 
+
         public static float time;
         public static float finalTime;
 
@@ -39,6 +42,11 @@ namespace Mooyash.Services
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
                 time = 0;
+            }
+
+            foreach()
+            {
+
             }
 
             time += dt;
@@ -124,6 +132,11 @@ namespace Mooyash.Services
             }
 
             RenderEngine.camera.followKart(player);
+        }
+
+        public static void collide(DynamicObj d, StaticObj s)
+        {
+            //TODO
         }
 
         public static int GetPhysicsID(Vector2 position)
@@ -237,7 +250,7 @@ namespace Mooyash.Services
         }
     }
 
-    public class CirclePath
+    public class CirclePath : DynamicObj
     {
         public Vector2 c1;
         public Vector2 c2;
@@ -249,6 +262,21 @@ namespace Mooyash.Services
             this.c2 = c2;
             this.r = r;
         }
+
+        public void collide(StaticObj s)
+        {
+            
+        }
+    }
+
+    interface DynamicObj
+    {
+        void collide(StaticObj s);
+    }
+
+    public class StaticObj
+    {
+
     }
 }
 
