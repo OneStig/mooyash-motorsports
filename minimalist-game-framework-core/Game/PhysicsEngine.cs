@@ -269,12 +269,12 @@ namespace Mooyash.Services
         }
     }
 
-    interface DynamicObj
+    public interface DynamicObj
     {
         void collide(StaticObj s);
     }
 
-    public class StaticObj
+    public interface StaticObj
     {
 
     }
