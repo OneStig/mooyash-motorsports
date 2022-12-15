@@ -19,6 +19,8 @@ class Game
 
     public Game()
     {
+        LANHandler.init();
+
         Engine.Fullscreen = true;
         SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
