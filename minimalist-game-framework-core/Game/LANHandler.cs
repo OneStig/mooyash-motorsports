@@ -20,6 +20,7 @@ namespace Mooyash.Services
 
         public static void init()
         {
+            MessageReceiver = new BackgroundWorker();
             MessageReceiver.DoWork += CheckSocket;
         }
 
@@ -27,6 +28,8 @@ namespace Mooyash.Services
         {
             byte[] buffer = new byte[1];
             socket.Receive(buffer);
+
+            Console.WriteLine(buffer[0]);
         }
 
         private static void SocketSend(byte[] payload)
@@ -43,6 +46,8 @@ namespace Mooyash.Services
                 host.Start();
 
                 socket = host.AcceptSocket();
+
+                Console.WriteLine(hostIP.ToString());
 
                 return true;
             }
