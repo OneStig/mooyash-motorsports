@@ -72,17 +72,27 @@ namespace Mooyash.Modules
 
             for (int j = 0; j < tracks.Length; j++)
             {
-                string test = File.ReadAllText("Assets/Track" + j + ".json");
-                TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(test);
+                string RawTrack;
 
-                float sf = 10f;
+                if (Engine.MacOS)
+                {
+                    RawTrack = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Track" + j + ".json"));
+                }
+                else
+                {
+                    RawTrack = File.ReadAllText(Path.Combine("Assets", "Track" + j + ".json"));
+                }
+                
+                TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(RawTrack);
+
+                float scaleFactor = 10f;
                 // apply sf
 
                 for (int i = 0; i < loaded.collidable.Length; i++)
                 {
                     for (int k = 0; k < loaded.collidable[i].Length; k++)
                     {
-                        loaded.collidable[i][k] *= sf;
+                        loaded.collidable[i][k] *= scaleFactor;
                     }
                 }
 
@@ -90,7 +100,7 @@ namespace Mooyash.Modules
                 {
                     for (int k = 0; k < loaded.interactable[i].Length; k++)
                     {
-                        loaded.interactable[i][k] *= sf;
+                        loaded.interactable[i][k] *= scaleFactor;
                     }
                 }
 
@@ -98,7 +108,7 @@ namespace Mooyash.Modules
                 {
                     for (int k = 0; k < loaded.visual[i].Length; k++)
                     {
-                        loaded.visual[i][k] *= sf;
+                        loaded.visual[i][k] *= scaleFactor;
                     }
                 }
 
