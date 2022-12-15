@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -157,11 +158,11 @@ namespace Mooyash.Services
             return splice;
         }
 
-        public static void drawTextureObj(TextureObj o)
+        public static void drawObject(GameObject t)
         {
-            Vector2 newP = rotate(o.pos);
+            Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
-            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0))
+            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
             {
                 return;
             }
@@ -196,12 +197,26 @@ namespace Mooyash.Services
 
         public static void drawUI()
         {
-            drawPlayer();
+            //TO DO
         }
 
-        public static void drawObjects()
+        public static void drawObjects(List<GameObject> objs)
         {
-            //TO DO
+            List<GameObject> temp = new List<GameObject>();
+            foreach(GameObject t in objs)
+            {
+                temp.Add(t);
+            }
+            temp.Sort(compareDepths);
+            foreach(GameObject t in temp)
+            {
+                drawObject(t);
+            }
+        }
+
+        private static int compareDepths(GameObject first, GameObject second)
+        {
+            return rotate(first.position).Y.CompareTo(rotate(first.position).Y);
         }
     }
 }
