@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SDL2;
 using Mooyash.Modules;
 using Mooyash.Services;
@@ -56,7 +57,7 @@ class Game
             RenderEngine.camera.followKart(PhysicsEngine.player);
             RenderEngine.drawPerTrack(PhysicsEngine.track);
             RenderEngine.drawUI();
-            RenderEngine.drawObjects();
+            RenderEngine.drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
         }
         else
         {

@@ -56,9 +56,6 @@ namespace Mooyash.Services
         public static Camera camera;
         public static float renderDistance = 3000f;
 
-        // for debugging
-        private static bool drawhitboxes = false;
-
         public static Vector2 rotate(Vector2 input)
         {
             Vector2 temp;
@@ -127,10 +124,6 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
-            foreach (TextureObj o in t.textureObjs)
-            {
-                drawTextureObj(o);
-            }
         }
 
         public static bool testDraw(Polygon temp)
@@ -167,11 +160,12 @@ namespace Mooyash.Services
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*o.size;
+            Vector2 newSize = (camera.screen/newP.Y)*t.sizes[t.curTex];
             newP = project(newP);
-            Engine.DrawResizableTexture(o.texture, new Bounds2(new Vector2(newP.X - newSize.X/2, newP.Y - newSize.Y), newSize));
+            Engine.DrawResizableTexture(t.textures[t.curTex], new Bounds2(new Vector2(newP.X - newSize.X/2, newP.Y - newSize.Y), newSize));
         }
 
+        /*
         public static void drawPlayer()
         {
             if (drawhitboxes)
@@ -195,7 +189,7 @@ namespace Mooyash.Services
             screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
             Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
-
+        */
         public static void drawUI()
         {
             //TO DO
