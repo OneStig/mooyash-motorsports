@@ -54,6 +54,7 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
+        public static float renderDistance = 3000f;
 
         // for debugging
         private static bool drawhitboxes = false;
