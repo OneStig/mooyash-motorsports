@@ -66,6 +66,11 @@ class Game
                 playing = true;
                 GameSettings = MenuSystem.GetSettings();
                 PhysicsEngine.init();
+                GameObject test = new GameObject();
+                test.position = new Vector2(4000, 4000);
+                test.textures = new Texture[] { Engine.LoadTexture("R.jpg") };
+                test.sizes = new Vector2[] { new Vector2(500, 500) };
+                PhysicsEngine.gameObjects.Add("test", test);
             }
         }
     }

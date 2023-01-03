@@ -162,7 +162,9 @@ namespace Mooyash.Services
             }
             Vector2 newSize = (camera.screen/newP.Y)*t.sizes[t.curTex];
             newP = project(newP);
-            Engine.DrawResizableTexture(t.textures[t.curTex], new Bounds2(new Vector2(newP.X - newSize.X/2, newP.Y - newSize.Y), newSize));
+            Engine.DrawTexture(t.textures[t.curTex],
+                new Vector2(newP.X - newSize.X / 2, newP.Y - newSize.Y),
+                size: newSize, scaleMode: TextureScaleMode.Nearest);
         }
 
         /*
@@ -197,13 +199,8 @@ namespace Mooyash.Services
 
         public static void drawObjects(List<GameObject> objs)
         {
-            List<GameObject> temp = new List<GameObject>();
+            objs.Sort(compareDepths);
             foreach(GameObject t in objs)
-            {
-                temp.Add(t);
-            }
-            temp.Sort(compareDepths);
-            foreach(GameObject t in temp)
             {
                 drawObject(t);
             }
@@ -211,7 +208,7 @@ namespace Mooyash.Services
 
         private static int compareDepths(GameObject first, GameObject second)
         {
-            return rotate(first.position).Y.CompareTo(rotate(first.position).Y);
+            return rotate(second.position).Y.CompareTo(rotate(first.position).Y);
         }
     }
 }

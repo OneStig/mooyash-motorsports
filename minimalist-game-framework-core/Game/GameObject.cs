@@ -9,9 +9,9 @@ namespace Mooyash.Modules
         public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
         public int curTex;
-        public ResizableTexture[] textures;
-        //parallel array with textures, represents width by length when on screen
-        public Vector2[] sizes; 
+        public Texture[] textures;
+        //parallel array with textures to indicate how big sprites should be drawn
+        public Vector2[] sizes;
 
         public GameObject()
         {
@@ -56,14 +56,14 @@ namespace Mooyash.Modules
         public Kart() : base()
         {
             velocity = new Vector2(0, 0);
-            textures = new ResizableTexture[5];
+            textures = new Texture[5];
             sizes = new Vector2[5];
             position = new Vector2(4500, 0);
             radius = 32f;
 
             for (int i = 0; i < textures.Length; i++)
             {
-                textures[i] = Engine.LoadResizableTexture("player_" + i + ".png",0,0,0,0);
+                textures[i] = Engine.LoadTexture("player_" + i + ".png");
                 sizes[i] = new Vector2(500, 500);
             }
         }
