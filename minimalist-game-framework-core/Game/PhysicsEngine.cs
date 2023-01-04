@@ -103,16 +103,6 @@ namespace Mooyash.Services
                 player.velocity.X = -player.velocity.X * 0.75f;
                 player.throttle /= 2;
             }
-
-            // Checks collisions between player and gameObjects. (Needs to check between Karts and Gameobjects later)
-
-            foreach (KeyValuePair<string, GameObject> go in gameObjects)
-            {
-                if (go.GetType() == typeof(ItemBox))
-                {
-
-                }
-            }
             
             //This checks for crossing on every frame, probably needs to be optimized later
             //Checks if player crosses the finish line

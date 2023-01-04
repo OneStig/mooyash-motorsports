@@ -36,6 +36,8 @@ namespace Mooyash.Modules
         public string itemHeld;
         public float stunTime = float.MaxValue / 2; // time passed since last stun
 
+        private float stunDrag = 1f;
+
         // stun constant determines how long a stun lasts
         private readonly float stunConst = 3f; // In seconds
 
@@ -91,6 +93,7 @@ namespace Mooyash.Modules
         public void updateInput(float dt)
         {
             braking = false;
+
             if (Engine.GetKeyHeld(Key.W))
             {
                 if(velocity.X < 0)
@@ -139,10 +142,23 @@ namespace Mooyash.Modules
             // update stun timer
             stunTime += dt;
 
+            // when stunned
+
+            if (stunTime < stunConst)
+            {
+                stunDrag = 6f;
+                throttle = 0;
+            }
+            else
+            {
+                stunDrag = 1f;
+            }
+
             //acceleration due to drag (quadratic) and friction
-            float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
+            float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst * stunDrag 
                 - velocity.X * terrainConst.Item2 * linDragConst 
                 - Math.Sign(velocity.X) * terrainConst.Item3 * naturalDecel;
+
             if (braking)
             {
                 //acceleration due to braking
@@ -184,14 +200,6 @@ namespace Mooyash.Modules
             else
             {
                 velocity = new Vector2(tempV, 0);
-            }
-
-            // when stunned
-
-            if (stunTime < stunConst)
-            {
-                velocity = new Vector2(0, 0);
-                acceleration = 0;
             }
 
             float angularVelo;
