@@ -31,6 +31,8 @@ class Game
 
         //DEBUGGING
         debugging = false; // set true for diagnostics
+        PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
+        RenderEngine.camera = new Camera(new Vector2(300, 100), 25, Math.PI / 2, 20);
     }
 
     public void Update()
@@ -54,10 +56,7 @@ class Game
             //  rendering handled by rendering engine            
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
 
-            RenderEngine.camera.followKart(PhysicsEngine.player);
-            RenderEngine.drawPerTrack(PhysicsEngine.track);
-            RenderEngine.drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
-            RenderEngine.drawUI();
+            RenderEngine.draw();
         }
         else
         {

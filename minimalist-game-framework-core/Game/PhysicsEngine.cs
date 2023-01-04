@@ -118,8 +118,6 @@ namespace Mooyash.Services
                 }
                 lapDisplay = Math.Max(lapDisplay, lapCount);
             }
-
-            RenderEngine.camera.followKart(player);
         }
 
         public static int GetPhysicsID(Vector2 position)

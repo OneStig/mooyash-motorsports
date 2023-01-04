@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -163,7 +164,7 @@ namespace Mooyash.Services
             Vector2 newSize = (camera.screen/newP.Y)*t.sizes[t.curTex];
             newP = project(newP);
             Engine.DrawTexture(t.textures[t.curTex],
-                new Vector2(newP.X - newSize.X / 2, newP.Y - newSize.Y),
+                new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest);
         }
 
@@ -216,6 +217,14 @@ namespace Mooyash.Services
         private static int compareDepths(GameObject first, GameObject second)
         {
             return rotate(second.position).Y.CompareTo(rotate(first.position).Y);
+        }
+
+        public static void draw()
+        {
+            camera.followKart(PhysicsEngine.player);
+            drawPerTrack(PhysicsEngine.track);
+            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawUI();
         }
     }
 }
