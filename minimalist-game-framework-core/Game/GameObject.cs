@@ -5,6 +5,8 @@ namespace Mooyash.Modules
 {
     public class GameObject
     {
+        public string selfId;
+
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
@@ -31,6 +33,12 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
+        public string itemHeld;
+        public float stunTime = float.MaxValue / 2; // time passed since last stun
+
+        // stun constant determines how long a stun lasts
+        private readonly float stunConst = 3f; // In seconds
+
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
         private readonly float linDragConst = 0.5f; //deceleration linearly based on velocity
@@ -51,12 +59,16 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        
+
         public Kart(float throttleConst) : base()
         {
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
             radius = 24f;
             this.throttleConst = throttleConst;
+
+            itemHeld = null;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -124,6 +136,9 @@ namespace Mooyash.Modules
 
         public void update(float dt, Tuple<float, float, float> terrainConst)
         {
+            // update stun timer
+            stunTime += dt;
+
             //acceleration due to drag (quadratic) and friction
             float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
                 - velocity.X * terrainConst.Item2 * linDragConst 
@@ -169,6 +184,14 @@ namespace Mooyash.Modules
             else
             {
                 velocity = new Vector2(tempV, 0);
+            }
+
+            // when stunned
+
+            if (stunTime < stunConst)
+            {
+                velocity = new Vector2(0, 0);
+                acceleration = 0;
             }
 
             float angularVelo;
