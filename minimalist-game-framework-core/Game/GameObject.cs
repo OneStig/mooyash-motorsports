@@ -53,13 +53,14 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        public Kart() : base()
+        public Kart(float throttleConst) : base()
         {
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
             sizes = new Vector2[5];
             position = new Vector2(4500, 0);
-            radius = 32f;
+            radius = 24f;
+            this.throttleConst = throttleConst;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -126,12 +127,12 @@ namespace Mooyash.Modules
             }
         }
 
-        public void update(float dt, Tuple<float, float> terrainConst)
+        public void update(float dt, Tuple<float, float, float> terrainConst)
         {
             //acceleration due to drag (quadratic) and friction
             float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
                 - velocity.X * terrainConst.Item2 * linDragConst 
-                - Math.Sign(velocity.X) * naturalDecel;
+                - Math.Sign(velocity.X) * terrainConst.Item3 * naturalDecel;
             if (braking)
             {
                 //acceleration due to braking
@@ -145,13 +146,13 @@ namespace Mooyash.Modules
             //static friction
             if(velocity.X == 0)
             {
-                if(Math.Abs(tempA) <= naturalDecel)
+                if(Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
                 {
                     tempA = 0;
                 }
                 else
                 {
-                    tempA -= Math.Sign(tempA) * naturalDecel;
+                    tempA -= Math.Sign(tempA) * terrainConst.Item3 * naturalDecel;
                 }
             }
             //if acceleration and tempA have opposite signs

@@ -194,7 +194,14 @@ namespace Mooyash.Services
         */
         public static void drawUI()
         {
-            //TO DO
+            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            if (PhysicsEngine.time % 60 < 10)
+            {
+                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+            }
+            timer = timer.Substring(0, 8);
+            Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)

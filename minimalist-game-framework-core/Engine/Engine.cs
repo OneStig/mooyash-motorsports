@@ -6,10 +6,12 @@ using System.Runtime.InteropServices;
 
 static partial class Engine
 {
-    private static IntPtr Window;
-    private static bool Fullscreen;
+    public static IntPtr Window;
+    public static bool Fullscreen;
     private static Texture RenderTarget;
     private static Game Game;
+
+    public static bool MacOS;
 
     /// <summary>
     /// The amount of time (in seconds) since the last frame.
@@ -31,10 +33,11 @@ static partial class Engine
         try
         {
             ShowWindow(GetConsoleWindow(), 0);
+            MacOS = false;
         }
         catch
         {
-            Console.WriteLine("MACS ARE SIMPLY BETTER");
+            MacOS = true;
         }
         
 
@@ -141,7 +144,7 @@ static partial class Engine
             PollEvents();
 
             // Toggle between windowed and fullscreen mode when Alt+Enter is pressed:
-            if (GetKeyDown(Key.Return) && (GetKeyHeld(Key.LeftAlt) || GetKeyHeld(Key.RightAlt)))
+            if (GetKeyDown(Key.Escape))
             {
                 Fullscreen = !Fullscreen;
                 SDL.SDL_SetWindowFullscreen(Window, Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);

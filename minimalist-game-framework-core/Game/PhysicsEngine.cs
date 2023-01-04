@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -13,32 +12,55 @@ namespace Mooyash.Services
         public static int lapDisplay;
         public static Track track;
 
-        //Item 1 is for quadratic drag, Item2 is for linear drag
-        public static Tuple<float,float>[] terrainConsts = new Tuple<float,float>[] {
-            new Tuple<float, float>(1,1), new Tuple<float, float>(1.5f,1.5f), new Tuple<float, float>(2,2)};
+        public static float time;
+        public static float finalTime;
+
+        //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
+        public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
+            new Tuple<float, float, float>(1,1,1), new Tuple<float, float, float>(2,2,2), new Tuple<float, float, float>(3,3,3)};
 
         public static void init()
         {
-            player = new Kart();
+            //GameSettings[2]: 0 = 50cc, 1 = 100cc
+            player = new Kart(2400 * (Game.GameSettings[2]+1));
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
+            player.position = track.startPos;
+            player.angle = track.startAngle;
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
+            time = 0;
         }
 
         public static void update(float dt)
         {
+
+            time += dt;
+
+            if (lapDisplay > 3)
+            {
+                lapDisplay = 3;
+                Game.playing = false;
+                finalTime = time;
+                MenuSystem.SetFinalTime(finalTime);
+            }
+
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
             player.updateInput(dt);
             int id = GetPhysicsID(player.position);
+
+            //this shouldn't happen, maybe we should do something else?
             if(id == -1)
             {
-                //FIX LATER
-                player = new Kart();
+                player = new Kart(1200 + Game.GameSettings[2]*600);
+                player.position = track.startPos;
+                player.angle = track.startAngle;
                 id = GetPhysicsID(player.position);
             }
+
             player.update(dt, terrainConsts[id]);
+
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
@@ -66,8 +88,6 @@ namespace Mooyash.Services
                         Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
                         float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
                         float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        System.Diagnostics.Debug.Write("NORM " + norm + " COLL: " + norm1 / (norm1 - norm2));
-                        System.Diagnostics.Debug.WriteLine(" BOOL: " + (norm1 < minCollision * (norm1 - norm2)));
                         if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);
@@ -79,7 +99,6 @@ namespace Mooyash.Services
 
             if(minCollision != 1)
             {
-                System.Diagnostics.Debug.WriteLine("PAST: " + pastPos + "TRY: " + player.position + "FINAL: " + finalPos);
                 player.position = finalPos;
                 player.velocity.X = -player.velocity.X * 0.75f;
                 player.throttle /= 2;
@@ -89,7 +108,7 @@ namespace Mooyash.Services
             //Checks if player crosses the finish line
             if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
             {
-                if (Vector2.Dot(pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
                 {
                     lapCount++;
                 }
@@ -192,7 +211,7 @@ namespace Mooyash.Services
             }
             else
             {
-                return Vector2.Dot(p - c.c1, p - c.c1) - dot * dot < c.r * c.r;
+                return (Vector2.Dot(p - c.c1, p - c.c1) - dot * dot/ Vector2.Dot(c.c2 - c.c1, c.c2 - c.c1)) < c.r * c.r;
             }
         }
 
