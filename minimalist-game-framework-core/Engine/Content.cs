@@ -305,7 +305,7 @@ public class Texture
 /// <summary>
 /// A handle to a resizable texture. These should only be created by calling LoadResizableTexture().
 /// </summary>
-class ResizableTexture
+public class ResizableTexture
 {
     public readonly IntPtr Handle;
     public readonly int Width;

@@ -151,7 +151,6 @@ namespace Mooyash.Modules
                 tracks[j].startPos = loaded.startPos;
                 tracks[j].startAngle = loaded.startAngle;
             }
-            
         }
     }
 
