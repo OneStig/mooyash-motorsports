@@ -7,6 +7,11 @@ static partial class Engine
 {
     private static string GetAssetPath(string path)
     {
+        if (Engine.MacOS == true)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", path);
+        }
+
         return Path.Combine("Assets", path);
     }
 

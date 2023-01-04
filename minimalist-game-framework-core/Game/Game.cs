@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using SDL2;
 using Mooyash.Modules;
 using Mooyash.Services;
+using SDL2;
 
 class Game
 {
@@ -11,15 +10,18 @@ class Game
     public static readonly Vector2 Resolution = new Vector2(320, 180);
 
     public static List<int> GameSettings;
-    private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 10);
+    public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17);
 
     public static bool debugging;
 
 
-    bool playing; // (saves 31 bits of overhead yay)
+    public static bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
     {
+        Engine.Fullscreen = true;
+        SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
         // Load textures
         MenuSystem.loadTextures();
         Track.LoadTracks();
@@ -50,7 +52,7 @@ class Game
             //  input handling
             //  physics handled by physics engine
             //  rendering handled by rendering engine            
-            PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 60f));
+            PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
 
             RenderEngine.camera.followKart(PhysicsEngine.player);
             RenderEngine.drawPerTrack(PhysicsEngine.track);
