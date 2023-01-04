@@ -118,8 +118,6 @@ namespace Mooyash.Services
                 }
                 lapDisplay = Math.Max(lapDisplay, lapCount);
             }
-
-            RenderEngine.camera.followKart(player);
         }
 
         public static int GetPhysicsID(Vector2 position)
@@ -219,6 +217,13 @@ namespace Mooyash.Services
         public static bool TestCircleCircle(CirclePath a, CirclePath b)
         {
             //TODO!
+            return false;
+        }
+
+        //Tests if path a intersects static circle at pos with radius rad
+        public static bool TestCircleStaticCircle(CirclePath a, Vector2 pos, float rad)
+        {
+            //TODO:
             return false;
         }
 

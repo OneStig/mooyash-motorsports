@@ -126,9 +126,7 @@ namespace Mooyash.Services
 
             if (CurScreen == 5)
             {
-                RenderEngine.drawPerTrack(PhysicsEngine.track);
-                RenderEngine.drawPlayer();
-                RenderEngine.drawUI();
+                RenderEngine.draw();
             }
 
             cur.DrawScreen();
