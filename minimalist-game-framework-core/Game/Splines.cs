@@ -29,7 +29,7 @@ namespace Game.Game
 
             Vector2 closestPoint = new Vector2((float) (a.X + a.X * percent), (float) (a.Y + a.Y * percent));
 
-            return (Math.Sqrt( Math.Pow(closestPoint.X - cartLocation.X, 2) + Math.Pow(closestPoint.Y - cartLocation.Y, 2)));
+            return (Math.Sqrt(Math.Pow(closestPoint.X - cartLocation.X, 2) + Math.Pow(closestPoint.Y - cartLocation.Y, 2)));
 
         }
     }
