@@ -132,6 +132,7 @@ namespace Mooyash.Services
             bool leftCut = true;
             bool rightCut = true;
             bool botCut = true;
+            bool topCut = true;
             for (int i = 0; i < temp.points.Length; i++)
             {
                 temp.points[i] = rotate(temp.points[i]);
@@ -139,6 +140,7 @@ namespace Mooyash.Services
                 rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
                 //technically, we could be more aggressive with botCut, but should be unnecessary
                 botCut &= (temp.points[i].Y < camera.screen);
+                topCut &= (temp.points[i].Y > renderDistance);
             }
             return !(leftCut || rightCut || botCut);
         }
