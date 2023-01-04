@@ -142,7 +142,7 @@ namespace Mooyash.Services
                 botCut &= (temp.points[i].Y < camera.screen);
                 topCut &= (temp.points[i].Y > renderDistance);
             }
-            return !(leftCut || rightCut || botCut);
+            return !(leftCut || rightCut || botCut || topCut);
         }
 
         public static bool testSplice(Polygon temp)
