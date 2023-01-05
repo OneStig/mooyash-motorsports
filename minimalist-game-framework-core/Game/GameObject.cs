@@ -151,17 +151,22 @@ namespace Mooyash.Modules
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
 
+            Random rnd = new Random();
+            double randAngle = (rnd.NextDouble() * 2) * Math.PI;
+            Vector2 oldPoint = allWaypoints[currentWaypoint];
+            Vector2 newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * radius), (float)(oldPoint.Y + Math.Sin(randAngle) * radius));
+
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);
 
-            angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
+            angleToWaypoint = (float)Math.Atan2(newPoint.Y - position.Y,
                                                     allWaypoints[currentWaypoint].X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
 
             float angleDiff = (angleToWaypoint - angle) % (2*(float)Math.PI);
 
             Vector2[] closestPoints = Splines.getClosestPoints(PhysicsEngine.ai1.position, Track.tracks[0].splines);
-            closestDistance = Splines.getClosestDistance(closestPoints[1], closestPoints[0], PhysicsEngine.ai1.position) / 100;
+            double closestDistance = Splines.getClosestDistance(closestPoints[1], closestPoints[0], PhysicsEngine.ai1.position) / 100;
             
             if (Math.Abs(angleToWaypoint - angle) > .1f)
             {
@@ -169,7 +174,7 @@ namespace Mooyash.Modules
                 {
                     if (angleToWaypoint - angle < 0)
                     {
-                        //turn left
+                        //turn left   
                         steer = Math.Max(-1, steer - sInputScale * dt);
                     }
                     else if (angleToWaypoint - angle > 0)
