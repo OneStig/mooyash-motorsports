@@ -33,6 +33,8 @@ class Game
         debugging = false; // set true for diagnostics
         PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
         RenderEngine.camera = new Camera(new Vector2(300,100), 25, Math.PI/2, 20);
+
+        Kart test = new Kart(50);
     }
 
     public void Update()

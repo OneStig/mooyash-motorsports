@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Game.Game
+namespace Mooyash.Services
 {
     public class Splines
     {
@@ -10,14 +10,15 @@ namespace Game.Game
             this.points = points;
         }
 
-        //returns the two closest points to the player, which forms a line segment
-        public Vector2[] getClosestSegment(Vector2 cartLocation) 
+        //returns the 
+        public Vector2[] getTurnAngle(Vector2 cartLocation) 
         {
+            Vector2[] points = new Vector2[2];
             return null;
         }
 
         //where p is the cartLocation, finds the closest point on a line from a to b to the cart
-        public double getDistanceToSpline(Vector2 a, Vector2 b, Vector2 cartLocation) 
+        public Vector2 getClosestPoint(Vector2 a, Vector2 b, Vector2 cartLocation) 
         {
             Vector2 aToCart = cartLocation - a;
             Vector2 aToB = b - a;
@@ -27,9 +28,9 @@ namespace Game.Game
 
             double percent = dotProduct/ atcMagnitude;
 
-            Vector2 closestPoint = new Vector2((float) (a.X + a.X * percent), (float) (a.Y + a.Y * percent));
-
-            return (Math.Sqrt( Math.Pow(closestPoint.X - cartLocation.X, 2) + Math.Pow(closestPoint.Y - cartLocation.Y, 2)));
+            return new Vector2((float) (a.X + a.X * percent), (float) (a.Y + a.Y * percent));
+           
+            //return (Math.Sqrt( Math.Pow(closestPoint.X - cartLocation.X, 2) + Math.Pow(closestPoint.Y - cartLocation.Y, 2)));
 
         }
     }
