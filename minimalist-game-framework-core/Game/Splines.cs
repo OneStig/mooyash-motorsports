@@ -3,6 +3,21 @@ namespace Mooyash.Services
 {
     public class Splines
     {
+        /*
+        228, 654
+        264, 704
+        523, 668
+        869, 692
+        905, 629
+        742, 480
+        608, 513
+        546, 449
+        634, 330
+        579, 239
+        256, 232
+        226, 284
+        */
+
         //stores all the points in the spline for a specific track
         public Vector2[] points;
         public Splines(Vector2[] points)

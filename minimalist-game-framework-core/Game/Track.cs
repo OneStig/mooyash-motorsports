@@ -18,7 +18,7 @@ namespace Mooyash.Modules
         public Color[] interactableColor;
         public Color[] visualColor;
 
-        public Vector2[] splines;
+        public List<Vector2> splines;
         public Tuple<Vector2, Vector2> checkpoint;
     }
 
@@ -135,7 +135,20 @@ namespace Mooyash.Modules
                     visual.Add(new Polygon(loaded.visual[i], loaded.visualColor[i]));
                 }
 
-                tracks[j] = new Track(collidable, interactable, visual, new List<Vector2>(),
+                tracks[j] = new Track(collidable, interactable, visual,
+                new List<Vector2>{
+                new Vector2(228, 654),
+                new Vector2(264, 704),
+                new Vector2(523, 668),
+                new Vector2(869, 692),
+                new Vector2(905, 629),
+                new Vector2(742, 480),
+                new Vector2(608, 513),
+                new Vector2(546, 449),
+                new Vector2(634, 330),
+                new Vector2(579, 239),
+                new Vector2(256, 232),
+                new Vector2(226, 284)},
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
                 tracks[j].startPos = loaded.startPos;
