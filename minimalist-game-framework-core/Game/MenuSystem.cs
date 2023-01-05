@@ -16,6 +16,7 @@ namespace Mooyash.Services
         {
             Texture Menu = Engine.LoadTexture("fallengong.png");
             Texture MenuWithoutLogo = Engine.LoadTexture("fallinggong.png");
+            Texture CreditsScreen = Engine.LoadTexture("Credits.png");
 
             SettingtoID["play"] = 0;
 
@@ -98,18 +99,20 @@ namespace Mooyash.Services
             ScreenStack[5] = new Screen(EndTextures, EndTexturePositions, EndTextureSizes, EndButtons, 0);
 
             //credits
-            Texture[] CreditTextures = new Texture[] { MenuWithoutLogo };
+            Texture[] CreditTextures = new Texture[] { CreditsScreen };
             Vector2[] CreditTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CreditTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CreditButtons = new Dictionary<int, Button>();
             CreditButtons[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "replay", Color.White);
             CreditButtons[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "return", Color.White);
 
+            /*
             CreditButtons[2] = new Button(new Color(0, 0, 0, 0), new Vector2(175,10), new Vector2(1,1), "attribution - mario kart 1992", Color.Black);
             CreditButtons[3] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 35), new Vector2(1, 1), "created by - steven h sebastian k ", Color.Black);
             CreditButtons[4] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 60), new Vector2(1, 1), "william g suyash m and davis y", Color.Black);
             CreditButtons[5] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 85), new Vector2(1, 1), "special thanks to - andrew martz", Color.Black);
             CreditButtons[6] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 110), new Vector2(1, 1), "and mrs. kankelborg", Color.Black);
+            */
 
             ScreenStack[6] = new Screen(CreditTextures, CreditTexturePositions, CreditTextureSizes, CreditButtons, 0);
 
@@ -123,9 +126,7 @@ namespace Mooyash.Services
 
             if (CurScreen == 5)
             {
-                RenderEngine.drawPerTrack(PhysicsEngine.track);
-                RenderEngine.drawPlayer();
-                RenderEngine.drawUI();
+                RenderEngine.draw();
             }
 
             cur.DrawScreen();

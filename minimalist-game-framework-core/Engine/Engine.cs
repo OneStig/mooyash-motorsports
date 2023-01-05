@@ -11,6 +11,8 @@ static partial class Engine
     private static Texture RenderTarget;
     private static Game Game;
 
+    public static bool MacOS;
+
     /// <summary>
     /// The amount of time (in seconds) since the last frame.
     /// </summary>
@@ -31,10 +33,11 @@ static partial class Engine
         try
         {
             ShowWindow(GetConsoleWindow(), 0);
+            MacOS = false;
         }
         catch
         {
-            // Console.WriteLine("MACS ARE SIMPLY BETTER");
+            MacOS = true;
         }
         
 
