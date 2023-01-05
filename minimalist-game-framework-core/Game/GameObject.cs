@@ -36,6 +36,7 @@ namespace Mooyash.Modules
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
         public float minDistanceToReachWaypoint;
+        public float angleToWaypoint;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -64,9 +65,9 @@ namespace Mooyash.Modules
             radius = 24f;
             this.throttleConst = throttleConst;
             this.allWaypoints = Track.tracks[0].splines;
-            currentWaypoint = 1;
+            currentWaypoint = 0;
             previousWaypoint = 0;
-            minDistanceToReachWaypoint = 500;
+            minDistanceToReachWaypoint = 400;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -135,7 +136,9 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
+            angle %= 2*(float)Math.PI;
             //target is current waypoint
+
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if(Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
@@ -146,20 +149,40 @@ namespace Mooyash.Modules
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);
 
-            float angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
+            angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
                                                     allWaypoints[currentWaypoint].X - position.X);
+            angleToWaypoint %= 2 * (float)Math.PI;
 
-            if (Math.Abs(angle - angleToWaypoint) > .5f)
+            float angleDiff = (angleToWaypoint - angle) % (2*(float)Math.PI);
+
+            if (Math.Abs(angleToWaypoint - angle) > .1f)
             {
-                if(angleToWaypoint > 0)
+                if (Math.Abs(angleDiff) < Math.PI)
                 {
-                    //turn left
-                    steer = Math.Max(-1, steer - sInputScale * dt);
+                    if (angleToWaypoint - angle < 0)
+                    {
+                        //turn left
+                        steer = Math.Max(-1, steer - sInputScale * dt);
+                    }
+                    else if (angleToWaypoint - angle > 0)
+                    {
+                        //turn right
+                        steer = Math.Min(1, steer + sInputScale * dt);
+                    }
                 }
-                else if (angleToWaypoint < 0)
+                else
                 {
-                    //turn right
-                    steer = Math.Min(1, steer + sInputScale * dt);
+
+                    if (angleToWaypoint - angle > 0)
+                    {
+                        //turn left
+                        steer = Math.Max(-1, steer - sInputScale * dt);
+                    }
+                    else if (angleToWaypoint - angle < 0)
+                    {
+                        //turn right
+                        steer = Math.Min(1, steer + sInputScale * dt);
+                    }
                 }
             }
             else

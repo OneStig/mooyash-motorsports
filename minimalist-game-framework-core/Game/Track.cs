@@ -137,7 +137,7 @@ namespace Mooyash.Modules
 
                 tracks[j] = new Track(collidable, interactable, visual,
                 new List<Vector2>{
-                new Vector2(2280, 6540),
+                loaded.startPos,
                 new Vector2(2640, 7040),
                 new Vector2(5230, 6680),
                 new Vector2(8690, 6920),

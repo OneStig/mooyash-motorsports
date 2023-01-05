@@ -140,6 +140,13 @@ namespace Mooyash.Services
                 drawPerPolygon(p);
             }
 
+            for(int i = 0; i < t.splines.Count; i++)
+            {
+                Vector2 cur = t.splines[i];
+                cur = project(rotate(cur));
+                Engine.DrawPoint(cur, Color.Orange);
+            }
+
             // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
@@ -177,6 +184,10 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+            
+            Engine.DrawString("at  "+PhysicsEngine.ai1.angleToWaypoint, new Vector2(10, 10), Color.Black, Game.font, TextAlignment.Left);
+            Engine.DrawString("a   "+PhysicsEngine.ai1.angle, new Vector2(10, 25), Color.Black, Game.font, TextAlignment.Left);
+            Engine.DrawString("    " + (PhysicsEngine.ai1.angleToWaypoint - PhysicsEngine.ai1.angle), new Vector2(10, 40), Color.Black, Game.font, TextAlignment.Left);
         }
 
         public static void drawObjects()
