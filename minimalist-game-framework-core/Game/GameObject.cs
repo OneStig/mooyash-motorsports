@@ -41,6 +41,7 @@ namespace Mooyash.Modules
         public List<Vector2> allWaypoints;
         public float minDistanceToReachWaypoint;
         public float angleToWaypoint;
+        public Random rand = new Random();
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -73,7 +74,8 @@ namespace Mooyash.Modules
             this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
-            minDistanceToReachWaypoint = 400;
+
+            minDistanceToReachWaypoint = rand.Next(500,550);
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -81,6 +83,7 @@ namespace Mooyash.Modules
                 sizes[i] = new Vector2(500, 500);
             }
         }
+
 
 
         private float decay(float value, float constant, float dt)
@@ -149,6 +152,7 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if(Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
+                minDistanceToReachWaypoint = rand.Next(400, 550);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
@@ -160,13 +164,10 @@ namespace Mooyash.Modules
                                                     allWaypoints[currentWaypoint].X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
 
-            float angleDiff = (angleToWaypoint - angle) % (2*(float)Math.PI);
 
-            Vector2[] closestPoints = Splines.getClosestPoints(PhysicsEngine.ai1.position, Track.tracks[0].splines);
-            closestDistance = Splines.getClosestDistance(closestPoints[1], closestPoints[0], PhysicsEngine.ai1.position) / 100;
-            
-            if (Math.Abs(angleToWaypoint - angle) > .1f)
-            {
+            if (Math.Abs(angleToWaypoint - angle) > .1)
+            { 
+                float angleDiff = (angleToWaypoint - angle) % (2 * (float)Math.PI);
                 if (Math.Abs(angleDiff) < Math.PI)
                 {
                     if (angleToWaypoint - angle < 0)
