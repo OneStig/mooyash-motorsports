@@ -3,23 +3,25 @@ using Mooyash.Services;
 
 namespace Mooyash.Modules
 {
-    public class GameObject
+    public interface GameObject
     {
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
-        public Polygon hitbox;
+        public float radius;
         public int curTex;
         public Texture[] textures;
         //parallel array with textures to indicate how big sprites should be drawn
         public Vector2[] sizes;
+    }
 
-        public GameObject()
-        {
-            position = new Vector2();
-            angle = 0;
-            curTex = 0;
-            // need to add hitbox and textures later
-        }
+    public interface StaticObj : GameObject
+    {
+
+    }
+
+    public interface DynamicObj : GameObject
+    {
+        
     }
 
     public class Kart : GameObject

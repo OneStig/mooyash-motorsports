@@ -6,7 +6,9 @@ namespace Mooyash.Services
 {
     public static class PhysicsEngine
     {
-        public static Dictionary<string, GameObject> gameObjects;
+        public static List<Kart> karts = new List<Kart>();
+        public static List<DynamicObj> dynamicObjs = new List<DynamicObj>();
+        public static List<StaticObj> staticObjs = new List<StaticObj>();
         public static Kart player;
         public static int lapCount;
         public static int lapDisplay;
@@ -61,6 +63,35 @@ namespace Mooyash.Services
 
             player.update(dt, terrainConsts[id]);
 
+            foreach(StaticObj staticObj in staticObjs)
+            {
+                foreach(Kart kart in karts)
+                {
+                    staticObj.collide(kart);
+                }
+                foreach(DynamicObj dynamicObj in dynamicObjs)
+                {
+                    staticObj.collide(dynamicObj);
+                }
+            }
+            for(int i = 0; i < dynamicObjs.length(); i++)
+            {
+                for(int j = i+1; j < dynamicObjs.length(); j++)
+                {
+                    dynamicObjs.get(i).collide(dynamicObjs.get(j));
+                }
+                foreach(Kart kart in karts)
+                {
+                    dynamicsObjs.collide(kart);
+                }
+            }
+            for(int i = 0; i < karts.length(); i++)
+            {
+                for(int j = i+1; j < karts.Length(); j++)
+                {
+                    karts.get(i).collide(karts.get(j));
+                }
+            }
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
