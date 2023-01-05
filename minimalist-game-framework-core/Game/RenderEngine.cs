@@ -184,7 +184,9 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
-            }
+
+            Engine.DrawString("distance  " + PhysicsEngine.ai1.closestDistance, new Vector2(120, 50), Color.White, Game.font);
+        }
 
         public static void drawObjects()
         {

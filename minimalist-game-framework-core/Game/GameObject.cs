@@ -32,6 +32,8 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
+        public double closestDistance;
+
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
@@ -155,6 +157,9 @@ namespace Mooyash.Modules
 
             float angleDiff = (angleToWaypoint - angle) % (2*(float)Math.PI);
 
+            Vector2[] closestPoints = Splines.getClosestPoints(PhysicsEngine.ai1.position, Track.tracks[0].splines);
+            closestDistance = Splines.getClosestDistance(closestPoints[1], closestPoints[0], PhysicsEngine.ai1.position) / 100;
+            
             if (Math.Abs(angleToWaypoint - angle) > .1f)
             {
                 if (Math.Abs(angleDiff) < Math.PI)
@@ -189,7 +194,6 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
             }
-
         }
 
 
