@@ -31,6 +31,9 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
+        public Vector2 currentWaypoint;
+        public Vector2 previousWaypoint;
+
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
         private readonly float linDragConst = 0.5f; //deceleration linearly based on velocity
@@ -81,7 +84,7 @@ namespace Mooyash.Modules
             braking = false;
             if (Engine.GetKeyHeld(Key.W))
             {
-                if(velocity.X < 0)
+                if (velocity.X < 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -93,7 +96,7 @@ namespace Mooyash.Modules
             }
             else if (Engine.GetKeyHeld(Key.S))
             {
-                if(velocity.X > 0)
+                if (velocity.X > 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -122,11 +125,57 @@ namespace Mooyash.Modules
             }
         }
 
+        public void updateInputAI(float dt)
+        {
+            braking = false;
+            if (Engine.GetKeyHeld(Key.Up))
+            {
+                if (velocity.X < 0)
+                {
+                    throttle = 0;
+                    braking = true;
+                }
+                else
+                {
+                    throttle = Math.Min(1, throttle + tInputScale * dt);
+                }
+            }
+            else if (Engine.GetKeyHeld(Key.Down))
+            {
+                if (velocity.X > 0)
+                {
+                    throttle = 0;
+                    braking = true;
+                }
+                else
+                {
+                    throttle = Math.Max(-0.5f, throttle - tInputScale * dt);
+                }
+            }
+            else
+            {
+                throttle = decay(throttle, throttleDecay, dt);
+            }
+
+            if (Engine.GetKeyHeld(Key.Left))
+            {
+                steer = Math.Max(-1, steer - sInputScale * dt);
+            }
+            else if (Engine.GetKeyHeld(Key.Right))
+            {
+                steer = Math.Min(1, steer + sInputScale * dt);
+            }
+            else
+            {
+                steer = decay(steer, steerDecay, dt);
+            }
+        }
+
         public void update(float dt, Tuple<float, float, float> terrainConst)
         {
             //acceleration due to drag (quadratic) and friction
-            float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst 
-                - velocity.X * terrainConst.Item2 * linDragConst 
+            float tempA = -velocity.X * Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst
+                - velocity.X * terrainConst.Item2 * linDragConst
                 - Math.Sign(velocity.X) * terrainConst.Item3 * naturalDecel;
             if (braking)
             {
@@ -139,9 +188,9 @@ namespace Mooyash.Modules
                 tempA += throttle * throttleConst;
             }
             //static friction
-            if(velocity.X == 0)
+            if (velocity.X == 0)
             {
-                if(Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
+                if (Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
                 {
                     tempA = 0;
                 }
@@ -151,7 +200,7 @@ namespace Mooyash.Modules
                 }
             }
             //if acceleration and tempA have opposite signs
-            if (Math.Sign(acceleration)*Math.Sign(tempA) == -1)
+            if (Math.Sign(acceleration) * Math.Sign(tempA) == -1)
             {
                 acceleration = 0;
             }
@@ -162,7 +211,7 @@ namespace Mooyash.Modules
 
             float tempV = velocity.X + acceleration * dt;
             //if velocity and tempV have opposite signs
-            if (Math.Sign(velocity.X)*Math.Sign(tempV) == -1)
+            if (Math.Sign(velocity.X) * Math.Sign(tempV) == -1)
             {
                 velocity = new Vector2(0, 0);
             }

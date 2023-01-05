@@ -182,6 +182,10 @@ namespace Mooyash.Services
         public static void drawObjects()
         {
             //TO DO
+
+            Vector2 screenPlayer = project(rotate(PhysicsEngine.ai1.position));
+            screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
+            Engine.DrawTexture(PhysicsEngine.ai1.textures[0], new Vector2(-15,-24) + screenPlayer);
         }
     }
 }
