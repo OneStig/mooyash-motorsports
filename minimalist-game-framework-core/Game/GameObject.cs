@@ -172,33 +172,61 @@ namespace Mooyash.Modules
                 {
                     if (angleToWaypoint - angle < 0)
                     {
-                        //turn left
-                        steer = Math.Max(-1, steer - sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
                     }
                     else if (angleToWaypoint - angle > 0)
                     {
-                        //turn right
-                        steer = Math.Min(1, steer + sInputScale * dt);
+                        if(Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
                     }
                 }
                 else
                 {
-
                     if (angleToWaypoint - angle > 0)
                     {
-                        //turn left
-                        steer = Math.Max(-1, steer - sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
                     }
                     else if (angleToWaypoint - angle < 0)
                     {
-                        //turn right
-                        steer = Math.Min(1, steer + sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
                     }
                 }
             }
             else
             {
                 steer = decay(steer, steerDecay, dt);
+                angle = angleToWaypoint;
             }
         }
 
