@@ -11,6 +11,8 @@ namespace Mooyash.Modules
         public Polygon hitbox;
         public int curTex;
         public Texture[] textures;
+        //parallel array with textures to indicate how big sprites should be drawn
+        public Vector2[] sizes;
 
         public GameObject()
         {
@@ -62,6 +64,8 @@ namespace Mooyash.Modules
         {
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
+            sizes = new Vector2[5];
+            position = new Vector2(4500, 0);
             radius = 24f;
             this.throttleConst = throttleConst;
             this.allWaypoints = Track.tracks[0].splines;
@@ -72,6 +76,7 @@ namespace Mooyash.Modules
             for (int i = 0; i < textures.Length; i++)
             {
                 textures[i] = Engine.LoadTexture("player_" + i + ".png");
+                sizes[i] = new Vector2(500, 500);
             }
         }
 

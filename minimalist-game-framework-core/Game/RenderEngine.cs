@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Modules;
 
 namespace Mooyash.Services
@@ -53,9 +55,7 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-
-        // for debugging
-        private static bool drawhitboxes = false;
+        public static float renderDistance = 3000f;
 
         public static Vector2 rotate(Vector2 input)
         {
@@ -95,23 +95,9 @@ namespace Mooyash.Services
             }
 
             Polygon temp = new Polygon(tempPoints, p.color);
-            //used to check if polygon should be drawn and/or spliced
-            bool leftCut = true;
-            bool rightCut = true;
-            bool botCut = true;
-            bool splice = false;
 
-            for (int i = 0; i < temp.points.Length; i++)
-            {
-                temp.points[i] = rotate(temp.points[i]);
-                leftCut &= (camera.hslope * temp.points[i].Y + temp.points[i].X < 0);
-                rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
-                //technically, we could be more aggressive with botCut, but should be unnecessary
-                botCut &= (temp.points[i].Y < camera.screen);
-                splice |= (temp.points[i].Y < camera.screen);
-            }
-            if (leftCut || rightCut || botCut) { return; }
-            if (splice)
+            if (!testDraw(temp)) { return; }
+            if (testSplice(temp))
             {
                 temp.splice(camera.screen);
             }
@@ -150,6 +136,50 @@ namespace Mooyash.Services
             // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
+        public static bool testDraw(Polygon temp)
+        {
+            bool leftCut = true;
+            bool rightCut = true;
+            bool botCut = true;
+            bool topCut = true;
+            for (int i = 0; i < temp.points.Length; i++)
+            {
+                temp.points[i] = rotate(temp.points[i]);
+                leftCut &= (camera.hslope * temp.points[i].Y + temp.points[i].X < 0);
+                rightCut &= (camera.hslope * temp.points[i].Y - temp.points[i].X < 0);
+                //technically, we could be more aggressive with botCut, but should be unnecessary
+                botCut &= (temp.points[i].Y < camera.screen);
+                topCut &= (temp.points[i].Y > renderDistance);
+            }
+            return !(leftCut || rightCut || botCut || topCut);
+        }
+
+        public static bool testSplice(Polygon temp)
+        {
+            bool splice = false;
+            for (int i = 0; i < temp.points.Length; i++)
+            {
+                splice |= (temp.points[i].Y < camera.screen);
+            }
+            return splice;
+        }
+
+        public static void drawObject(GameObject t)
+        {
+            Vector2 newP = rotate(t.position);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            {
+                return;
+            }
+            Vector2 newSize = (camera.screen/newP.Y)*t.sizes[t.curTex];
+            newP = project(newP);
+            Engine.DrawTexture(t.textures[t.curTex],
+                new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
+                size: newSize, scaleMode: TextureScaleMode.Nearest);
+        }
+
+        /*
         public static void drawPlayer()
         {
             if (drawhitboxes)
@@ -173,7 +203,7 @@ namespace Mooyash.Services
             screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
             Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
-
+        */
         public static void drawUI()
         {
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
@@ -186,13 +216,26 @@ namespace Mooyash.Services
             Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
             }
 
-        public static void drawObjects()
+        public static void drawObjects(List<GameObject> objs)
         {
-            //TO DO
+            objs.Sort(compareDepths);
+            foreach(GameObject t in objs)
+            {
+                drawObject(t);
+            }
+        }
 
-            Vector2 screenPlayer = project(rotate(PhysicsEngine.ai1.position));
-            screenPlayer = new Vector2((float)Math.Round(screenPlayer.X), (float)Math.Round(screenPlayer.Y));
-            Engine.DrawTexture(PhysicsEngine.ai1.textures[0], new Vector2(-15,-24) + screenPlayer);
+        private static int compareDepths(GameObject first, GameObject second)
+        {
+            return rotate(second.position).Y.CompareTo(rotate(first.position).Y);
+        }
+
+        public static void draw()
+        {
+            camera.followKart(PhysicsEngine.player);
+            drawPerTrack(PhysicsEngine.track);
+            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawUI();
         }
     }
 }

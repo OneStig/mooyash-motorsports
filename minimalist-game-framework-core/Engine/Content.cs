@@ -7,6 +7,11 @@ static partial class Engine
 {
     private static string GetAssetPath(string path)
     {
+        if (Engine.MacOS == true)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", path);
+        }
+
         return Path.Combine("Assets", path);
     }
 
@@ -300,7 +305,7 @@ public class Texture
 /// <summary>
 /// A handle to a resizable texture. These should only be created by calling LoadResizableTexture().
 /// </summary>
-class ResizableTexture
+public class ResizableTexture
 {
     public readonly IntPtr Handle;
     public readonly int Width;
