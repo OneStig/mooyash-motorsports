@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 namespace Mooyash.Services
 {
     public class Splines
@@ -30,6 +31,31 @@ namespace Mooyash.Services
         {
             Vector2[] points = new Vector2[2];
             return null;
+        }
+
+        //gets two closest waypoints to the player
+        public Vector2[] getClosestPoints(Vector2 cartLocation, Vector2[] waypoints)
+        {
+            return waypoints.Select(point => new
+            {
+                Point = point,
+                Distance = distanceToPoint(point, cartLocation)
+
+
+            })
+                .OrderBy(p => p.Distance)
+                .Take(2)
+                .Select(p => p.Point)
+                .ToArray();
+        }
+
+        //returns the distance from one point to another
+        public double distanceToPoint(Vector2 point1, Vector2 point2)
+        {
+            double a = point2.X - point1.X;
+            double b = point2.Y - point1.Y;
+
+            return Math.Sqrt(a * a + b * b);
         }
 
         //where p is the cartLocation, finds the closest point on a line from a to b to the cart
