@@ -70,8 +70,9 @@ namespace Mooyash.Services
 
 
             ai1.updateInputAI(dt);
-            int idAI = GetPhysicsID(ai1.position);
-            ai1.update(dt, terrainConsts[idAI]);
+            //int idAI = GetPhysicsID(ai1.position);
+            ai1.update(dt, terrainConsts[id]);
+
 
 
             float minCollision = 1;

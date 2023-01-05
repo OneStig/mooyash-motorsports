@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Mooyash.Services;
 
 namespace Mooyash.Modules
@@ -31,8 +32,10 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
-        public Vector2 currentWaypoint;
-        public Vector2 previousWaypoint;
+        public int currentWaypoint;
+        public int previousWaypoint;
+        public List<Vector2> allWaypoints;
+        public float minDistanceToReachWaypoint;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -60,12 +63,17 @@ namespace Mooyash.Modules
             textures = new Texture[5];
             radius = 24f;
             this.throttleConst = throttleConst;
+            this.allWaypoints = Track.tracks[0].splines;
+            currentWaypoint = 1;
+            previousWaypoint = 0;
+            minDistanceToReachWaypoint = 500;
 
             for (int i = 0; i < textures.Length; i++)
             {
                 textures[i] = Engine.LoadTexture("player_" + i + ".png");
             }
         }
+
 
         private float decay(float value, float constant, float dt)
         {
@@ -127,49 +135,40 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
-            braking = false;
-            if (Engine.GetKeyHeld(Key.Up))
+            //target is current waypoint
+            Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
+            if(Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                if (velocity.X < 0)
-                {
-                    throttle = 0;
-                    braking = true;
-                }
-                else
-                {
-                    throttle = Math.Min(1, throttle + tInputScale * dt);
-                }
-            }
-            else if (Engine.GetKeyHeld(Key.Down))
-            {
-                if (velocity.X > 0)
-                {
-                    throttle = 0;
-                    braking = true;
-                }
-                else
-                {
-                    throttle = Math.Max(-0.5f, throttle - tInputScale * dt);
-                }
-            }
-            else
-            {
-                throttle = decay(throttle, throttleDecay, dt);
+                previousWaypoint = currentWaypoint;
+                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
 
-            if (Engine.GetKeyHeld(Key.Left))
+            braking = false;
+            throttle = Math.Min(1, throttle + tInputScale * dt);
+
+            float angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
+                                                    allWaypoints[currentWaypoint].X - position.X);
+
+            if (Math.Abs(angle - angleToWaypoint) > .5f)
             {
-                steer = Math.Max(-1, steer - sInputScale * dt);
-            }
-            else if (Engine.GetKeyHeld(Key.Right))
-            {
-                steer = Math.Min(1, steer + sInputScale * dt);
+                if(angleToWaypoint > 0)
+                {
+                    //turn left
+                    steer = Math.Max(-1, steer - sInputScale * dt);
+                }
+                else if (angleToWaypoint < 0)
+                {
+                    //turn right
+                    steer = Math.Min(1, steer + sInputScale * dt);
+                }
             }
             else
             {
                 steer = decay(steer, steerDecay, dt);
             }
+
         }
+
 
         public void update(float dt, Tuple<float, float, float> terrainConst)
         {
