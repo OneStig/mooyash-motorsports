@@ -232,7 +232,7 @@ namespace Mooyash.Services
 
         public static void draw()
         {
-            camera.followKart(PhysicsEngine.player);
+            camera.followKart(PhysicsEngine.ai1);
             drawPerTrack(PhysicsEngine.track);
             drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
             drawUI();
