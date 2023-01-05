@@ -4,18 +4,19 @@ namespace Mooyash.Modules
 {
     public class Banana : GameObject // Equivalent of mario kart mystery box
     {
-        bool exists;
-        float radius;
+        public float radius;
 
         public Banana(Vector2 position) : base()
         {
             this.position = position;
 
-            exists = true;
-            radius = 0.5f;
+            textures = new Texture[1] { Engine.LoadTexture("banana_peel.png") };
+            sizes = new Vector2[1] { new Vector2(500, 500) };
+
+            radius = 50f;
         }
 
-        public void collide(Kart k)
+        public override void collide(Kart k)
         {
             exists = false;
             k.stunTime = 0;

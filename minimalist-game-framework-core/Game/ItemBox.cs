@@ -4,26 +4,33 @@ namespace Mooyash.Modules
 {
 	public class ItemBox : GameObject // Equivalent of mario kart mystery box
 	{
-		public static string[] validItems = new string[] { "banana", "projectile" };
+		public static string[] validItems = new string[] { "banana", "projectile", "speed" };
 
-		bool exists;
-		float radius;
+		public float radius;
 
 		public ItemBox(Vector2 position) : base()
 		{
 			this.position = position;
+			textures = new Texture[1];
+			textures[0] = Engine.LoadTexture("mystery_box.png");
 
-			exists = true;
-			radius = 0.5f;
+			sizes = new Vector2[1] { new Vector2(500, 500) };
+
+			radius = 50f;
 		}
 
-		public void collide(Kart k)
+		public override void collide(Kart k)
 		{
-			Random r = new Random();
-			
-			exists = false;
-			string collect = validItems[r.Next(0, validItems.Length - 1)];
-			k.itemHeld = collect;
+			if (exists && (k.itemHeld == null || k.itemHeld == ""))
+			{
+                Random r = new Random();
+
+                exists = false;
+                string collect = validItems[r.Next(0, validItems.Length)];
+                k.itemHeld = collect;
+
+				Console.WriteLine(collect);
+            }
 		}
 	}
 }

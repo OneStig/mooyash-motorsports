@@ -7,6 +7,8 @@ namespace Mooyash.Services
     public static class PhysicsEngine
     {
         public static Dictionary<string, GameObject> gameObjects;
+        public static Dictionary<string, Kart> allkarts;
+
         public static Kart player;
         public static int lapCount;
         public static int lapDisplay;
@@ -24,12 +26,23 @@ namespace Mooyash.Services
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
             player = new Kart(2400 * (Game.GameSettings[2]+1));
             gameObjects = new Dictionary<string, GameObject>();
+            allkarts = new Dictionary<string, Kart>();
+
             gameObjects.Add("player", player);
+            allkarts.Add("player", player);
+
             player.position = track.startPos;
             player.angle = track.startAngle;
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
+
+            gameObjects.Add("box", new ItemBox(player.position + new Vector2(0, 700)));
+            gameObjects.Add("box1", new ItemBox(player.position + new Vector2(0, 400)));
+            gameObjects.Add("box2", new ItemBox(player.position + new Vector2(0, 600)));
+            gameObjects.Add("box3", new ItemBox(player.position + new Vector2(0, 800)));
+            gameObjects.Add("box4", new ItemBox(player.position + new Vector2(0, 900)));
+            gameObjects.Add("banana", new Banana(player.position + new Vector2(100, 300)));
         }
 
         public static void update(float dt)
@@ -103,6 +116,38 @@ namespace Mooyash.Services
                 player.velocity.X = -player.velocity.X * 0.75f;
                 player.throttle /= 2;
             }
+
+            // OPTIMIZE: this is very brute force right now
+            // kart to gameObject collision detection
+
+            foreach (KeyValuePair<string, Kart> curKart in allkarts)
+            {
+                foreach (KeyValuePair<string, GameObject> obj in gameObjects)
+                {
+                    if (obj.Value.exists)
+                    {
+                        if (obj.Value.GetType() == typeof(ItemBox))
+                        {
+                            ItemBox ib = (ItemBox)obj.Value;
+
+                            if (GetDistance(curKart.Value.position, ib.position) < ib.radius)
+                            {
+                                ib.collide(curKart.Value);
+                            }
+                        }
+
+                        if (obj.Value.GetType() == typeof(Banana))
+                        {
+                            Banana b = (Banana)obj.Value;
+
+                            if (GetDistance(curKart.Value.position, b.position) < b.radius)
+                            {
+                                b.collide(curKart.Value);
+                            }
+                        }
+                    }
+                }
+            }
             
             //This checks for crossing on every frame, probably needs to be optimized later
             //Checks if player crosses the finish line
@@ -131,6 +176,12 @@ namespace Mooyash.Services
                 }
             }
             return -1;
+        }
+
+        // distance formula
+        public static float GetDistance(Vector2 p1, Vector2 p2)
+        {
+            return (float)Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
         }
 
         //OPTIMIZATION: Should be faster to directly calculate instead of using Vector2 methods

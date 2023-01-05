@@ -212,7 +212,10 @@ namespace Mooyash.Services
             objs.Sort(compareDepths);
             foreach(GameObject t in objs)
             {
-                drawObject(t);
+                if (t.exists)
+                {
+                    drawObject(t);
+                }
             }
         }
 

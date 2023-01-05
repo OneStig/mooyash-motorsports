@@ -15,13 +15,18 @@ namespace Mooyash.Modules
         //parallel array with textures to indicate how big sprites should be drawn
         public Vector2[] sizes;
 
+        public bool exists;
+
         public GameObject()
         {
             position = new Vector2();
             angle = 0;
             curTex = 0;
+            exists = true;
             // need to add hitbox and textures later
         }
+
+        public virtual void collide(Kart k) { }
     }
 
     public class Kart : GameObject
@@ -37,11 +42,17 @@ namespace Mooyash.Modules
 
         public string itemHeld;
         public float stunTime = float.MaxValue / 2; // time passed since last stun
+        public float boostTime = float.MaxValue / 2; // time passed since last speed boost
 
         private float stunDrag = 1f;
 
-        // stun constant determines how long a stun lasts
-        private readonly float stunConst = 3f; // In seconds
+        // Constants to determine effect intensity
+        private readonly float boostMultiplier = 2f;
+        private readonly float stunMultiplier = 6f;
+
+        // Constants to determine how long certain effects will last (in seconds)
+        private readonly float stunConst = 3f;
+        private readonly float speedBoostConst = 3f;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -63,8 +74,6 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        
-
         public Kart(float throttleConst) : base()
         {
             velocity = new Vector2(0, 0);
@@ -81,6 +90,16 @@ namespace Mooyash.Modules
                 textures[i] = Engine.LoadTexture("player_" + i + ".png");
                 sizes[i] = new Vector2(500, 500);
             }
+        }
+
+        private void useItem()
+        {
+            if (itemHeld == "speed")
+            {
+                boostTime = 0;
+            }
+
+            itemHeld = "";
         }
 
         private float decay(float value, float constant, float dt)
@@ -140,23 +159,40 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
             }
+
+            if (Engine.GetKeyDown(Key.Space))
+            {
+                if (itemHeld != null && itemHeld != "")
+                {
+                    useItem();
+                }
+            }
         }
 
         public void update(float dt, Tuple<float, float, float> terrainConst)
         {
-            // update stun timer
+            // update various timers
             stunTime += dt;
+            boostTime += dt;
 
             // when stunned
 
             if (stunTime < stunConst)
             {
-                stunDrag = 6f;
+                stunDrag = stunMultiplier;
                 throttle = 0;
+                steer = 0;
             }
             else
             {
                 stunDrag = 1f;
+            }
+
+            // when boosting
+
+            if (boostTime < speedBoostConst)
+            {
+                throttle *= boostMultiplier;
             }
 
             //acceleration due to drag (quadratic) and friction
@@ -221,6 +257,13 @@ namespace Mooyash.Modules
             }
             angle += angularVelo * dt;
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
+
+            // reset throttle if boosting
+
+            if (boostTime < speedBoostConst)
+            {
+                throttle /= boostMultiplier;
+            }
 
             chooseTexture(angularVelo);
         }
