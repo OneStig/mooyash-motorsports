@@ -128,9 +128,7 @@ namespace Mooyash.Services
 
             for(int i = 0; i < t.splines.Count; i++)
             {
-                Vector2 cur = t.splines[i];
-                cur = project(rotate(cur));
-                Engine.DrawPoint(cur, Color.Orange);
+                drawWaypoint(t.splines[i]);
             }
 
             // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
@@ -162,6 +160,21 @@ namespace Mooyash.Services
                 splice |= (temp.points[i].Y < camera.screen);
             }
             return splice;
+        }
+
+        public static void drawWaypoint(Vector2 pos)
+        {
+            Vector2 newP = rotate(pos);
+
+            if ((camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            {
+                return;
+            }
+
+            newP = project(newP);
+
+            Engine.DrawPoint(newP, Color.Orange);
+
         }
 
         public static void drawObject(GameObject t)
