@@ -34,8 +34,6 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
-        public double closestDistance;
-
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
