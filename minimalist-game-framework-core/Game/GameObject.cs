@@ -75,7 +75,7 @@ namespace Mooyash.Modules
             currentWaypoint = 0;
             previousWaypoint = 0;
 
-            minDistanceToReachWaypoint = rand.Next(500,550);
+            minDistanceToReachWaypoint = rand.Next(475,525);
 
             for (int i = 0; i < textures.Length; i++)
             {
