@@ -151,6 +151,7 @@ namespace Mooyash.Modules
                 new Vector2(2270, 6530),
                 new Vector2(2640, 7030),
                 new Vector2(5260, 6700),
+                new Vector2(7260, 7100),
                 new Vector2(8600, 7000),
                 new Vector2(9020, 6650),
                 new Vector2(9000, 6120),

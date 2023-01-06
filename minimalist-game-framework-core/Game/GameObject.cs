@@ -38,7 +38,14 @@ namespace Mooyash.Modules
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
+
+        /*
+         * two separate variables, controls the radius at which a random point is found around a waypoint
+         * and the radius at which the kart will decide it reaches the waypoint.
+         * */
         public float minDistanceToReachWaypoint;
+        public float randomDrivingRadius;
+
         public float angleToWaypoint;
         public Random rand = new Random();
 
@@ -75,7 +82,9 @@ namespace Mooyash.Modules
             currentWaypoint = 0;
             previousWaypoint = 0;
  
-            minDistanceToReachWaypoint = rand.Next(250, 300);
+            minDistanceToReachWaypoint = rand.Next(300, 400);
+
+            randomDrivingRadius = rand.Next(100, 200);
 
             Random rnd = new Random();
             double randAngle;
@@ -87,7 +96,7 @@ namespace Mooyash.Modules
             {
                 oldPoint = allWaypoints[i];
                 randAngle = (rnd.NextDouble() * 2) * Math.PI;
-                newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * minDistanceToReachWaypoint), (float)(oldPoint.Y + Math.Sin(randAngle) * minDistanceToReachWaypoint));
+                newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * randomDrivingRadius), (float)(oldPoint.Y + Math.Sin(randAngle) * randomDrivingRadius));
                 allWaypoints[i] = newPoint;
             }
 
@@ -170,7 +179,7 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(250, 300);
+                minDistanceToReachWaypoint = rand.Next(300, 400);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
