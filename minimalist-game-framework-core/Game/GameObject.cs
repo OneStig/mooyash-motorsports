@@ -13,6 +13,7 @@ namespace Mooyash.Modules
         public Texture texture; //sprite sheet for this gameObject
         public Vector2 size; // width and height of the object in game
         public Vector2 resolution; // width and height of each costume
+        public int numTex; // number of textures
 
         public GameObject()
         {
@@ -20,6 +21,41 @@ namespace Mooyash.Modules
             angle = 0;
             curTex = 0;
             // need to add hitbox and textures later
+        }
+
+        public void chooseTextureCam(Camera c)
+        {
+            float cameraAng = (float)Math.Atan2(c.position.Y - position.Y, c.position.X - position.X);
+            float angDiff = cameraAng - angle;
+
+            angDiff %= 2f * (float)Math.PI;
+
+            if (angDiff < 0)
+            {
+                angDiff += 2f * (float)Math.PI;
+            }
+
+            bool parity = angDiff <= (float)Math.PI;
+            float intervalAngle = (float)Math.PI / (numTex - 1);
+
+            if (parity)
+            {
+                angDiff = (float)Math.PI - angDiff + intervalAngle / 2f;
+            }
+            else
+            {
+                angDiff -= (float)Math.PI;
+                angDiff += intervalAngle / 2f;
+            }
+
+            curTex = (int)Math.Floor(angDiff / intervalAngle);
+
+            if (!parity)
+            {
+                curTex *= -1;
+            }
+
+            // Console.WriteLine(angDiff * 180 / Math.PI);
         }
     }
 
@@ -33,6 +69,7 @@ namespace Mooyash.Modules
         public float radius;
         public bool stunned;
         public bool braking;
+        public bool isAI;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -54,15 +91,19 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        public Kart(string kartName, float throttleConst) : base()
+        public Kart(string kartName, float throttleConst, bool isAI) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
+            numTex = 12;
             size = new Vector2(500, 500);
             resolution = new Vector2(32, 32);
 
             velocity = new Vector2(0, 0);
             position = new Vector2(4500, 0);
             radius = 24f;
+            
+
+            this.isAI = isAI;
             this.throttleConst = throttleConst;
         }
 
@@ -188,10 +229,17 @@ namespace Mooyash.Modules
             angle += angularVelo * dt;
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
-            chooseTexture(angularVelo);
+            if (!isAI)
+            {
+                choosePlayerTexture(angularVelo);
+            }
+            else
+            {
+                chooseTextureCam(RenderEngine.camera);
+            }
         }
 
-        public void chooseTexture(float angularVelo)
+        public void choosePlayerTexture(float angularVelo)
         {
             if (angularVelo < -0.8)
             {
