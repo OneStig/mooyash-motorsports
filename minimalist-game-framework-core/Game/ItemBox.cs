@@ -28,8 +28,6 @@ namespace Mooyash.Modules
                 exists = false;
                 string collect = validItems[r.Next(0, validItems.Length)];
                 k.itemHeld = collect;
-
-				Console.WriteLine(collect);
             }
 		}
 	}

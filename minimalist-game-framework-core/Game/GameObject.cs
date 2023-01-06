@@ -83,7 +83,7 @@ namespace Mooyash.Modules
             radius = 24f;
             this.throttleConst = throttleConst;
 
-            itemHeld = null;
+            itemHeld = "";
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -96,7 +96,18 @@ namespace Mooyash.Modules
         {
             if (itemHeld == "speed")
             {
-                boostTime = 0;
+                if (boostTime < speedBoostConst)
+                {
+                    boostTime -= speedBoostConst;
+                }
+                else
+                {
+                    boostTime = 0;
+                }
+            }
+            else if (itemHeld == "banana")
+            {
+
             }
 
             itemHeld = "";

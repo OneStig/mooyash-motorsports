@@ -57,6 +57,8 @@ namespace Mooyash.Services
         public static Camera camera;
         public static float renderDistance = 3000f;
 
+        private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
+
         public static Vector2 rotate(Vector2 input)
         {
             Vector2 temp;
@@ -205,6 +207,17 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+
+            int ind = 0;
+            // "banana", "projectile", "speed"
+            // 26 x 18 pixels
+
+            if (PhysicsEngine.player.itemHeld == "banana")
+            {
+                ind = 1;
+            }
+
+            Engine.DrawTexture(itemRoulette, new Vector2(210, 5), source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)));
         }
 
         public static void drawObjects(List<GameObject> objs)
