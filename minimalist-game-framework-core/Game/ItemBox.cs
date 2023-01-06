@@ -21,13 +21,11 @@ namespace Mooyash.Modules
 
 		public override void collide(Kart k)
 		{
-			if (exists && (k.itemHeld == null || k.itemHeld == ""))
+			if (exists && k.itemHeld == 0)
 			{
-                Random r = new Random();
-
                 exists = false;
-                string collect = validItems[r.Next(0, validItems.Length)];
-                k.itemHeld = collect;
+				k.rollItemTime = 0;
+				k.itemHeld = -1;
             }
 		}
 	}

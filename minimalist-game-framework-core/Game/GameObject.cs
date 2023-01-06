@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Mooyash.Services;
 
 namespace Mooyash.Modules
@@ -40,9 +41,10 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
-        public string itemHeld;
+        public int itemHeld;
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
+        public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
 
         private float stunDrag = 1f;
 
@@ -53,6 +55,7 @@ namespace Mooyash.Modules
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 3f;
         private readonly float speedBoostConst = 3f;
+        private readonly float rollConst = 2f;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -83,7 +86,7 @@ namespace Mooyash.Modules
             radius = 24f;
             this.throttleConst = throttleConst;
 
-            itemHeld = "";
+            itemHeld = 0;
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -94,7 +97,21 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
-            if (itemHeld == "speed")
+            // "nothing", "banana", "projectile", "speed"
+            if (itemHeld == 1) // banana
+            {
+                float sin = (float)Math.Sin(angle);
+                float cos = (float)Math.Cos(angle);
+
+                Vector2 spawnPosition = position - new Vector2(cos, sin) * 60;
+
+                PhysicsEngine.gameObjects.Add("banana" + PhysicsEngine.gameObjects.Count, new Banana(spawnPosition));
+            }
+            else if (itemHeld == 2) // projectile
+            {
+                
+            }
+            else if (itemHeld == 3) // speed
             {
                 if (boostTime < speedBoostConst)
                 {
@@ -105,12 +122,8 @@ namespace Mooyash.Modules
                     boostTime = 0;
                 }
             }
-            else if (itemHeld == "banana")
-            {
 
-            }
-
-            itemHeld = "";
+            itemHeld = 0;
         }
 
         private float decay(float value, float constant, float dt)
@@ -173,7 +186,7 @@ namespace Mooyash.Modules
 
             if (Engine.GetKeyDown(Key.Space))
             {
-                if (itemHeld != null && itemHeld != "")
+                if (itemHeld > 0)
                 {
                     useItem();
                 }
@@ -185,6 +198,15 @@ namespace Mooyash.Modules
             // update various timers
             stunTime += dt;
             boostTime += dt;
+            rollItemTime += dt;
+
+            // when itemRolled
+
+            if (rollItemTime >= rollConst && itemHeld == -1)
+            {
+                Random r = new Random();
+                itemHeld = r.Next(0, ItemBox.validItems.Length) + 1;
+            }
 
             // when stunned
 
