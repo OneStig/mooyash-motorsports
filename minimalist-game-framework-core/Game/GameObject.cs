@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Services;
 
 namespace Mooyash.Modules
@@ -69,11 +70,28 @@ namespace Mooyash.Modules
             position = new Vector2(4500, 0);
             radius = 24f;
             this.throttleConst = throttleConst;
-            this.allWaypoints = Track.tracks[0].splines;
+            this.allWaypoints = Track.tracks[0].splines.Select(point => new Vector2(point.X, point.Y)).ToList();
+            // this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+ 
+            minDistanceToReachWaypoint = rand.Next(250, 300);
 
-            minDistanceToReachWaypoint = rand.Next(500,550);
+            Random rnd = new Random();
+            double randAngle;
+            Vector2 newPoint = allWaypoints[currentWaypoint];
+            Vector2 oldPoint;
+
+
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                oldPoint = allWaypoints[i];
+                randAngle = (rnd.NextDouble() * 2) * Math.PI;
+                newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * minDistanceToReachWaypoint), (float)(oldPoint.Y + Math.Sin(randAngle) * minDistanceToReachWaypoint));
+                allWaypoints[i] = newPoint;
+            }
+
+            
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -147,23 +165,20 @@ namespace Mooyash.Modules
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
+            
+
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
-            if(Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
+            if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(400, 550);
+                minDistanceToReachWaypoint = rand.Next(250, 300);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
 
-            Random rnd = new Random();
-            double randAngle = (rnd.NextDouble() * 2) * Math.PI;
-            Vector2 oldPoint = allWaypoints[currentWaypoint];
-            Vector2 newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * radius), (float)(oldPoint.Y + Math.Sin(randAngle) * radius));
-
             braking = false;
-            throttle = Math.Min(1, throttle + tInputScale * dt);
+            throttle = Math.Min(1, throttle + tInputScale * dt);    
 
-            angleToWaypoint = (float)Math.Atan2(newPoint.Y - position.Y,
+            angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
                                                     allWaypoints[currentWaypoint].X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
 
