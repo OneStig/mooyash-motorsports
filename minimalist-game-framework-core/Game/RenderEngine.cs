@@ -245,7 +245,7 @@ namespace Mooyash.Services
 
         public static void draw()
         {
-            camera.followKart(PhysicsEngine.ai2);
+            camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
             drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
             drawUI();
