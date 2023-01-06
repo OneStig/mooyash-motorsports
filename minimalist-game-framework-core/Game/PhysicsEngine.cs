@@ -17,6 +17,10 @@ namespace Mooyash.Services
 
         public static Kart ai1;
         public static Kart ai2;
+        public static Kart ai3;
+        public static Kart ai4;
+        public static Kart ai5;
+        public static Kart ai6;
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -43,6 +47,26 @@ namespace Mooyash.Services
             gameObjects.Add("ai2", ai2);
             ai2.position = track.startPos - new Vector2(100,100);
             ai2.angle = track.startAngle;
+
+            ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            gameObjects.Add("ai3", ai3);
+            ai3.position = track.startPos + new Vector2(100, 80);
+            ai3.angle = track.startAngle;
+
+            ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            gameObjects.Add("ai4", ai4);
+            ai4.position = track.startPos - new Vector2(100, 110);
+            ai4.angle = track.startAngle;
+
+            ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            gameObjects.Add("ai5", ai5);
+            ai5.position = track.startPos - new Vector2(100, 120);
+            ai5.angle = track.startAngle;
+
+            ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            gameObjects.Add("ai6", ai6);
+            ai6.position = track.startPos - new Vector2(100, 130);
+            ai6.angle = track.startAngle;
         }
 
         public static void update(float dt)
@@ -76,12 +100,22 @@ namespace Mooyash.Services
 
 
             ai1.updateInputAI(dt);
-            int idAI1 = GetPhysicsID(ai1.position);
-            ai1.update(dt, terrainConsts[idAI1]);
+            ai1.update(dt, terrainConsts[GetPhysicsID(ai1.position)]);
 
             ai2.updateInputAI(dt);
-            int idAI2 = GetPhysicsID(ai2.position);
-            ai2.update(dt, terrainConsts[idAI2]);
+            ai2.update(dt, terrainConsts[GetPhysicsID(ai2.position)]);
+
+            ai3.updateInputAI(dt);
+            ai3.update(dt, terrainConsts[GetPhysicsID(ai3.position)]);
+
+            ai4.updateInputAI(dt);
+            ai4.update(dt, terrainConsts[GetPhysicsID(ai4.position)]);
+
+            ai5.updateInputAI(dt);
+            ai5.update(dt, terrainConsts[GetPhysicsID(ai5.position)]);
+
+            ai6.updateInputAI(dt);
+            ai6.update(dt, terrainConsts[GetPhysicsID(ai6.position)]);
 
 
 
