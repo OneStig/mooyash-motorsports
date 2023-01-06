@@ -22,7 +22,7 @@ namespace Mooyash.Services
         public static void init()
         {
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1));
+            player = new Kart("mario", 2400 * (Game.GameSettings[2]+1));
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
             player.position = track.startPos;
@@ -53,7 +53,7 @@ namespace Mooyash.Services
             //this shouldn't happen, maybe we should do something else?
             if(id == -1)
             {
-                player = new Kart(1200 + Game.GameSettings[2]*600);
+                player = new Kart("mario", 1200 + Game.GameSettings[2]*600);
                 player.position = track.startPos;
                 player.angle = track.startAngle;
                 id = GetPhysicsID(player.position);

@@ -8,10 +8,11 @@ namespace Mooyash.Modules
         public Vector2 position;
         public float angle; //0 = positive x, pi/2 = positive y
         public Polygon hitbox;
-        public int curTex;
-        public Texture[] textures;
-        //parallel array with textures to indicate how big sprites should be drawn
-        public Vector2[] sizes;
+
+        public int curTex; // currentTexture
+        public Texture texture; //sprite sheet for this gameObject
+        public Vector2 size; // width and height of the object in game
+        public Vector2 resolution; // width and height of each costume
 
         public GameObject()
         {
@@ -53,20 +54,16 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        public Kart(float throttleConst) : base()
+        public Kart(string kartName, float throttleConst) : base()
         {
+            texture = Engine.LoadTexture(kartName + "_sheet.png");
+            size = new Vector2(500, 500);
+            resolution = new Vector2(32, 32);
+
             velocity = new Vector2(0, 0);
-            textures = new Texture[5];
-            sizes = new Vector2[5];
             position = new Vector2(4500, 0);
             radius = 24f;
             this.throttleConst = throttleConst;
-
-            for (int i = 0; i < textures.Length; i++)
-            {
-                textures[i] = Engine.LoadTexture("player_" + i + ".png");
-                sizes[i] = new Vector2(500, 500);
-            }
         }
 
         private float decay(float value, float constant, float dt)
@@ -198,19 +195,19 @@ namespace Mooyash.Modules
         {
             if (angularVelo < -0.8)
             {
-                curTex = 3;
+                curTex = -2;
             }
             else if (angularVelo > 0.8)
             {
-                curTex = 4;
+                curTex = 2;
             }
             else if (angularVelo < -0.3)
             {
-                curTex = 1;
+                curTex = -1;
             }
             else if (angularVelo > 0.3)
             {
-                curTex = 2;
+                curTex = 1;
             }
             else
             {
