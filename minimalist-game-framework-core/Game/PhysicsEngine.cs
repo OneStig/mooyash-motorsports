@@ -15,12 +15,16 @@ namespace Mooyash.Services
         public static float time;
         public static float finalTime;
 
+
+        public static Kart[] aiKarts = new Kart[0];
         public static Kart ai1;
         public static Kart ai2;
+        /*
         public static Kart ai3;
         public static Kart ai4;
         public static Kart ai5;
         public static Kart ai6;
+        */
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -37,36 +41,40 @@ namespace Mooyash.Services
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
+            if (Game.GameSettings[1] == 1)
+            {
+                ai1 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                gameObjects.Add("ai1", ai1);
+                ai1.position = track.startPos;
+                ai1.angle = track.startAngle;
 
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai1", ai1);
-            ai1.position = track.startPos;
-            ai1.angle = track.startAngle;
+                ai2 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                gameObjects.Add("ai2", ai2);
+                ai2.position = track.startPos - new Vector2(100, 100);
+                ai2.angle = track.startAngle;
 
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai2", ai2);
-            ai2.position = track.startPos - new Vector2(100,100);
-            ai2.angle = track.startAngle;
+                //ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai3", ai3);
+                //ai3.position = track.startPos + new Vector2(100, 80);
+                //ai3.angle = track.startAngle;
 
-            ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai3", ai3);
-            ai3.position = track.startPos + new Vector2(100, 80);
-            ai3.angle = track.startAngle;
+                //ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai4", ai4);
+                //ai4.position = track.startPos - new Vector2(100, 110);
+                //ai4.angle = track.startAngle;
 
-            ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai4", ai4);
-            ai4.position = track.startPos - new Vector2(100, 110);
-            ai4.angle = track.startAngle;
+                //ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai5", ai5);
+                //ai5.position = track.startPos - new Vector2(100, 120);
+                //ai5.angle = track.startAngle;
 
-            ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai5", ai5);
-            ai5.position = track.startPos - new Vector2(100, 120);
-            ai5.angle = track.startAngle;
+                //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai6", ai6);
+                //ai6.position = track.startPos - new Vector2(100, 130);
+                //ai6.angle = track.startAngle;
 
-            ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            gameObjects.Add("ai6", ai6);
-            ai6.position = track.startPos - new Vector2(100, 130);
-            ai6.angle = track.startAngle;
+                aiKarts = new Kart[] { ai1, ai2 };
+            }
         }
 
         public static void update(float dt)
@@ -98,25 +106,11 @@ namespace Mooyash.Services
 
             player.update(dt, terrainConsts[id]);
 
-
-            ai1.updateInputAI(dt);
-            ai1.update(dt, terrainConsts[GetPhysicsID(ai1.position)]);
-
-            ai2.updateInputAI(dt);
-            ai2.update(dt, terrainConsts[GetPhysicsID(ai2.position)]);
-
-            ai3.updateInputAI(dt);
-            ai3.update(dt, terrainConsts[GetPhysicsID(ai3.position)]);
-
-            ai4.updateInputAI(dt);
-            ai4.update(dt, terrainConsts[GetPhysicsID(ai4.position)]);
-
-            ai5.updateInputAI(dt);
-            ai5.update(dt, terrainConsts[GetPhysicsID(ai5.position)]);
-
-            ai6.updateInputAI(dt);
-            ai6.update(dt, terrainConsts[GetPhysicsID(ai6.position)]);
-
+            for(int i = 0; i < aiKarts.Length; i++)
+            {
+                aiKarts[i].updateInputAI(dt);
+                aiKarts[i].update(dt, terrainConsts[GetPhysicsID(aiKarts[i].position)]);
+            }
 
 
             float minCollision = 1;

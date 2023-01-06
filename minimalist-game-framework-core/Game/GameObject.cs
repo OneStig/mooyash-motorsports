@@ -47,10 +47,8 @@ namespace Mooyash.Modules
         public float minDistanceToReachWaypoint;
         public float randomDrivingRadius;
 
-        public Vector2 oldPoint;
-        public double randAngle;
-        public Random rnd = new Random();
-        public Vector2 newPoint = new Vector2(0, 0);
+        public float randAngle;
+        public Vector2 newRandomWaypoint;
 
         public float angleToWaypoint;
         public Random rand = new Random();
@@ -87,12 +85,9 @@ namespace Mooyash.Modules
             // this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
- 
-            minDistanceToReachWaypoint = rand.Next(300, 400);
 
-            randomDrivingRadius = rand.Next(100, 200);
-
-
+            newRandomWaypoint = allWaypoints[0];
+            minDistanceToReachWaypoint = rand.Next(450, 500);
             for (int i = 0; i < textures.Length; i++)
             {
                 textures[i] = Engine.LoadTexture("player_" + i + ".png");
@@ -172,16 +167,17 @@ namespace Mooyash.Modules
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
-                oldPoint = allWaypoints[currentWaypoint];
-                randAngle = (rnd.NextDouble() * 2) * Math.PI;
-                newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * randomDrivingRadius), (float)(oldPoint.Y + Math.Sin(randAngle) * randomDrivingRadius));
+                randomDrivingRadius = rand.Next(0, 30);
+                randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                                (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
 
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);    
 
-            angleToWaypoint = (float)Math.Atan2(newPoint.Y - position.Y,
-                                                    newPoint.X - position.X);
+            angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
+                                                    newRandomWaypoint.X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
 
 
