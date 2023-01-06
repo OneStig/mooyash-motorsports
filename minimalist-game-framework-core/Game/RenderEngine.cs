@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mooyash.Modules;
@@ -245,7 +245,7 @@ namespace Mooyash.Services
 
         public static void draw()
         {
-            camera.followKart(PhysicsEngine.ai1);
+            camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
             drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
             drawUI();
