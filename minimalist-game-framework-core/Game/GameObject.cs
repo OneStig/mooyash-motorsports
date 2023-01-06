@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Services;
 
 namespace Mooyash.Modules
@@ -34,12 +35,17 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
-        public double closestDistance;
-
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
+
+        /*
+         * two separate variables, controls the radius at which a random point is found around a waypoint
+         * and the radius at which the kart will decide it reaches the waypoint.
+         * */
         public float minDistanceToReachWaypoint;
+        public float randomDrivingRadius;
+
         public float angleToWaypoint;
         public Random rand = new Random();
 
@@ -71,11 +77,30 @@ namespace Mooyash.Modules
             position = new Vector2(4500, 0);
             radius = 24f;
             this.throttleConst = throttleConst;
-            this.allWaypoints = Track.tracks[0].splines;
+            this.allWaypoints = Track.tracks[0].splines.Select(point => new Vector2(point.X, point.Y)).ToList();
+            // this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+ 
+            minDistanceToReachWaypoint = rand.Next(300, 400);
 
-            minDistanceToReachWaypoint = rand.Next(500,550);
+            randomDrivingRadius = rand.Next(100, 200);
+
+            Random rnd = new Random();
+            double randAngle;
+            Vector2 newPoint = allWaypoints[currentWaypoint];
+            Vector2 oldPoint;
+
+
+            for (int i = 0; i < allWaypoints.Count; i++)
+            {
+                oldPoint = allWaypoints[i];
+                randAngle = (rnd.NextDouble() * 2) * Math.PI;
+                newPoint = new Vector2((float)(oldPoint.X + Math.Cos(randAngle) * randomDrivingRadius), (float)(oldPoint.Y + Math.Sin(randAngle) * randomDrivingRadius));
+                allWaypoints[i] = newPoint;
+            }
+
+            
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -149,16 +174,18 @@ namespace Mooyash.Modules
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
+            
+
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
-            if(Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
+            if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(400, 550);
+                minDistanceToReachWaypoint = rand.Next(300, 400);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
 
             braking = false;
-            throttle = Math.Min(1, throttle + tInputScale * dt);
+            throttle = Math.Min(1, throttle + tInputScale * dt);    
 
             angleToWaypoint = (float)Math.Atan2(allWaypoints[currentWaypoint].Y - position.Y,
                                                     allWaypoints[currentWaypoint].X - position.X);
@@ -172,33 +199,61 @@ namespace Mooyash.Modules
                 {
                     if (angleToWaypoint - angle < 0)
                     {
-                        //turn left
-                        steer = Math.Max(-1, steer - sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
                     }
                     else if (angleToWaypoint - angle > 0)
                     {
-                        //turn right
-                        steer = Math.Min(1, steer + sInputScale * dt);
+                        if(Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
                     }
                 }
                 else
                 {
-
                     if (angleToWaypoint - angle > 0)
                     {
-                        //turn left
-                        steer = Math.Max(-1, steer - sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
                     }
                     else if (angleToWaypoint - angle < 0)
                     {
-                        //turn right
-                        steer = Math.Min(1, steer + sInputScale * dt);
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
                     }
                 }
             }
             else
             {
                 steer = decay(steer, steerDecay, dt);
+                angle = angleToWaypoint;
             }
         }
 
