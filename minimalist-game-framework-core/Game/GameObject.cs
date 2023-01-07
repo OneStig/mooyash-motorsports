@@ -29,6 +29,7 @@ namespace Mooyash.Modules
             float angDiff = cameraAng - angle;
 
             angDiff %= 2f * (float)Math.PI;
+            angle %= 2f * (float)Math.PI;
 
             if (angDiff < 0)
             {
@@ -54,8 +55,6 @@ namespace Mooyash.Modules
             {
                 curTex *= -1;
             }
-
-            // Console.WriteLine(angDiff * 180 / Math.PI);
         }
     }
 

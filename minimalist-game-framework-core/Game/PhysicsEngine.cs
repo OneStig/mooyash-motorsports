@@ -8,7 +8,6 @@ namespace Mooyash.Services
     {
         public static Dictionary<string, GameObject> gameObjects;
         public static Kart player;
-        public static Kart aiKart;
         public static int lapCount;
         public static int lapDisplay;
         public static Track track;
@@ -24,15 +23,11 @@ namespace Mooyash.Services
         {
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
             player = new Kart("mario", 2400 * (Game.GameSettings[2]+1), false);
-            aiKart = new Kart("mario", 2400, true);
 
             gameObjects = new Dictionary<string, GameObject>();
             gameObjects.Add("player", player);
-            gameObjects.Add("test", aiKart);
             player.position = track.startPos;
-            aiKart.position = track.startPos;
             player.angle = track.startAngle;
-            aiKart.angle = track.startAngle;
 
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
@@ -68,7 +63,6 @@ namespace Mooyash.Services
             }
 
             player.update(dt, terrainConsts[id]);
-            aiKart.update(dt, terrainConsts[id]);
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
