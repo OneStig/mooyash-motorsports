@@ -24,7 +24,8 @@ namespace Mooyash.Services
         public static void init()
         {
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1));
+            player = new Kart("mario", 2400 * (Game.GameSettings[2]+1), false);
+
             gameObjects = new Dictionary<string, GameObject>();
             allkarts = new Dictionary<string, Kart>();
 
@@ -33,6 +34,7 @@ namespace Mooyash.Services
 
             player.position = track.startPos;
             player.angle = track.startAngle;
+
             lapCount = 0;
             lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
@@ -61,19 +63,19 @@ namespace Mooyash.Services
             Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
 
             player.updateInput(dt);
+            
             int id = GetPhysicsID(player.position);
 
             //this shouldn't happen, maybe we should do something else?
             if(id == -1)
             {
-                player = new Kart(1200 + Game.GameSettings[2]*600);
+                player = new Kart("mario", 1200 + Game.GameSettings[2]*600, false);
                 player.position = track.startPos;
                 player.angle = track.startAngle;
                 id = GetPhysicsID(player.position);
             }
 
             player.update(dt, terrainConsts[id]);
-
 
             float minCollision = 1;
             Vector2 finalPos = new Vector2();
