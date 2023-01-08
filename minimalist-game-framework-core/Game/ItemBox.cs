@@ -11,10 +11,9 @@ namespace Mooyash.Modules
 		public ItemBox(Vector2 position) : base()
 		{
 			this.position = position;
-			textures = new Texture[1];
-			textures[0] = Engine.LoadTexture("mystery_box.png");
-
-			sizes = new Vector2[1] { new Vector2(500, 500) };
+			texture = Engine.LoadTexture("mystery_box.png");
+			size = new Vector2(500, 500);
+			resolution = new Vector2(32, 32);
 
 			radius = 50f;
 		}

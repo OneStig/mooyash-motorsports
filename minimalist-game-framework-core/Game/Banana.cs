@@ -10,8 +10,9 @@ namespace Mooyash.Modules
         {
             this.position = position;
 
-            textures = new Texture[1] { Engine.LoadTexture("banana_peel.png") };
-            sizes = new Vector2[1] { new Vector2(500, 500) };
+            texture = Engine.LoadTexture("banana_peel.png");
+            size = new Vector2(500, 500);
+            resolution = new Vector2(32, 32);
 
             radius = 50f;
         }
