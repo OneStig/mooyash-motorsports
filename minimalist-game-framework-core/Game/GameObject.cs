@@ -133,7 +133,7 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
-            // "nothing", "banana", "projectile", "speed"
+            // "nothing", "banana", "green shell", "mushroom"
             if (itemHeld == 1) // banana
             {
                 float sin = (float)Math.Sin(angle);
@@ -143,11 +143,11 @@ namespace Mooyash.Modules
 
                 PhysicsEngine.gameObjects.Add("banana" + PhysicsEngine.gameObjects.Count, new Banana(spawnPosition));
             }
-            else if (itemHeld == 2) // projectile
+            else if (itemHeld == 2) // green shell
             {
                 
             }
-            else if (itemHeld == 3) // speed
+            else if (itemHeld == 3) // mushroom
             {
                 if (boostTime < speedBoostConst)
                 {
