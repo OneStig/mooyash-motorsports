@@ -31,13 +31,13 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             time = 0;
 
-            gameObjects.Add("box", new ItemBox(player.position + new Vector2(0, 700)));
-            gameObjects.Add("box1", new ItemBox(player.position + new Vector2(0, 400)));
-            gameObjects.Add("box2", new ItemBox(player.position + new Vector2(0, 600)));
-            gameObjects.Add("box3", new ItemBox(player.position + new Vector2(0, 800)));
-            gameObjects.Add("box4", new ItemBox(player.position + new Vector2(0, 900)));
-            gameObjects.Add("banana", new Banana(player.position + new Vector2(100, 300)));
-            gameObjects.Add("coin", new Coin(player.position + new Vector2(0, 1000)));
+            gameObjects.Add(new ItemBox(player.position + new Vector2(0, 700)));
+            gameObjects.Add(new ItemBox(player.position + new Vector2(0, 400)));
+            gameObjects.Add(new ItemBox(player.position + new Vector2(0, 600)));
+            gameObjects.Add(new ItemBox(player.position + new Vector2(0, 800)));
+            gameObjects.Add(new ItemBox(player.position + new Vector2(0, 900)));
+            gameObjects.Add(new Banana(player.position + new Vector2(100, 300)));
+            gameObjects.Add(new Coin(player.position + new Vector2(0, 1000)));
         }
 
         public static void update(float dt)

@@ -70,9 +70,6 @@ namespace Mooyash.Modules
         {
             return PhysicsEngine.TestCircles(kart.position, kart.radius, position, radius);
         }
-
-        public void collide(Kart kart)
-        { }
     }
 
     //I think, Kart could inherit from projectile - but it's not critical
@@ -216,16 +213,19 @@ namespace Mooyash.Modules
 
                 Vector2 spawnPosition = position - new Vector2(cos, sin) * 60;
 
-                PhysicsEngine.gameObjects.Add("banana" + PhysicsEngine.gameObjects.Count, new Banana(spawnPosition));
+                PhysicsEngine.gameObjects.Add(new Banana(spawnPosition));
             }
             else if (itemHeld == 2) // green shell
             {
                 float sin = (float)Math.Sin(angle);
                 float cos = (float)Math.Cos(angle);
 
-                Vector2 spawnPosition = position + new Vector2(cos, sin) * 60;
+                Vector2 spawnPosition = position + new Vector2(cos, sin) * 120;
 
-                PhysicsEngine.gameObjects.Add("shell" + PhysicsEngine.gameObjects.Count, new Shell(spawnPosition, angle));
+                Shell sh = new Shell(spawnPosition, angle);
+
+                PhysicsEngine.gameObjects.Add(sh);
+                PhysicsEngine.projectiles.Add(sh);
             }
             else if (itemHeld == 3) // mushroom
             {
@@ -343,6 +343,8 @@ namespace Mooyash.Modules
             {
                 throttle *= boostMultiplier;
             }
+
+
             Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
 
             //acceleration due to drag (quadratic) and friction

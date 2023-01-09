@@ -2,7 +2,7 @@
 
 namespace Mooyash.Modules
 {
-    public class Shell : GameObject
+    public class Shell : Projectile
     {
         public float radius;
         public float angle;
