@@ -11,6 +11,7 @@ namespace Mooyash.Services
 
         public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
         public static List<string> Settings = new List<String>();
+        
 
         public static void loadTextures()
         {

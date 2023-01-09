@@ -45,6 +45,7 @@ namespace Mooyash.Services
             gameObjects.Add("box3", new ItemBox(player.position + new Vector2(0, 800)));
             gameObjects.Add("box4", new ItemBox(player.position + new Vector2(0, 900)));
             gameObjects.Add("banana", new Banana(player.position + new Vector2(100, 300)));
+            gameObjects.Add("coin", new Coin(player.position + new Vector2(0, 1000)));
         }
 
         public static void update(float dt)
@@ -145,6 +146,17 @@ namespace Mooyash.Services
                             if (GetDistance(curKart.Value.position, b.position) < b.radius)
                             {
                                 b.collide(curKart.Value);
+                            }
+                        }
+
+                        if (obj.Value.GetType() == typeof(Coin))
+                        { 
+                            Coin coin = (Coin)obj.Value;
+
+                            if (GetDistance(curKart.Value.position, coin.position) < coin.radius)
+                            {
+                                coin.collide(curKart.Value);
+
                             }
                         }
                     }

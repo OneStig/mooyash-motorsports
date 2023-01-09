@@ -114,6 +114,8 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        // score
+        public int score;
         public Kart(string kartName, float throttleConst, bool isAI) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
@@ -126,6 +128,8 @@ namespace Mooyash.Modules
             radius = 24f;
 
             itemHeld = 0;
+            score = 0;
+            
 
             this.isAI = isAI;
             this.throttleConst = throttleConst;
