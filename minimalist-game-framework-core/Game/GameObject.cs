@@ -9,11 +9,46 @@ namespace Mooyash.Modules
         //technically unnecessary for StaticObjects
         public float angle; //0 = positive x, pi/2 = positive y
         public float radius;
-        public int curTex;
-        public Texture[] textures;
-        //parallel array with textures to indicate how big sprites should be drawn
-        public Vector2[] sizes;
+        public int curTex; // currentTexture
+        public Texture texture; //sprite sheet for this gameObject
+        public Vector2 size; // width and height of the object in game
+        public Vector2 resolution; // width and height of each costume
+        public int numTex; // number of textures
 
+        public void chooseTextureCam(Camera c)
+        {
+            float cameraAng = (float)Math.Atan2(c.position.Y - position.Y, c.position.X - position.X);
+            float angDiff = cameraAng - angle;
+
+            angDiff %= 2f * (float)Math.PI;
+            angle %= 2f * (float)Math.PI;
+
+            if (angDiff < 0)
+            {
+                angDiff += 2f * (float)Math.PI;
+            }
+
+            bool parity = angDiff <= (float)Math.PI;
+            float intervalAngle = (float)Math.PI / (numTex - 1);
+
+            if (parity)
+            {
+                angDiff = (float)Math.PI - angDiff + intervalAngle / 2f;
+            }
+            else
+            {
+                angDiff -= (float)Math.PI;
+                angDiff += intervalAngle / 2f;
+            }
+
+            curTex = (int)Math.Floor(angDiff / intervalAngle);
+
+            if (!parity)
+            {
+                curTex *= -1;
+            }
+        }
+        
         //updates object and returns true if there is a collision
         public bool testCollision(float dt, Kart kart)
         {
@@ -22,10 +57,6 @@ namespace Mooyash.Modules
 
         public void collide(Kart kart)
         { }
-    }
-
-    public class StaticObject : GameObject
-    {
     }
 
     //I think, Kart could inherit from projectile - but it's not critical
@@ -96,6 +127,7 @@ namespace Mooyash.Modules
 
         public bool stunned;
         public bool braking;
+        public bool isAI;
 
         //for lap completion
         public float lapCount;
@@ -121,21 +153,21 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-            
-        public Kart(float throttleConst) : base()
+        public Kart(float throttleConst, bool isAI) : base()
         {
+            texture = Engine.LoadTexture(kartName + "_sheet.png");
+            numTex = 15;
+            size = new Vector2(500, 500);
+            resolution = new Vector2(32, 32);
+            lapCount = 0;
+            lapDisplay = 1;
+
             velocity = new Vector2(0, 0);
-            textures = new Texture[5];
-            sizes = new Vector2[5];
             position = new Vector2(4500, 0);
             radius = 24f;
+            
+            this.isAI = isAI;
             this.throttleConst = throttleConst;
-
-            for (int i = 0; i < textures.Length; i++)
-            {
-                textures[i] = Engine.LoadTexture("player_" + i + ".png");
-                sizes[i] = new Vector2(500, 500);
-            }
         }
 
         private float decay(float value, float constant, float dt)
@@ -260,7 +292,15 @@ namespace Mooyash.Modules
                 angularVelo = velocity.X / turnRad;
             }
             angle += angularVelo * dt;
-            chooseTexture(angularVelo);
+            
+            if (!isAI)
+            {
+                choosePlayerTexture(angularVelo);
+            }
+            else
+            {
+                chooseTextureCam(RenderEngine.camera);
+            }
 
             base.update(dt);
 
@@ -286,23 +326,23 @@ namespace Mooyash.Modules
             throttle /= 2;
         }
 
-        public void chooseTexture(float angularVelo)
+        public void choosePlayerTexture(float angularVelo)
         {
             if (angularVelo < -0.8)
             {
-                curTex = 3;
+                curTex = -2;
             }
             else if (angularVelo > 0.8)
             {
-                curTex = 4;
+                curTex = 2;
             }
             else if (angularVelo < -0.3)
             {
-                curTex = 1;
+                curTex = -1;
             }
             else if (angularVelo > 0.3)
             {
-                curTex = 2;
+                curTex = 1;
             }
             else
             {

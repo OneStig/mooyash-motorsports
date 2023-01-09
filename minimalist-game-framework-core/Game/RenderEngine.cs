@@ -163,11 +163,16 @@ namespace Mooyash.Services
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*t.sizes[t.curTex];
+            Vector2 newSize = (camera.screen/newP.Y)*t.size;
+            TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
+
             newP = project(newP);
-            Engine.DrawTexture(t.textures[t.curTex],
+
+            Engine.DrawTexture(t.texture,
                 new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
-                size: newSize, scaleMode: TextureScaleMode.Nearest);
+                size: newSize, scaleMode: TextureScaleMode.Nearest,
+                source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution),
+                mirror: m);
         }
 
         /*

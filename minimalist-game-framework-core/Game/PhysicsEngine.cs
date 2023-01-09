@@ -46,6 +46,7 @@ namespace Mooyash.Services
             }
 
             player.updateInput(dt);
+
             foreach (Kart kart in karts)
             {
                 kart.update(dt);
