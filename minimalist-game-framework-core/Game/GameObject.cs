@@ -427,6 +427,49 @@ namespace Mooyash.Modules
                 chooseTextureCam(RenderEngine.camera);
             }
 
+            // this code is copy pasted probably bad but eh
+
+            float minCollision = 1;
+            Vector2 finalPos = new Vector2();
+            Vector2 cur;
+            Vector2 next;
+            CirclePath c = new CirclePath(prevPosition, position, radius);
+
+            //Handles collisions between player and walls of polygon
+            //Should implement bounding box idea
+            foreach (Polygon p in PhysicsEngine.track.collidable)
+            {
+                for (int i = 0; i < p.vertices; i++)
+                {
+                    //if p has the same point twice in a row, this fails
+                    cur = p.points[i];
+                    next = p.points[(i + 1) % p.vertices];
+                    if (cur.Equals(next))
+                    {
+                        throw new Exception("Polygon cannot have same point twice in a row");
+                    }
+                    if (PhysicsEngine.TestCircleLine(c, cur, next))
+                    {
+                        //OPTIMIZE: This is (kinda) recalculating norm
+                        //EXCEPTION: What if cross is 0? - shouldn't happen though
+                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next - cur, c.c1 - cur)) * 90).Normalized();
+                        float norm1 = Vector2.Dot(norm, c.c1 - next) - radius;
+                        float norm2 = Vector2.Dot(norm, c.c2 - next) - radius;
+                        if (norm1 != norm2 && norm1 < minCollision * (norm1 - norm2))
+                        {
+                            minCollision = norm1 / (norm1 - norm2);
+                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
+                        }
+                    }
+                }
+            }
+
+            if (minCollision != 1)
+            {
+                position = finalPos;
+                wallCollide();
+            }
+
             // base.update(dt);
 
             if (PhysicsEngine.TestLineLine(prevPosition, position, PhysicsEngine.track.finish.Item1, PhysicsEngine.track.finish.Item2))
