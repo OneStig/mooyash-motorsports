@@ -153,7 +153,7 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        public Kart(float throttleConst, bool isAI) : base()
+        public Kart(float throttleConst, bool isAI, String kartName) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             numTex = 15;

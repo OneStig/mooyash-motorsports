@@ -23,7 +23,7 @@ namespace Mooyash.Services
         {
             //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1));
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
             gameObjects = new HashSet<GameObject>();
             gameObjects.Add(player);
             karts.Add(player);
