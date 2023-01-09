@@ -17,7 +17,7 @@ namespace Mooyash.Modules
         //updates object and returns true if there is a collision
         public bool testCollision(float dt, Kart kart)
         {
-            return false;
+            return PhysicsEngine.TestCircles(kart.position, kart.radius, position, radius);
         }
 
         public void collide(Kart kart)
@@ -26,10 +26,6 @@ namespace Mooyash.Modules
 
     public class StaticObject : GameObject
     {
-        new public bool testCollision(float dt, Kart kart)
-        {
-            return PhysicsEngine.TestCircleStaticCircle(kart.getCirclePath(), position, radius);
-        }
     }
 
     //I think, Kart could inherit from projectile - but it's not critical
@@ -37,16 +33,6 @@ namespace Mooyash.Modules
     {
         public Vector2 prevPosition;
         public Vector2 velocity;
-
-        new public bool testCollision(float dt, Kart kart)
-        {
-            return PhysicsEngine.TestCircleCircle(kart.getCirclePath(), getCirclePath());
-        }
-
-        public CirclePath getCirclePath()
-        {
-            return new CirclePath(prevPosition, position, radius);
-        }
 
         public void update(float dt)
         {

@@ -178,6 +178,11 @@ namespace Mooyash.Services
         {
             return true;
         }
+
+        public static bool TestCircles(Vector2 c1, float r1, Vector2 c2, float r2)
+        {
+            return (c1 - c2).Length() < (r1 + r2);
+        }
     }
 
     public class CirclePath
