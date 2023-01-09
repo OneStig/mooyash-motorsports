@@ -257,7 +257,7 @@ namespace Mooyash.Services
         {
             camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
-            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawObjects(PhysicsEngine.gameObjects.ToList());
             drawUI();
         }
     }

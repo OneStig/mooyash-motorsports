@@ -6,12 +6,10 @@ namespace Mooyash.Services
 {
     public static class PhysicsEngine
     {
-        public static Dictionary<string, GameObject> gameObjects;
-        public static Dictionary<string, Kart> allkarts;
-
+        public static HashSet<Kart> karts = new HashSet<Kart>();
+        public static HashSet<Projectile> projectiles = new HashSet<Projectile>();
+        public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
         public static Kart player;
-        public static int lapCount;
-        public static int lapDisplay;
         public static Track track;
 
         public static float time;
@@ -23,20 +21,14 @@ namespace Mooyash.Services
 
         public static void init()
         {
+            //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart("mario", 2400 * (Game.GameSettings[2]+1), false);
-
-            gameObjects = new Dictionary<string, GameObject>();
-            allkarts = new Dictionary<string, Kart>();
-
-            gameObjects.Add("player", player);
-            allkarts.Add("player", player);
-
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
+            gameObjects = new HashSet<GameObject>();
+            gameObjects.Add(player);
+            karts.Add(player);
             player.position = track.startPos;
             player.angle = track.startAngle;
-
-            lapCount = 0;
-            lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
 
             gameObjects.Add("box", new ItemBox(player.position + new Vector2(0, 700)));
@@ -50,144 +42,36 @@ namespace Mooyash.Services
 
         public static void update(float dt)
         {
-
             time += dt;
 
-            if (lapDisplay > 3)
+            //sees if game ends
+            if (player.lapDisplay > 3)
             {
-                lapDisplay = 3;
+                player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
             }
 
-            Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
-
             player.updateInput(dt);
-            
-            int id = GetPhysicsID(player.position);
 
-            //this shouldn't happen, maybe we should do something else?
-            if(id == -1)
+            foreach (Kart kart in karts)
             {
-                player = new Kart("mario", 1200 + Game.GameSettings[2]*600, false);
-                player.position = track.startPos;
-                player.angle = track.startAngle;
-                id = GetPhysicsID(player.position);
+                kart.update(dt);
             }
-
-            player.update(dt, terrainConsts[id]);
-
-            float minCollision = 1;
-            Vector2 finalPos = new Vector2();
-            Vector2 cur;
-            Vector2 next;
-            CirclePath c = new CirclePath(pastPos, player.position, player.radius);
-
-            //Handles collisions between player and walls of polygon
-            //Should implement bounding box idea
-            foreach(Polygon p in track.collidable)
+            foreach(Projectile projectile in projectiles)
             {
-                for(int i = 0; i < p.vertices; i++)
+                projectile.update(dt);
+            }
+            foreach(GameObject obj in gameObjects)
+            {
+                foreach(Kart kart in karts)
                 {
-                    //if p has the same point twice in a row, this fails
-                    cur = p.points[i];
-                    next = p.points[(i+1) % p.vertices]; 
-                    if(cur.Equals(next))
+                    if(obj.testCollision(dt, kart))
                     {
-                        throw new Exception("Polygon cannot have same point twice in a row");
-                    }
-                    if(TestCircleLine(c, cur, next))
-                    {
-                        //OPTIMIZE: This is (kinda) recalculating norm
-                        //EXCEPTION: What if cross is 0? - shouldn't happen though
-                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
-                        float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
-                        float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
-                        {
-                            minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
-                        }
+                        obj.collide(kart);
                     }
                 }
-            }
-
-            if(minCollision != 1)
-            {
-                player.position = finalPos;
-                player.velocity.X = -player.velocity.X * 0.75f;
-                player.throttle /= 2;
-            }
-
-            // This is brute force checking objects, integrate with sebi's code later
-
-            foreach (KeyValuePair<string, GameObject> obj in gameObjects)
-            {
-                if (obj.Value.exists && obj.Value.GetType() == typeof(Shell))
-                {
-                    Shell s = (Shell)obj.Value;
-                    s.update(dt);
-                }
-            }
-
-
-            // OPTIMIZE: this is very brute force right now
-            // kart to gameObject collision detection
-
-            foreach (KeyValuePair<string, Kart> curKart in allkarts)
-            {
-                foreach (KeyValuePair<string, GameObject> obj in gameObjects)
-                {
-                    if (obj.Value.exists)
-                    {
-                        if (obj.Value.GetType() == typeof(ItemBox))
-                        {
-                            ItemBox ib = (ItemBox)obj.Value;
-
-                            if (GetDistance(curKart.Value.position, ib.position) < ib.radius)
-                            {
-                                ib.collide(curKart.Value);
-                            }
-                        }
-
-                        if (obj.Value.GetType() == typeof(Banana))
-                        {
-                            Banana b = (Banana)obj.Value;
-
-                            if (GetDistance(curKart.Value.position, b.position) < b.radius)
-                            {
-                                b.collide(curKart.Value);
-                            }
-                        }
-
-                        if (obj.Value.GetType() == typeof(Coin))
-                        { 
-                            Coin coin = (Coin)obj.Value;
-
-                            if (GetDistance(curKart.Value.position, coin.position) < coin.radius)
-                            {
-                                coin.collide(curKart.Value);
-
-                            }
-                        }
-                    }
-                }
-            }
-            
-            //This checks for crossing on every frame, probably needs to be optimized later
-            //Checks if player crosses the finish line
-            if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
-            {
-                if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
-                {
-                    lapCount++;
-                }
-                else
-                {
-                    lapCount = lapDisplay - 1;
-                }
-                lapDisplay = Math.Max(lapDisplay, lapCount);
             }
         }
 
@@ -201,7 +85,7 @@ namespace Mooyash.Services
                     return track.interactable[i].id;
                 }
             }
-            return -1;
+            return 0;
         }
 
         // distance formula
@@ -308,6 +192,11 @@ namespace Mooyash.Services
         public static bool TestStaticCircleLine(Vector2 c, float r, Vector2 p1, Vector2 p2)
         {
             return true;
+        }
+
+        public static bool TestCircles(Vector2 c1, float r1, Vector2 c2, float r2)
+        {
+            return (c1 - c2).Length() < (r1 + r2);
         }
     }
 
