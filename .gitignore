@@ -1,3 +1,4 @@
 .vs/
 Builds/
 /minimalist-game-framework-core/Game.csproj.user
+.DS_Store

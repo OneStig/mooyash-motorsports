@@ -2,11 +2,11 @@
 
 namespace Mooyash.Modules
 {
-    public class Banana : GameObject
+    public class Shell : GameObject
     {
         public float radius;
 
-        public Banana(Vector2 position) : base()
+        public Shell(Vector2 position) : base()
         {
             this.position = position;
 
