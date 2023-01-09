@@ -149,7 +149,12 @@ namespace Mooyash.Modules
             }
             else if (itemHeld == 2) // green shell
             {
-                
+                float sin = (float)Math.Sin(angle);
+                float cos = (float)Math.Cos(angle);
+
+                Vector2 spawnPosition = position + new Vector2(cos, sin) * 60;
+
+                PhysicsEngine.gameObjects.Add("shell" + PhysicsEngine.gameObjects.Count, new Shell(spawnPosition, angle));
             }
             else if (itemHeld == 3) // mushroom
             {
