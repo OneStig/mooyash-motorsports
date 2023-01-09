@@ -204,7 +204,7 @@ namespace Mooyash.Services
             }
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
@@ -225,7 +225,7 @@ namespace Mooyash.Services
         {
             camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
-            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawObjects(PhysicsEngine.gameObjects.ToList());
             drawUI();
         }
     }
