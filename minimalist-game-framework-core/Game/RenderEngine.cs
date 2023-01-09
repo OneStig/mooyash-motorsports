@@ -241,10 +241,21 @@ namespace Mooyash.Services
             objs.Sort(compareDepths);
             foreach(GameObject t in objs)
             {
-                if (t.exists)
+                if (t.GetType() == typeof(Kart))
                 {
-                    drawObject(t);
+                    Kart k = (Kart)t;
+
+                    if (k.isAI)
+                    {
+                        t.chooseTextureCam(RenderEngine.camera);
+                    }
                 }
+                else if (t.GetType() == typeof(Coin))
+                {
+                    t.chooseTextureCam(RenderEngine.camera);
+                }
+
+                drawObject(t);
             }
         }
 

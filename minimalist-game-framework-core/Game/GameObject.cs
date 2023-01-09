@@ -18,14 +18,11 @@ namespace Mooyash.Modules
         public Vector2 resolution; // width and height of each costume
         public int numTex; // number of textures
 
-        public bool exists;
-
         public GameObject()
         {
             position = new Vector2();
             angle = 0;
             curTex = 0;
-            exists = true;
             // need to add hitbox and textures later
         }
 
@@ -78,9 +75,9 @@ namespace Mooyash.Modules
         public Vector2 prevPosition;
         public Vector2 velocity;
 
-        public void update(float dt)
+        public virtual void update(float dt)
         {
-            prevPosition = position;
+            prevPosition = new Vector2(position.X, position.Y);
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
             float minCollision = 1;
@@ -131,12 +128,15 @@ namespace Mooyash.Modules
         }
     }
 
-    public class Kart : Projectile
+    public class Kart : GameObject
     {
         public float acceleration;
+        public Vector2 velocity;
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+
+        public Vector2 prevPosition;
 
         public bool stunned;
         public bool braking;
@@ -211,7 +211,7 @@ namespace Mooyash.Modules
                 float sin = (float)Math.Sin(angle);
                 float cos = (float)Math.Cos(angle);
 
-                Vector2 spawnPosition = position - new Vector2(cos, sin) * 60;
+                Vector2 spawnPosition = position - new Vector2(cos, sin) * 100;
 
                 PhysicsEngine.gameObjects.Add(new Banana(spawnPosition));
             }
@@ -220,7 +220,7 @@ namespace Mooyash.Modules
                 float sin = (float)Math.Sin(angle);
                 float cos = (float)Math.Cos(angle);
 
-                Vector2 spawnPosition = position + new Vector2(cos, sin) * 120;
+                Vector2 spawnPosition = position + new Vector2(cos, sin) * 100;
 
                 Shell sh = new Shell(spawnPosition, angle);
 
@@ -309,8 +309,10 @@ namespace Mooyash.Modules
             }
         }
 
-        new public void update(float dt)
+        public void update(float dt)
         {
+            prevPosition = new Vector2(position.X, position.Y);
+
             // update various timers
             stunTime += dt;
             boostTime += dt;
@@ -343,7 +345,6 @@ namespace Mooyash.Modules
             {
                 throttle *= boostMultiplier;
             }
-
 
             Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
 
@@ -426,8 +427,7 @@ namespace Mooyash.Modules
                 chooseTextureCam(RenderEngine.camera);
             }
 
-            base.update(dt);
-
+            // base.update(dt);
 
             if (PhysicsEngine.TestLineLine(prevPosition, position, PhysicsEngine.track.finish.Item1, PhysicsEngine.track.finish.Item2))
             {
@@ -444,7 +444,7 @@ namespace Mooyash.Modules
             }
         }
 
-        new public void wallCollide()
+        public void wallCollide()
         {
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
