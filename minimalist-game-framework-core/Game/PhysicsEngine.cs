@@ -119,6 +119,18 @@ namespace Mooyash.Services
                 player.throttle /= 2;
             }
 
+            // This is brute force checking objects, integrate with sebi's code later
+
+            foreach (KeyValuePair<string, GameObject> obj in gameObjects)
+            {
+                if (obj.Value.exists && obj.Value.GetType() == typeof(Shell))
+                {
+                    Shell s = (Shell)obj.Value;
+                    s.update(dt);
+                }
+            }
+
+
             // OPTIMIZE: this is very brute force right now
             // kart to gameObject collision detection
 
