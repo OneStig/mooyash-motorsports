@@ -38,27 +38,18 @@ namespace Mooyash.Services
         }
 
         //where p is the cartLocation, finds the distance to the closest point on a line from a to b to the cart
-        public static Vector2 getClosestPoint(Vector2 a, Vector2 b, Vector2 cartLocation) 
+        public static float getPercentageProgress(Vector2 a, Vector2 b, Vector2 cartLocation) 
         {
             Vector2 aToCart = cartLocation - a;
             Vector2 aToB = b - a;
 
-            double atbMagnitude = aToB.Length();
-            double dotProduct = Vector2.Dot(aToCart, aToB);
+            float atbMagnitude = aToB.Length();
+            float dotProduct = Vector2.Dot(aToCart, aToB);
 
-            double percent = dotProduct/ (atbMagnitude * atbMagnitude);
+            float percent = dotProduct/ (atbMagnitude * atbMagnitude);
 
-            Vector2 closestPoint = new Vector2((float) (a.X + a.X * percent), (float) (a.Y + a.Y * percent));
 
-            return closestPoint;
-        }
-
-        public static float getPercentageProgress(Vector2 a, Vector2 b, Vector2 progress)
-        {
-            float totalDist = distanceToPoint(a, b);
-            float curDist = distanceToPoint(a, progress);
-
-            return (curDist/totalDist)*100f;
+            return percent*100;
         }
     }
 }

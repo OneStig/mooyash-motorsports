@@ -36,9 +36,14 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
 
+        //Waypoint variables for ai driving
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
+
+        //Kart dependent lapCount and lapDisplay variables
+        public int lapCount;
+        public int lapDisplay;
 
         /*
          * two separate variables, controls the radius at which a random point is found around a waypoint
@@ -75,19 +80,26 @@ namespace Mooyash.Modules
 
         public Kart(float throttleConst) : base()
         {
+            //Kart physics/properties
             velocity = new Vector2(0, 0);
             textures = new Texture[5];
             sizes = new Vector2[5];
             position = new Vector2(4500, 0);
             radius = 24f;
             this.throttleConst = throttleConst;
+
+            //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
-            // this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
-
             newRandomWaypoint = allWaypoints[0];
             minDistanceToReachWaypoint = rand.Next(450, 500);
+
+            //Kart-dependent lap
+            lapCount = 0;
+            lapDisplay = 1;
+
+            //Loading textures
             for (int i = 0; i < textures.Length; i++)
             {
                 textures[i] = Engine.LoadTexture("player_" + i + ".png");

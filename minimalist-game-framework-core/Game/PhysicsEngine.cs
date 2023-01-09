@@ -8,8 +8,6 @@ namespace Mooyash.Services
     {
         public static Dictionary<string, GameObject> gameObjects;
         public static Kart player;
-        public static int lapCount;
-        public static int lapDisplay;
         public static Track track;
 
         public static float time;
@@ -38,20 +36,15 @@ namespace Mooyash.Services
             gameObjects.Add("player", player);
             player.position = track.startPos;
             player.angle = track.startAngle;
-            lapCount = 0;
-            lapDisplay = 1; // e.g. Lap 1/3
-            time = 0;
-            if (Game.GameSettings[1] == 1)
-            {
-                ai1 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                gameObjects.Add("ai1", ai1);
-                ai1.position = track.startPos;
-                ai1.angle = track.startAngle;
 
-                ai2 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                gameObjects.Add("ai2", ai2);
-                ai2.position = track.startPos - new Vector2(100, 100);
-                ai2.angle = track.startAngle;
+            time = 0;
+            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            ai1.position = track.startPos;
+            ai1.angle = track.startAngle;
+
+            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            ai2.position = track.startPos - new Vector2(100, 100);
+            ai2.angle = track.startAngle;
 
                 //ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
                 //gameObjects.Add("ai3", ai3);
@@ -73,7 +66,11 @@ namespace Mooyash.Services
                 //ai6.position = track.startPos - new Vector2(100, 130);
                 //ai6.angle = track.startAngle;
 
-                aiKarts = new Kart[] { ai1, ai2 };
+            aiKarts = new Kart[] { ai1, ai2 };
+            if (Game.GameSettings[1] == 1)
+            {
+                gameObjects.Add("ai1", ai1);
+                gameObjects.Add("ai2", ai2);
             }
         }
 
@@ -82,9 +79,9 @@ namespace Mooyash.Services
 
             time += dt;
 
-            if (lapDisplay > 3)
+            if (ai2.lapDisplay > 3)
             {
-                lapDisplay = 3;
+                ai2.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
@@ -106,10 +103,19 @@ namespace Mooyash.Services
 
             player.update(dt, terrainConsts[id]);
 
+            Vector2[] pastPosAIs = new Vector2[aiKarts.Length];
             for(int i = 0; i < aiKarts.Length; i++)
             {
-                aiKarts[i].updateInputAI(dt);
-                aiKarts[i].update(dt, terrainConsts[GetPhysicsID(aiKarts[i].position)]);
+                pastPosAIs[i] = aiKarts[i].position;
+            }
+
+            if (Game.GameSettings[1] == 1)
+            {
+                for (int i = 0; i < aiKarts.Length; i++)
+                {
+                    aiKarts[i].updateInputAI(dt);
+                    aiKarts[i].update(dt, terrainConsts[GetPhysicsID(aiKarts[i].position)]);
+                }
             }
 
 
@@ -161,13 +167,29 @@ namespace Mooyash.Services
             {
                 if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
                 {
-                    lapCount++;
+                    player.lapCount++;
                 }
                 else
                 {
-                    lapCount = lapDisplay - 1;
+                    player.lapCount = player.lapDisplay - 1;
                 }
-                lapDisplay = Math.Max(lapDisplay, lapCount);
+                player.lapDisplay = Math.Max(player.lapDisplay, player.lapCount);
+            }
+
+            for(int i = 0; i < aiKarts.Length; i++)
+            {
+                if (TestLineLine(pastPosAIs[i], aiKarts[i].position, track.finish.Item1, track.finish.Item2))
+                {
+                    if (Vector2.Dot(aiKarts[i].position - pastPosAIs[i], (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                    {
+                        aiKarts[i].lapCount++;
+                    }
+                    else
+                    {
+                        aiKarts[i].lapCount = aiKarts[i].lapDisplay - 1;
+                    }
+                    aiKarts[i].lapDisplay = Math.Max(aiKarts[i].lapDisplay, aiKarts[i].lapCount);
+                }
             }
         }
 

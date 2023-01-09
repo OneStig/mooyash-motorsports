@@ -226,15 +226,14 @@ namespace Mooyash.Services
             }
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.ai2.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
 
             Kart a2 = PhysicsEngine.ai2;
             Vector2 prev = a2.allWaypoints[a2.previousWaypoint];
-            Vector2 cur = a2.allWaypoints[a2.currentWaypoint];
+            Vector2 cur = a2.newRandomWaypoint;
             Vector2 pos = a2.position;
 
-            Vector2 closestPoint = Splines.getClosestPoint(prev, cur, pos);
-            float percentage = Splines.getPercentageProgress(prev, cur, closestPoint);
+            float percentage = Splines.getPercentageProgress(prev, cur, pos);
 
             Engine.DrawString(percentage + "", new Vector2(160, 80), Color.Black, Game.font);
         }
