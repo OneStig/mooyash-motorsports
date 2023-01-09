@@ -34,6 +34,7 @@ namespace Mooyash.Modules
         public List<Vector2> splines;
 
         public float totalLen;
+        public float[] lens;
 
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
@@ -170,13 +171,30 @@ namespace Mooyash.Modules
                 },
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
+                tracks[j].lens = new float[tracks[j].splines.Count];
+
+                float deltaX;
+                float deltaY;
+                float dist;
+
                 for(int i = 0; i < tracks[j].splines.Count-1; i++)
                 {
-                    tracks[j].totalLen += (float)Math.Sqrt(tracks[j].splines[i].X * tracks[j].splines[i].X +
-                                                           tracks[j].splines[i].Y * tracks[j].splines[i].Y);
+                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i+1].X);
+                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i+1].Y);
+                    dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                    tracks[j].totalLen += dist;
+                    tracks[j].lens[i] = dist;
                 }
 
+                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
+                deltaY = (tracks[j].splines[0].Y - tracks[j].splines[tracks[j].splines.Count - 1].Y);
+                dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                tracks[j].totalLen += dist;
+                tracks[j].lens[tracks[j].splines.Count - 1] = dist;
+
                 tracks[j].startPos = loaded.startPos;
+
                 tracks[j].startAngle = loaded.startAngle;
 
 
