@@ -33,6 +33,8 @@ namespace Mooyash.Modules
 
         public List<Vector2> splines;
 
+        public float totalLen;
+
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
 
@@ -168,8 +170,16 @@ namespace Mooyash.Modules
                 },
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
+                for(int i = 0; i < tracks[j].splines.Count-1; i++)
+                {
+                    tracks[j].totalLen += (float)Math.Sqrt(tracks[j].splines[i].X * tracks[j].splines[i].X +
+                                                           tracks[j].splines[i].Y * tracks[j].splines[i].Y);
+                }
+
                 tracks[j].startPos = loaded.startPos;
                 tracks[j].startAngle = loaded.startAngle;
+
+
             }
         }
     }

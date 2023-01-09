@@ -48,7 +48,6 @@ namespace Mooyash.Services
 
             float percent = dotProduct/ (atbMagnitude * atbMagnitude);
 
-
             return percent*100;
         }
     }
