@@ -41,6 +41,11 @@ namespace Mooyash.Modules
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
 
+        public float distanceTraveled;
+        public float prevPercent;
+        public float curPercent;
+        public float percentageAlongTrack;
+
         //Kart dependent lapCount and lapDisplay variables
         public int lapCount;
         public int lapDisplay;
@@ -179,11 +184,28 @@ namespace Mooyash.Modules
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
+                if (previousWaypoint == 0)
+                {
+                    prevPercent = curPercent;
+                    curPercent = Splines.getPercentageProgress(allWaypoints[previousWaypoint], newRandomWaypoint, position);
+                    distanceTraveled += curPercent - prevPercent;
+                }
+                else
+                {
+                    prevPercent = curPercent;
+                    curPercent = Splines.getPercentageProgress(allWaypoints[previousWaypoint - 1], newRandomWaypoint, position);
+                    distanceTraveled += Track.tracks[0].lens[previousWaypoint - 1];
+                    distanceTraveled += curPercent - prevPercent;
+                }
+                
+
                 randomDrivingRadius = rand.Next(0, 30);
                 randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
+
+            percentageAlongTrack = (distanceTraveled / Track.tracks[0].totalLen) * 100;
 
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);    

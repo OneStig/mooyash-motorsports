@@ -183,6 +183,7 @@ namespace Mooyash.Services
                     if (Vector2.Dot(aiKarts[i].position - pastPosAIs[i], (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
                     {
                         aiKarts[i].lapCount++;
+                        aiKarts[i].distanceTraveled = 0;
                     }
                     else
                     {

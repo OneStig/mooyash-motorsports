@@ -229,13 +229,17 @@ namespace Mooyash.Services
             Engine.DrawString("lap " + PhysicsEngine.ai2.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
 
             Kart a2 = PhysicsEngine.ai2;
+
+            /*
             Vector2 prev = a2.allWaypoints[a2.previousWaypoint];
             Vector2 cur = a2.newRandomWaypoint;
             Vector2 pos = a2.position;
 
-            float percentage = Splines.getPercentageProgress(prev, cur, pos);
+            float Totalpercentage = Splines.getPercentageProgress(prev, cur, pos);
+            */
+            float totalPercentage = a2.percentageAlongTrack;
 
-            Engine.DrawString(percentage + "", new Vector2(160, 80), Color.Black, Game.font);
+            Engine.DrawString(totalPercentage + "", new Vector2(160, 80), Color.Black, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)

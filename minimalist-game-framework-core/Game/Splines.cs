@@ -46,6 +46,11 @@ namespace Mooyash.Services
             float atbMagnitude = aToB.Length();
             float dotProduct = Vector2.Dot(aToCart, aToB);
 
+            if (dotProduct == 0)
+            {
+                return 0;
+            }
+
             float percent = dotProduct/ (atbMagnitude * atbMagnitude);
 
             return percent*100;
