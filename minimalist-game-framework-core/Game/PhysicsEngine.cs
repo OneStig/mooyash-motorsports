@@ -38,6 +38,11 @@ namespace Mooyash.Services
             gameObjects.Add(new ItemBox(player.position + new Vector2(0, 900)));
             gameObjects.Add(new Banana(player.position + new Vector2(100, 300)));
             gameObjects.Add(new Coin(player.position + new Vector2(0, 1000)));
+            gameObjects.Add(new Coin(player.position + new Vector2(0, 1200)));
+            gameObjects.Add(new Coin(player.position + new Vector2(0, 1400)));
+            gameObjects.Add(new Coin(player.position + new Vector2(0, 1600)));
+            gameObjects.Add(new Coin(player.position + new Vector2(0, 1800)));
+
         }
 
         public static void update(float dt)

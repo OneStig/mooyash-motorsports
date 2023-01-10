@@ -21,6 +21,8 @@ namespace Mooyash.Services
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
 
+
+        
         //don't use camera until callling followKart
         public Camera(Vector2 follow, float height, double hfov, float screen)
         {
@@ -56,7 +58,7 @@ namespace Mooyash.Services
     {
         public static Camera camera;
         public static float renderDistance = 3000f;
-
+        public static int score = 0;
         private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
         private static int lastItem = 0;
         private static float lastItemTimer = 0;
@@ -234,6 +236,7 @@ namespace Mooyash.Services
             }
 
             Engine.DrawTexture(itemRoulette, new Vector2(210, 5), source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)));
+            Engine.DrawString("Score  " + score, new Vector2(110, 5), Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
