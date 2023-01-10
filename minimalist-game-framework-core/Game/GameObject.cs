@@ -330,12 +330,14 @@ namespace Mooyash.Modules
 
             if (stunTime < stunConst)
             {
+                stunned = true;
                 stunDrag = stunMultiplier;
                 throttle = 0;
                 steer = 0;
             }
             else
             {
+                stunned = false;
                 stunDrag = 1f;
             }
 
