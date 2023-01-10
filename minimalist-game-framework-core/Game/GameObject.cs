@@ -59,6 +59,7 @@ namespace Mooyash.Modules
 
         public float randAngle;
         public Vector2 newRandomWaypoint;
+        public Vector2 prevRandomWaypoint;
 
         public float angleToWaypoint;
         public Random rand = new Random();
@@ -97,7 +98,9 @@ namespace Mooyash.Modules
             this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+
             newRandomWaypoint = allWaypoints[0];
+            prevRandomWaypoint = allWaypoints[0];
             minDistanceToReachWaypoint = rand.Next(450, 500);
 
             //Kart-dependent lap
@@ -112,7 +115,17 @@ namespace Mooyash.Modules
             }
         }
 
-
+        public void percentDone()
+        {
+            if(previousWaypoint == 0)
+            {
+                percentageAlongTrack = Track.tracks[0].lens[0] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+                return;
+            }
+            float curDist = Track.tracks[0].lens[0] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+            float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
+            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+        }
 
         private float decay(float value, float constant, float dt)
         {
@@ -184,28 +197,13 @@ namespace Mooyash.Modules
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
-                if (previousWaypoint == 0)
-                {
-                    prevPercent = curPercent;
-                    curPercent = Splines.getPercentageProgress(allWaypoints[previousWaypoint], newRandomWaypoint, position);
-                    distanceTraveled += curPercent - prevPercent;
-                }
-                else
-                {
-                    prevPercent = curPercent;
-                    curPercent = Splines.getPercentageProgress(allWaypoints[previousWaypoint - 1], newRandomWaypoint, position);
-                    distanceTraveled += Track.tracks[0].lens[previousWaypoint - 1];
-                    distanceTraveled += curPercent - prevPercent;
-                }
-                
-
                 randomDrivingRadius = rand.Next(0, 30);
                 randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                prevRandomWaypoint = newRandomWaypoint;
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
 
-            percentageAlongTrack = (distanceTraveled / Track.tracks[0].totalLen) * 100;
 
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);    
@@ -278,6 +276,7 @@ namespace Mooyash.Modules
                 steer = decay(steer, steerDecay, dt);
                 angle = angleToWaypoint;
             }
+            percentDone();
         }
 
 
