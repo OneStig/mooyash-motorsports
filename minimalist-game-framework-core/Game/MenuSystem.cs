@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-
+using Mooyash.Modules;
 namespace Mooyash.Services
+    
 {
     public static class MenuSystem
     {
@@ -154,6 +155,7 @@ namespace Mooyash.Services
                     if (select.Equals("replay"))
                     {
                         CurScreen = 4;
+                        RenderEngine.score = 0;
                         Settings.RemoveAt(Settings.Count-1);
 
                     }
