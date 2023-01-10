@@ -69,6 +69,10 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
         public bool isAI;
+        
+        //drifting
+        public bool drifting;
+        public float driftTime;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -150,7 +154,17 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.A))
+            if (Engine.GetKeyHeld(Key.LeftShift))
+            {
+                if (drifting == false)
+                {
+                    driftTime = 0;
+                }
+                drifting = true;
+                driftTime += dt;
+                steer = Math.Sign(steer) * 1.2f;
+            }
+            else if (Engine.GetKeyHeld(Key.A))
             {
                 steer = Math.Max(-1, steer - sInputScale * dt);
             }
