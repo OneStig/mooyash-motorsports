@@ -172,6 +172,22 @@ namespace Mooyash.Services
 
             newP = project(newP);
 
+            if (t.GetType() == typeof(Kart))
+            {
+                Kart k = (Kart)t;
+
+                if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
+                {
+                    Engine.DrawTexture(t.texture,
+                    new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                    size: newSize, scaleMode: TextureScaleMode.Nearest,
+                    source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution),
+                    mirror: m,
+                    color: Color.Red);
+                    return;
+                }
+            }
+
             Engine.DrawTexture(t.texture,
                 new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest,
