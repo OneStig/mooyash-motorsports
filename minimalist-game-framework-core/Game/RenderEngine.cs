@@ -213,7 +213,7 @@ namespace Mooyash.Services
             }
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
@@ -241,10 +241,21 @@ namespace Mooyash.Services
             objs.Sort(compareDepths);
             foreach(GameObject t in objs)
             {
-                if (t.exists)
+                if (t.GetType() == typeof(Kart))
                 {
-                    drawObject(t);
+                    Kart k = (Kart)t;
+
+                    if (k.isAI)
+                    {
+                        t.chooseTextureCam(RenderEngine.camera);
+                    }
                 }
+                else if (t.GetType() == typeof(Coin))
+                {
+                    t.chooseTextureCam(RenderEngine.camera);
+                }
+
+                drawObject(t);
             }
         }
 
@@ -257,7 +268,7 @@ namespace Mooyash.Services
         {
             camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
-            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawObjects(PhysicsEngine.gameObjects.ToList());
             drawUI();
         }
     }

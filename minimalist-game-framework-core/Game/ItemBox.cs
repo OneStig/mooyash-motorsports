@@ -1,12 +1,12 @@
 ﻿using System;
+using Mooyash.Modules;
+using Mooyash.Services;
 
 namespace Mooyash.Modules
 {
 	public class ItemBox : GameObject // Equivalent of mario kart mystery box
 	{
 		public static string[] validItems = new string[] { "banana", "green_shell", "mushroom" };
-
-		public float radius;
 
 		public ItemBox(Vector2 position) : base()
 		{
@@ -20,11 +20,12 @@ namespace Mooyash.Modules
 
 		public override void collide(Kart k)
 		{
-			if (exists && k.itemHeld == 0)
+			if (k.itemHeld == 0)
 			{
-                exists = false;
 				k.rollItemTime = 0;
 				k.itemHeld = -1;
+
+				PhysicsEngine.gameObjects.Remove(this);
             }
 		}
 	}

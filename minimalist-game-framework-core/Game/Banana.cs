@@ -1,11 +1,10 @@
 ﻿using System;
+using Mooyash.Services;
 
 namespace Mooyash.Modules
 {
     public class Banana : GameObject
     {
-        public float radius;
-
         public Banana(Vector2 position) : base()
         {
             this.position = position;
@@ -14,12 +13,13 @@ namespace Mooyash.Modules
             size = new Vector2(500, 500);
             resolution = new Vector2(32, 32);
 
-            radius = 50f;
+            radius = 30f;
         }
 
         public override void collide(Kart k)
         {
-            exists = false;
+            PhysicsEngine.gameObjects.Remove(this);
+
             k.stunTime = 0;
         }
     }

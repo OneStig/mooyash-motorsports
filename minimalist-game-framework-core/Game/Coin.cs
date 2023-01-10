@@ -1,10 +1,16 @@
-﻿using System;
+using System;
+using Mooyash.Services;
+using Mooyash.Modules;
 
 namespace Mooyash.Modules
 {
     public class Coin : GameObject
     {
+
         public float radius;
+
+
+
         public Coin(Vector2 position) : base()
         {
             this.position = position;
@@ -15,15 +21,19 @@ namespace Mooyash.Modules
             radius = 40f;
         }
 
+
         public void update(float dt)
         {
            
         }
+
+
         public override void collide(Kart k)
         {
-            exists = false;
             k.score += 1;
             //Engine.DrawString("score " + k.score, new Vector2(100, 5), Color.White, );
+
+            PhysicsEngine.gameObjects.Remove(this);
         }
     }
 
