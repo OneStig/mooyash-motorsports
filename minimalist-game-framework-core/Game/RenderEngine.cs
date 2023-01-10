@@ -163,10 +163,10 @@ namespace Mooyash.Services
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*t.size;
+            Vector2 newSize = (camera.screen/newP.Y)*t.size * Game.ResolutionScale;
             TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
 
-            newP = project(newP);
+            newP = project(newP) * Game.ResolutionScale;
 
             Engine.DrawTexture(t.texture,
                 new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
