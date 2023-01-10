@@ -30,7 +30,7 @@ namespace Mooyash.Services
             this.screen = screen;
 
             hslope = (float) Math.Tan(hfov / 2);
-            scale = Game.Resolution.X / (float)(2 * screen * hslope);
+            scale = Game.VirtualResolution.X / (float)(2 * screen * hslope);
         }
 
         public void changeAngle(double dAngle)
@@ -80,8 +80,8 @@ namespace Mooyash.Services
             result.X = result.X * camera.scale;
             result.Y = result.Y * camera.scale;
             //convert to MGF coordinate system
-            result.X += Game.Resolution.X / 2;
-            result.Y = Game.Resolution.Y / 2 - result.Y;
+            result.X += Game.VirtualResolution.X / 2;
+            result.Y = Game.VirtualResolution.Y / 2 - result.Y;
             return result;
         }
 

@@ -7,7 +7,9 @@ using SDL2;
 class Game
 {
     public static readonly string Title = "Mooyash Motorsport";
-    public static readonly Vector2 Resolution = new Vector2(320, 180);
+    public static readonly Vector2 Resolution = new Vector2(1280, 720);
+    public static readonly Vector2 VirtualResolution = new Vector2(320, 180);
+    public static readonly int ResolutionScale = 4;
 
     public static List<int> GameSettings;
     public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17);
