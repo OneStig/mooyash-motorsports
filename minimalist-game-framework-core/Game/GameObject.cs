@@ -168,9 +168,9 @@ namespace Mooyash.Modules
             {
                 if(drifting == true)
                 {
-                    //boost;
+                    boost(1.5f);
+                    drifting = false;
                 }
-                drifting = false;
                 if (Engine.GetKeyHeld(Key.A))
                 {
                     steer = Math.Max(-1, steer - sInputScale * dt);
@@ -282,6 +282,11 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
+        }
+
+        public void boost(float multiplier)
+        {
+            //steve;
         }
     }
 
