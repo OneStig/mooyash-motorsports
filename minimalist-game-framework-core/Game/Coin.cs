@@ -5,22 +5,20 @@ namespace Mooyash.Modules
     public class Coin : GameObject
     {
         public float radius;
-
         public Coin(Vector2 position) : base()
         {
             this.position = position;
-
-            texture = Engine.LoadTexture("coin.png");
+            texture = Engine.LoadTexture("temp.png");
             size = new Vector2(400, 400);
             resolution = new Vector2(32, 32);
 
             radius = 40f;
-
-
-            
         }
 
-
+        public void update(float dt)
+        {
+           
+        }
         public override void collide(Kart k)
         {
             exists = false;
