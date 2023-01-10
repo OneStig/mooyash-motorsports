@@ -35,6 +35,7 @@ namespace Mooyash.Modules
 
         public float totalLen;
         public float[] lens;
+        public float[] lensToPoint;
 
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
@@ -172,6 +173,7 @@ namespace Mooyash.Modules
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
                 tracks[j].lens = new float[tracks[j].splines.Count];
+                tracks[j].lensToPoint = new float[tracks[j].splines.Count];
 
                 float deltaX;
                 float deltaY;
@@ -185,6 +187,14 @@ namespace Mooyash.Modules
 
                     tracks[j].totalLen += dist;
                     tracks[j].lens[i] = dist;
+                    if(i == 0)
+                    {
+                        tracks[j].lensToPoint[i] = tracks[j].lens[i];
+                    }
+                    else
+                    {
+                        tracks[j].lensToPoint[i] = tracks[j].lens[i] + tracks[j].lensToPoint[i - 1];
+                    }
                 }
 
                 deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
@@ -192,6 +202,8 @@ namespace Mooyash.Modules
                 dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
                 tracks[j].totalLen += dist;
                 tracks[j].lens[tracks[j].splines.Count - 1] = dist;
+
+                tracks[j].lensToPoint[tracks[j].splines.Count - 1] = tracks[j].totalLen;
 
                 tracks[j].startPos = loaded.startPos;
 
