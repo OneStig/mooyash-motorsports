@@ -154,7 +154,7 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.LeftShift))
+            if (Engine.GetKeyHeld(Key.LeftShift) && steer != 0)
             {
                 if (drifting == false)
                 {
@@ -162,19 +162,27 @@ namespace Mooyash.Modules
                 }
                 drifting = true;
                 driftTime += dt;
-                steer = Math.Sign(steer) * 1.2f;
-            }
-            else if (Engine.GetKeyHeld(Key.A))
-            {
-                steer = Math.Max(-1, steer - sInputScale * dt);
-            }
-            else if (Engine.GetKeyHeld(Key.D))
-            {
-                steer = Math.Min(1, steer + sInputScale * dt);
+                steer = Math.Sign(steer) * Math.Min(Math.Abs(steer)+sInputScale*dt, 1.2f);
             }
             else
             {
-                steer = decay(steer, steerDecay, dt);
+                if(drifting == true)
+                {
+                    //boost;
+                }
+                drifting = false;
+                if (Engine.GetKeyHeld(Key.A))
+                {
+                    steer = Math.Max(-1, steer - sInputScale * dt);
+                }
+                else if (Engine.GetKeyHeld(Key.D))
+                {
+                    steer = Math.Min(1, steer + sInputScale * dt);
+                }
+                else
+                {
+                    steer = decay(steer, steerDecay, dt);
+                }
             }
         }
 
