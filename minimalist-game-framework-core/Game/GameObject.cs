@@ -155,6 +155,10 @@ namespace Mooyash.Modules
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
             }
+            if (dists[0] < dists[1])
+            {
+
+            }
             newRandomWaypoint = allWaypoints[currentWaypoint];
             prevRandomWaypoint = allWaypoints[previousWaypoint];
 

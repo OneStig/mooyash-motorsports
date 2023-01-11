@@ -240,7 +240,7 @@ namespace Mooyash.Services
 
             Kart player = PhysicsEngine.player;
 
-            Engine.DrawString(player.prevRandomWaypoint.X + " " + player.prevRandomWaypoint.Y, new Vector2(160, 80), Color.Black, Game.font);
+            //Engine.DrawString(player.prevRandomWaypoint.X + " " + player.prevRandomWaypoint.Y, new Vector2(160, 80), Color.Black, Game.font);
 
             float progress = PhysicsEngine.player.percentageAlongTrack/100;
             float lineLen = 250;

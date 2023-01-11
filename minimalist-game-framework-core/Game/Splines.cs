@@ -12,13 +12,27 @@ namespace Mooyash.Services
             this.points = points;
         }
 
+        public static double getDistFromLinetoPoint(Vector2 a, Vector2 b, Vector2 position)
+        {
+            Vector2 aToCart = position - a;
+            Vector2 aToB = b - a;
+            return 0.0;
+        }
+
         //gets two closest waypoints to the player
         public static float[] getClosestPoints(Vector2 position, int prevWaypoint, int curWaypoint, List<Vector2> waypoints)
         {
-            float distToPrev = distanceToPoint(position, waypoints[prevWaypoint]);
-            float distToCur = distanceToPoint(position, waypoints[curWaypoint]);
-            float distToNext = distanceToPoint(position, waypoints[(curWaypoint + 1) % waypoints.Count]);
-            return new float[] { distToPrev, distToCur, distToNext };
+            Vector2 prevPoint = waypoints[prevWaypoint];
+            Vector2 curPoint = waypoints[curWaypoint];
+            Vector2 nextPoint = waypoints[(curWaypoint + 1) % waypoints.Count];
+
+            Vector2 aToCart = position;
+            float distToLineP;
+            float distToLineC;
+            float distToLineN;
+
+
+            return null;
         }
 
         //returns the distance from one point to another
