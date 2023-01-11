@@ -265,7 +265,10 @@ namespace Mooyash.Services
         */
         public static void drawUI()
         {
-            Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+            if (Game.debugging)
+            {
+                Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+            }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
             if (PhysicsEngine.time % 60 < 10)
