@@ -226,7 +226,7 @@ namespace Mooyash.Services
             }
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.ai2.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
 
             Kart a2 = PhysicsEngine.ai2;
 
@@ -237,9 +237,15 @@ namespace Mooyash.Services
 
             float Totalpercentage = Splines.getPercentageProgress(prev, cur, pos);
             */
-            float totalPercentage = a2.percentageAlongTrack;
 
-            Engine.DrawString(totalPercentage + "", new Vector2(160, 80), Color.Black, Game.font);
+            Engine.DrawString(Track.tracks[0].startPos.X + " " + Track.tracks[0].startPos.Y, new Vector2(160, 80), Color.Black, Game.font);
+
+            float progress = a2.percentageAlongTrack/100;
+            float lineLen = 250;
+            float start = (360-lineLen) / 3f;
+
+            Engine.DrawLine(new Vector2(start, 7), new Vector2(start + lineLen*progress, 7), Color.White);
+
         }
 
         public static void drawObjects(List<GameObject> objs)
@@ -258,7 +264,7 @@ namespace Mooyash.Services
 
         public static void draw()
         {
-            camera.followKart(PhysicsEngine.ai2);
+            camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
             drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
             drawUI();

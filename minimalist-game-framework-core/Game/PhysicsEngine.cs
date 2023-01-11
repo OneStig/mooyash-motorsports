@@ -79,9 +79,9 @@ namespace Mooyash.Services
 
             time += dt;
 
-            if (ai2.lapDisplay > 3)
+            if (player.lapDisplay > 3)
             {
-                ai2.lapDisplay = 3;
+                player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);

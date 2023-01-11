@@ -119,10 +119,11 @@ namespace Mooyash.Modules
         {
             if(previousWaypoint == 0)
             {
-                percentageAlongTrack = Track.tracks[0].lens[0] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+                percentageAlongTrack = Track.tracks[0].lens[0] *
+                                        Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
                 return;
             }
-            float curDist = Track.tracks[0].lens[0] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+            float curDist = Track.tracks[0].lens[previousWaypoint] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
             float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
             percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
         }
@@ -193,7 +194,7 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(300, 400);
+                minDistanceToReachWaypoint = rand.Next(450, 500);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 

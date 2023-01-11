@@ -151,7 +151,7 @@ namespace Mooyash.Modules
 
                 tracks[j] = new Track(collidable, interactable, visual,
                 new List<Vector2>{
-                loaded.startPos,
+                new Vector2(2250, 4250),
                 new Vector2(2270, 6530),
                 new Vector2(2640, 7030),
                 new Vector2(5260, 6700),
@@ -200,6 +200,7 @@ namespace Mooyash.Modules
                 deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
                 deltaY = (tracks[j].splines[0].Y - tracks[j].splines[tracks[j].splines.Count - 1].Y);
                 dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
                 tracks[j].totalLen += dist;
                 tracks[j].lens[tracks[j].splines.Count - 1] = dist;
 
