@@ -121,7 +121,7 @@ namespace Mooyash.Services
                 for (int i = 0; i < aiKarts.Length; i++)
                 {
                     aiKarts[i].updateInputAI(dt);
-                    aiKarts[i].update(dt);
+                    // aiKarts[i].update(dt);
                 }
             }
 
