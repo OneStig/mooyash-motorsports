@@ -254,7 +254,9 @@ namespace Mooyash.Services
                 ind = lastItem + 1;
             }
 
-            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale, source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)));
+            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale,
+                source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
+                scaleMode: TextureScaleMode.Nearest);
             Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
         }
 
