@@ -309,24 +309,24 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
-            if(previousWaypoint == 0)
-            {
-                currentWaypoint = 1;
-            }
+            //if(previousWaypoint == 0)
+            //{
+            //    currentWaypoint = 1;
+            //}
 
-            float[] dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
+            //float[] dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
 
-            if (dists[0] > dists[2])
-            {
-                previousWaypoint = currentWaypoint;
-                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
-            }
-            if (dists[0] < dists[1])
-            {
+            //if (dists[0] > dists[2])
+            //{
+            //    previousWaypoint = currentWaypoint;
+            //    currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+            //}
+            //if (dists[0] < dists[1])
+            //{
 
-            }
-            newRandomWaypoint = allWaypoints[currentWaypoint];
-            prevRandomWaypoint = allWaypoints[previousWaypoint];
+            //}
+            //newRandomWaypoint = allWaypoints[currentWaypoint];
+            //prevRandomWaypoint = allWaypoints[previousWaypoint];
 
             braking = false;
 

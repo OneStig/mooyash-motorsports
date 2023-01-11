@@ -42,11 +42,11 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
 
             time = 0;
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
             ai1.position = track.startPos;
             ai1.angle = track.startAngle;
 
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
             ai2.position = track.startPos - new Vector2(100, 100);
             ai2.angle = track.startAngle;
 
@@ -73,8 +73,8 @@ namespace Mooyash.Services
             aiKarts = new Kart[] { ai1, ai2 };
             if (Game.GameSettings[1] == 1)
             {
-                gameObjects.Add("ai1", ai1);
-                gameObjects.Add("ai2", ai2);
+                gameObjects.Add(ai1);
+                gameObjects.Add(ai2);
                 karts.Add(ai1);
                 karts.Add(ai2);
             }
@@ -110,8 +110,6 @@ namespace Mooyash.Services
                 kart.update(dt);
             }
 
-            player.update(dt, terrainConsts[id]);
-
             Vector2[] pastPosAIs = new Vector2[aiKarts.Length];
             for(int i = 0; i < aiKarts.Length; i++)
             {
@@ -123,16 +121,9 @@ namespace Mooyash.Services
                 for (int i = 0; i < aiKarts.Length; i++)
                 {
                     aiKarts[i].updateInputAI(dt);
-                    aiKarts[i].update(dt, terrainConsts[GetPhysicsID(aiKarts[i].position)]);
+                    aiKarts[i].update(dt);
                 }
             }
-
-
-            float minCollision = 1;
-            Vector2 finalPos = new Vector2();
-            Vector2 cur;
-            Vector2 next;
-            CirclePath c = new CirclePath(pastPos, player.position, player.radius);
 
             foreach(Projectile projectile in projectiles)
             {
@@ -158,20 +149,20 @@ namespace Mooyash.Services
                 }
             }
 
-            for(int i = 0; i < karts.Length; i++)
+            foreach (Kart curK in karts)
             {
-                if (TestLineLine(pastPosAIs[i], aiKarts[i].position, track.finish.Item1, track.finish.Item2))
+                if (TestLineLine(curK.prevPosition, curK.position, track.finish.Item1, track.finish.Item2))
                 {
-                    if (Vector2.Dot(aiKarts[i].position - pastPosAIs[i], (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                    if (Vector2.Dot(curK.position - curK.prevPosition, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
                     {
-                        aiKarts[i].lapCount++;
-                        aiKarts[i].distanceTraveled = 0;
+                        curK.lapCount++;
+                        curK.distanceTraveled = 0;
                     }
                     else
                     {
-                        aiKarts[i].lapCount = aiKarts[i].lapDisplay - 1;
+                        curK.lapCount = curK.lapDisplay - 1;
                     }
-                    aiKarts[i].lapDisplay = Math.Max(aiKarts[i].lapDisplay, aiKarts[i].lapCount);
+                    curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
                 }
                     
             }
