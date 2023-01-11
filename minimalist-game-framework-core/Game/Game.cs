@@ -14,7 +14,7 @@ class Game
 
     public static bool debugging;
 
-
+    
     public static bool playing; // (saves 31 bits of overhead yay)
 
     public Game()

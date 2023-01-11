@@ -24,6 +24,8 @@ namespace Mooyash.Services
         public float tsin { get; private set; } // of tilt angle
         public float tcos { get; private set; } // of tilt angle
 
+
+        
         //don't use camera until callling followKart
         public Camera(Vector2 follow, double hfov, float screen, float tilt)
         {
@@ -53,6 +55,11 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
+
+        private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
+        private static int lastItem = 0;
+        private static float lastItemTimer = 0;
+
         public static float renderDistance = 4000f;
 
         public static Vector2 rotate(Vector2 input)
@@ -169,6 +176,22 @@ namespace Mooyash.Services
 
             newP = project(newP);
 
+            if (t.GetType() == typeof(Kart))
+            {
+                Kart k = (Kart)t;
+
+                if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
+                {
+                    Engine.DrawTexture(t.texture,
+                    new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                    size: newSize, scaleMode: TextureScaleMode.Nearest,
+                    source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution),
+                    mirror: m,
+                    color: Color.Red);
+                    return;
+                }
+            }
+
             Engine.DrawTexture(t.texture,
                 new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest,
@@ -211,6 +234,27 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
             Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+
+            // "banana", "projectile", "speed"
+            // 26 x 18 pixels
+
+            lastItemTimer += Engine.TimeDelta;
+
+            int ind = PhysicsEngine.player.itemHeld;
+
+            if (ind == -1)
+            {
+                if (lastItemTimer > 0.1f)
+                {
+                    lastItemTimer = 0;
+                    lastItem = (lastItem + 1) % ItemBox.validItems.Length;
+                }
+                
+                ind = lastItem + 1;
+            }
+
+            Engine.DrawTexture(itemRoulette, new Vector2(210, 5), source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)));
+            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5), Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
@@ -218,6 +262,20 @@ namespace Mooyash.Services
             objs.Sort(compareDepths);
             foreach(GameObject t in objs)
             {
+                if (t.GetType() == typeof(Kart))
+                {
+                    Kart k = (Kart)t;
+
+                    if (k.isAI)
+                    {
+                        t.chooseTextureCam(RenderEngine.camera);
+                    }
+                }
+                else if (t.GetType() == typeof(Coin))
+                {
+                    t.chooseTextureCam(RenderEngine.camera);
+                }
+
                 drawObject(t);
             }
         }

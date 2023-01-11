@@ -30,6 +30,16 @@ namespace Mooyash.Services
             player.position = track.startPos;
             player.angle = track.startAngle;
             time = 0;
+
+            for (int i = 0; i < track.boxes.Length; i++)
+            {
+                gameObjects.Add(new ItemBox(track.boxes[i]));
+            }
+
+            for (int i = 0; i < track.coins.Length; i++)
+            {
+                gameObjects.Add(new Coin(track.coins[i]));
+            }
         }
 
         public static void update(float dt)
@@ -64,6 +74,14 @@ namespace Mooyash.Services
                         obj.collide(kart);
                     }
                 }
+
+                // This is scuffed for coin rotation, replace with dynamic obj later
+
+                if (obj.GetType() == typeof(Coin))
+                {
+                    Coin c = (Coin)obj;
+                    c.update(dt);
+                }
             }
         }
 
@@ -78,6 +96,12 @@ namespace Mooyash.Services
                 }
             }
             return 0;
+        }
+
+        // distance formula
+        public static float GetDistance(Vector2 p1, Vector2 p2)
+        {
+            return (float)Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
         }
 
         //OPTIMIZATION: Should be faster to directly calculate instead of using Vector2 methods
