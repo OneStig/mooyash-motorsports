@@ -69,7 +69,7 @@ namespace Mooyash.Services
             {
                 foreach(Kart kart in karts)
                 {
-                    if(obj.testCollision(dt, kart))
+                    if(obj.testCollision(dt, kart) && !obj.Equals(kart))
                     {
                         obj.collide(kart);
                     }

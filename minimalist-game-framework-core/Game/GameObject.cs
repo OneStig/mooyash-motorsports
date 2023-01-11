@@ -81,6 +81,7 @@ namespace Mooyash.Modules
             position += velocity.Rotated(angle * 180f / (float)Math.PI) * dt;
 
             float minCollision = 1;
+            float wallAngle = 0;
             Vector2 finalPos = new Vector2();
             Vector2 cur;
             Vector2 next;
@@ -109,6 +110,7 @@ namespace Mooyash.Modules
                         if (norm1 != norm2 && norm1 < minCollision * (norm1 - norm2))
                         {
                             minCollision = norm1 / (norm1 - norm2);
+                            wallAngle = Vector2.Angle(next - cur);
                             finalPos = c.c1 + minCollision * (c.c2 - c.c1);
                         }
                     }
@@ -118,13 +120,13 @@ namespace Mooyash.Modules
             if (minCollision != 1)
             {
                 position = finalPos;
-                wallCollide();
+                wallCollide(wallAngle);
             }
         }
 
-        public void wallCollide()
+        public void wallCollide(float wallAngle)
         {
-            velocity.X = -velocity.X;
+            angle = 2 * wallAngle - angle;
         }
     }
 
@@ -470,7 +472,7 @@ namespace Mooyash.Modules
             if (minCollision != 1)
             {
                 position = finalPos;
-                wallCollide();
+                wallCollide(0);
             }
 
             // base.update(dt);
@@ -490,12 +492,18 @@ namespace Mooyash.Modules
             }
         }
 
-        public void wallCollide()
+        public void wallCollide(float wallAngle)
         {
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
         }
 
+        public override void collide(Kart kart)
+        {
+            Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
+            kart.position += adjust;
+            position -= adjust;
+        }
         public void choosePlayerTexture(float angularVelo)
         {
             if (angularVelo < -0.8)
