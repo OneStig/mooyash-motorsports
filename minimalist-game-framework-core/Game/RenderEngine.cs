@@ -165,7 +165,7 @@ namespace Mooyash.Services
         {
             Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
-            if( (camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X/10 < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            if( (camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
             {
                 return false;
             }
