@@ -187,7 +187,7 @@ namespace Mooyash.Modules
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             numTex = 15;
-            size = new Vector2(500, 500);
+            size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);
             lapCount = 0;
             lapDisplay = 1;

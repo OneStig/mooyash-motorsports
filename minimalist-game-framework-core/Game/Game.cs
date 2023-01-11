@@ -13,6 +13,7 @@ class Game
 
     public static List<int> GameSettings;
     public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
+    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 20);
 
     public static bool debugging;
 
@@ -39,16 +40,9 @@ class Game
 
     public void Update()
     {
-        if (debugging && playing)
+        if (Engine.GetKeyDown(Key.P))
         {
-            if (Engine.GetKeyHeld(Key.Up))
-            {
-                RenderEngine.camera.height += 1;
-            }
-            if (Engine.GetKeyHeld(Key.Down))
-            {
-                RenderEngine.camera.height -= 1;
-            }
+            debugging = !debugging;
         }
         
         if (playing)
@@ -64,9 +58,9 @@ class Game
         {
             if (MenuSystem.UpdateMenu())
             {
-                playing = true;
                 GameSettings = MenuSystem.GetSettings();
                 PhysicsEngine.init();
+                playing = true;
             }
         }
     }

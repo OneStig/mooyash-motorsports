@@ -12,7 +12,7 @@ namespace Mooyash.Modules
         {
             this.position = position;
             texture = Engine.LoadTexture("Coin.png");
-            size = new Vector2(400, 400);
+            size = new Vector2(50, 50);
             resolution = new Vector2(32, 32);
             numTex = 5;
             radius = 20f;
@@ -26,7 +26,6 @@ namespace Mooyash.Modules
         public override void collide(Kart k)
         {
             k.score += 1;
-            //Engine.DrawString("score " + k.score, new Vector2(100, 5), Color.White, );
 
             PhysicsEngine.gameObjects.Remove(this);
         }
