@@ -150,7 +150,7 @@ namespace Mooyash.Modules
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
-        private readonly float boostMultiplier = 2f;
+        private readonly float boostMultiplier = 1.000000001f;
         private readonly float stunMultiplier = 6f;
 
         // Constants to determine how long certain effects will last (in seconds)
@@ -163,8 +163,8 @@ namespace Mooyash.Modules
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
-        private readonly float linDragConst = 0.5f; //deceleration linearly based on velocity
-        private readonly float quadDragConst = 0.002f; //deceleration quadratically based on velocity
+        private float linDragConst = 0.5f; //deceleration linearly based on velocity
+        private float quadDragConst = 0.002f; //deceleration quadratically based on velocity
         private readonly float naturalDecel = 1; //constant deceleration
         private readonly float brakeConst = 300; //deceleration due to braking
 
@@ -346,6 +346,9 @@ namespace Mooyash.Modules
             if (boostTime < speedBoostConst)
             {
                 throttle *= boostMultiplier;
+                linDragConst = 0.1f;
+                quadDragConst = 0.0002f;
+
             }
 
             Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
@@ -418,6 +421,8 @@ namespace Mooyash.Modules
             if (boostTime < speedBoostConst)
             {
                 throttle /= boostMultiplier;
+                linDragConst = 0.5f;
+                quadDragConst = 0.002f;
             }
 
             if (!isAI)
