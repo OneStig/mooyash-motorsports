@@ -16,7 +16,7 @@ namespace Mooyash.Modules
             this.angle = angle;
 
             texture = Engine.LoadTexture("shell.png");
-            size = new Vector2(300, 300);
+            size = new Vector2(37.5f, 37.5f);
             resolution = new Vector2(16, 16);
 
             radius = 30f;
