@@ -155,7 +155,6 @@ namespace Mooyash.Services
                     if (select.Equals("replay"))
                     {
                         CurScreen = 4;
-                        RenderEngine.score = 0;
                         Settings.RemoveAt(Settings.Count-1);
 
                     }

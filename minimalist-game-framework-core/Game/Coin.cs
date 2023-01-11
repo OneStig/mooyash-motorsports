@@ -6,22 +6,22 @@ namespace Mooyash.Modules
 {
     public class Coin : GameObject
     {
+        public static float angularVelo = (float)Math.PI * 2;
+
         public Coin(Vector2 position) : base()
         {
             this.position = position;
-            texture = Engine.LoadTexture("temp.png");
+            texture = Engine.LoadTexture("Coin.png");
             size = new Vector2(400, 400);
             resolution = new Vector2(32, 32);
-
-            radius = 40f;
+            numTex = 5;
+            radius = 20f;
         }
-
 
         public void update(float dt)
         {
-
+            angle = (angle + angularVelo * dt) % ((float)Math.PI * 2);
         }
-
 
         public override void collide(Kart k)
         {

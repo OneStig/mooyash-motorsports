@@ -77,6 +77,14 @@ namespace Mooyash.Services
                         obj.collide(kart);
                     }
                 }
+
+                // This is scuffed for coin rotation, replace with dynamic obj later
+
+                if (obj.GetType() == typeof(Coin))
+                {
+                    Coin c = (Coin)obj;
+                    c.update(dt);
+                }
             }
         }
 

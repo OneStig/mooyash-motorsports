@@ -341,17 +341,15 @@ namespace Mooyash.Modules
                 stunDrag = 1f;
             }
 
+            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
+
             // when boosting
 
             if (boostTime < speedBoostConst)
             {
                 throttle *= boostMultiplier;
-                linDragConst = 0.1f;
-                quadDragConst = 0.0002f;
-
+                terrainConst = PhysicsEngine.terrainConsts[0];
             }
-
-            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
 
             //acceleration due to drag (quadratic) and friction
             float tempA = -velocity.X*Math.Abs(velocity.X) * terrainConst.Item1 * quadDragConst * stunDrag 
@@ -421,8 +419,6 @@ namespace Mooyash.Modules
             if (boostTime < speedBoostConst)
             {
                 throttle /= boostMultiplier;
-                linDragConst = 0.5f;
-                quadDragConst = 0.002f;
             }
 
             if (!isAI)

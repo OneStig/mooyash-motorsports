@@ -16,8 +16,6 @@ namespace Mooyash.Modules
             radius = 30f;
         }
 
-
-
         public override void collide(Kart k)
         {
             if(k.score < 2)
@@ -27,11 +25,10 @@ namespace Mooyash.Modules
             {
                 k.score -= 2;
             }
-            
-            RenderEngine.score = k.score;
-            PhysicsEngine.gameObjects.Remove(this);
 
             k.stunTime = 0;
+
+            PhysicsEngine.gameObjects.Remove(this);
         }
     }
 }
