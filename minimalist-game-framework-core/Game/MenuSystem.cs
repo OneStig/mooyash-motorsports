@@ -249,7 +249,7 @@ namespace Mooyash.Services
         {
             for(int i = 0; i < textures.Length; i++)
             {
-                Engine.DrawTexture(textures[i], positions[i], size: sizes[i]);
+                Engine.DrawTexture(textures[i], positions[i] * Game.ResolutionScale, size: sizes[i] * Game.ResolutionScale, scaleMode: TextureScaleMode.Nearest);
             }
 
             for(int i = 0; i < buttons.Count; i++)
@@ -321,7 +321,7 @@ namespace Mooyash.Services
         private Color color;
         private Color fontColor;
 
-        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 18);
+        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 18 * Game.ResolutionScale);
 
         public Button(Color color, Vector2 position, Vector2 size, string func, Color fontColor)
         {
@@ -334,15 +334,15 @@ namespace Mooyash.Services
 
         public void DrawButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position.X, position.Y, size.X, size.Y), color);
-            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+Game.Resolution.Y/22), fontColor, font, TextAlignment.Center);
+            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color);
+            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+Game.VirtualResolution.Y/22) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
         }
 
         public void DrawSelectedButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position.X, position.Y, size.X, size.Y), Color.AliceBlue);
-            Engine.DrawRectSolid(new Bounds2(position.X+2, position.Y+2, size.X-4, size.Y-4), color);
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + Game.Resolution.Y / 22), fontColor, font, TextAlignment.Center);
+            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue);
+            Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + Game.VirtualResolution.Y / 22) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
         }
 
         public string Function()

@@ -35,7 +35,7 @@ namespace Mooyash.Services
             this.tilt = tilt;
 
             hslope = (float) Math.Tan(hfov / 2);
-            scale = Game.Resolution.X / (float)(2 * screen * hslope);
+            scale = Game.VirtualResolution.X / (float)(2 * screen * hslope);
             tcos = (float)Math.Cos(tilt);
             tsin = (float)Math.Sin(tilt);
         }
@@ -86,8 +86,8 @@ namespace Mooyash.Services
             result.X = result.X * camera.scale;
             result.Y = result.Y * camera.scale;
             //convert to MGF coordinate system
-            result.X += Game.Resolution.X / 2;
-            result.Y = Game.Resolution.Y / 2 - result.Y;
+            result.X += Game.VirtualResolution.X / 2;
+            result.Y = Game.VirtualResolution.Y / 2 - result.Y;
             return result;
         }
 
@@ -169,12 +169,12 @@ namespace Mooyash.Services
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*t.size;
+            Vector2 newSize = (camera.screen/newP.Y)*t.size * Game.ResolutionScale;
             newSize.X = (float)Math.Round(newSize.X);
             newSize.Y = (float)Math.Round(newSize.Y);
             TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
 
-            newP = project(newP);
+            newP = project(newP) * Game.ResolutionScale;
 
             if (t.GetType() == typeof(Kart))
             {
@@ -232,8 +232,9 @@ namespace Mooyash.Services
                 timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
             }
             timer = timer.Substring(0, 8);
-            Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+
+            Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
@@ -253,8 +254,10 @@ namespace Mooyash.Services
                 ind = lastItem + 1;
             }
 
-            Engine.DrawTexture(itemRoulette, new Vector2(210, 5), source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)));
-            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5), Color.White, Game.font);
+            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale,
+                source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
+                scaleMode: TextureScaleMode.Nearest);
+            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)

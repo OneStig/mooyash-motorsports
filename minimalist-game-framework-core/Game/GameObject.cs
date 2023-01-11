@@ -150,7 +150,7 @@ namespace Mooyash.Modules
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
-        private readonly float boostMultiplier = 1.000000001f;
+        private readonly float boostMultiplier = 1.8f;
         private readonly float stunMultiplier = 6f;
 
         // Constants to determine how long certain effects will last (in seconds)
