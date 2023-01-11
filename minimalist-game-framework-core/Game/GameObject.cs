@@ -641,20 +641,6 @@ namespace Mooyash.Modules
             }
 
             // base.update(dt);
-
-            if (PhysicsEngine.TestLineLine(prevPosition, position, PhysicsEngine.track.finish.Item1, PhysicsEngine.track.finish.Item2))
-            {
-                if (Vector2.Dot(position - prevPosition, (PhysicsEngine.track.finish.Item2 - PhysicsEngine.track.finish.Item1).Rotated(90)) > 0
-                    == PhysicsEngine.track.finish.Item3)
-                {
-                    lapCount++;
-                }
-                else
-                {
-                    lapCount = lapDisplay - 1;
-                }
-                lapDisplay = Math.Max(lapDisplay, lapCount);
-            }
         }
 
         public void wallCollide()
