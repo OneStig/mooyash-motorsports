@@ -53,7 +53,7 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-        public static float renderDistance = 3000f;
+        public static float renderDistance = 4000f;
 
         public static Vector2 rotate(Vector2 input)
         {
@@ -163,6 +163,8 @@ namespace Mooyash.Services
                 return;
             }
             Vector2 newSize = (camera.screen/newP.Y)*t.size;
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
             TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
 
             newP = project(newP);
