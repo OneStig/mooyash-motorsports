@@ -11,6 +11,7 @@ namespace Mooyash.Services
         public float height;
         public Vector2 follow; //x = followBack, y = followUp
 
+        public float tilt { get; private set; } //in radians, positive = down;
         public double hfov { get; private set; } //in radians
         public double angle { get; private set; } //0 = positive x, pi/2 = positive y
         public float screen { get; private set; } //how far (in cm) the screen is in front of camera
@@ -20,26 +21,23 @@ namespace Mooyash.Services
         public float cos { get; private set; } // of angle
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
+        public float tsin { get; private set; } // of tilt angle
+        public float tcos { get; private set; } // of tilt angle
 
 
         
         //don't use camera until callling followKart
-        public Camera(Vector2 follow, float height, double hfov, float screen)
+        public Camera(Vector2 follow, double hfov, float screen, float tilt)
         {
             this.follow = follow;
-            this.height = height;
             this.hfov = hfov;
             this.screen = screen;
+            this.tilt = tilt;
 
             hslope = (float) Math.Tan(hfov / 2);
             scale = Game.Resolution.X / (float)(2 * screen * hslope);
-        }
-
-        public void changeAngle(double dAngle)
-        {
-            angle += dAngle;
-            sin = (float)Math.Sin(angle);
-            cos = (float)Math.Cos(angle);
+            tcos = (float)Math.Cos(tilt);
+            tsin = (float)Math.Sin(tilt);
         }
 
         public void followKart(Kart kart)
@@ -57,10 +55,12 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-        public static float renderDistance = 3000f;
+
         private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
         private static int lastItem = 0;
         private static float lastItemTimer = 0;
+
+        public static float renderDistance = 4000f;
 
         public static Vector2 rotate(Vector2 input)
         {
@@ -79,8 +79,9 @@ namespace Mooyash.Services
         {
             Vector2 result = new Vector2();
             //project coordinates onto screen
-            result.X = camera.screen * input.X / input.Y;
-            result.Y = -camera.screen * camera.height / input.Y;
+            float distance = camera.tcos * input.Y + camera.tsin * camera.height;
+            result.X = camera.screen * input.X / distance;
+            result.Y = (camera.tsin*input.Y-camera.tcos*camera.height) * camera.screen / distance;
             //scale according to FOV
             result.X = result.X * camera.scale;
             result.Y = result.Y * camera.scale;
@@ -169,6 +170,8 @@ namespace Mooyash.Services
                 return;
             }
             Vector2 newSize = (camera.screen/newP.Y)*t.size;
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
             TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
 
             newP = project(newP);
