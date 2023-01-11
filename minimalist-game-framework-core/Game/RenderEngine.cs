@@ -165,11 +165,13 @@ namespace Mooyash.Services
         {
             Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
-            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            if( (camera.hslope * newP.Y + newP.X + t.size.X/2 < 0) || (camera.hslope * newP.Y - newP.X + t.size.X/2 < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*t.size * Game.ResolutionScale;
+
+            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
+            Vector2 newSize = (camera.screen/distance)*t.size * Game.ResolutionScale;
             newSize.X = (float)Math.Round(newSize.X);
             newSize.Y = (float)Math.Round(newSize.Y);
             TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
