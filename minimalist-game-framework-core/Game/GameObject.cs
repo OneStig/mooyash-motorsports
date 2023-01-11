@@ -97,11 +97,11 @@ namespace Mooyash.Modules
             //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
-            previousWaypoint = 0;
+            previousWaypoint = allWaypoints.Count-1;
 
             newRandomWaypoint = allWaypoints[0];
             prevRandomWaypoint = allWaypoints[0];
-            minDistanceToReachWaypoint = rand.Next(450, 500);
+            minDistanceToReachWaypoint = 500;
 
             //Kart-dependent lap
             lapCount = 0;
@@ -123,7 +123,8 @@ namespace Mooyash.Modules
                                         Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
                 return;
             }
-            float curDist = Track.tracks[0].lens[previousWaypoint] * Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+            float curDist = Track.tracks[0].lens[previousWaypoint] *
+                            Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
             float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
             percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
         }
@@ -142,6 +143,21 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
+            if(previousWaypoint == 0)
+            {
+                currentWaypoint = 1;
+            }
+
+            float[] dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
+
+            if (dists[0] > dists[2])
+            {
+                previousWaypoint = currentWaypoint;
+                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+            }
+            newRandomWaypoint = allWaypoints[currentWaypoint];
+            prevRandomWaypoint = allWaypoints[previousWaypoint];
+
             braking = false;
             if (Engine.GetKeyHeld(Key.W))
             {
@@ -184,6 +200,8 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
             }
+
+            percentDone();
         }
 
         public void updateInputAI(float dt)
@@ -204,7 +222,6 @@ namespace Mooyash.Modules
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
-
 
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);    

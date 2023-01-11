@@ -13,19 +13,12 @@ namespace Mooyash.Services
         }
 
         //gets two closest waypoints to the player
-        public static Vector2[] getClosestPoints(Vector2 cartLocation, List<Vector2> waypoints)
+        public static float[] getClosestPoints(Vector2 position, int prevWaypoint, int curWaypoint, List<Vector2> waypoints)
         {
-            return waypoints.Select(point => new
-            {
-                Point = point,
-                Distance = distanceToPoint(point, cartLocation)
-
-
-            })
-                .OrderBy(p => p.Distance)
-                .Take(2)
-                .Select(p => p.Point)
-                .ToArray();
+            float distToPrev = distanceToPoint(position, waypoints[prevWaypoint]);
+            float distToCur = distanceToPoint(position, waypoints[curWaypoint]);
+            float distToNext = distanceToPoint(position, waypoints[(curWaypoint + 1) % waypoints.Count]);
+            return new float[] { distToPrev, distToCur, distToNext };
         }
 
         //returns the distance from one point to another

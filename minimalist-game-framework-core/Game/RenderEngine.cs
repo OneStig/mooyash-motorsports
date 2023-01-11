@@ -238,9 +238,11 @@ namespace Mooyash.Services
             float Totalpercentage = Splines.getPercentageProgress(prev, cur, pos);
             */
 
-            Engine.DrawString(Track.tracks[0].startPos.X + " " + Track.tracks[0].startPos.Y, new Vector2(160, 80), Color.Black, Game.font);
+            Kart player = PhysicsEngine.player;
 
-            float progress = a2.percentageAlongTrack/100;
+            Engine.DrawString(player.prevRandomWaypoint.X + " " + player.prevRandomWaypoint.Y, new Vector2(160, 80), Color.Black, Game.font);
+
+            float progress = PhysicsEngine.player.percentageAlongTrack/100;
             float lineLen = 250;
             float start = (360-lineLen) / 3f;
 
