@@ -6,7 +6,9 @@ namespace Mooyash.Services
 {
     public static class PhysicsEngine
     {
-        public static Dictionary<string, GameObject> gameObjects;
+        public static HashSet<Kart> karts = new HashSet<Kart>();
+        public static HashSet<Projectile> projectiles = new HashSet<Projectile>();
+        public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
         public static Kart player;
         public static Track track;
 
@@ -30,10 +32,12 @@ namespace Mooyash.Services
 
         public static void init()
         {
+            //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1));
-            gameObjects = new Dictionary<string, GameObject>();
-            gameObjects.Add("player", player);
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
+            gameObjects = new HashSet<GameObject>();
+            gameObjects.Add(player);
+            karts.Add(player);
             player.position = track.startPos;
             player.angle = track.startAngle;
 
@@ -71,14 +75,26 @@ namespace Mooyash.Services
             {
                 gameObjects.Add("ai1", ai1);
                 gameObjects.Add("ai2", ai2);
+                karts.Add(ai1);
+                karts.Add(ai2);
+            }
+
+            for (int i = 0; i < track.boxes.Length; i++)
+            {
+                gameObjects.Add(new ItemBox(track.boxes[i]));
+            }
+
+            for (int i = 0; i < track.coins.Length; i++)
+            {
+                gameObjects.Add(new Coin(track.coins[i]));
             }
         }
 
         public static void update(float dt)
         {
-
             time += dt;
 
+            //sees if game ends
             if (player.lapDisplay > 3)
             {
                 player.lapDisplay = 3;
@@ -87,18 +103,11 @@ namespace Mooyash.Services
                 MenuSystem.SetFinalTime(finalTime);
             }
 
-            Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
-
             player.updateInput(dt);
-            int id = GetPhysicsID(player.position);
 
-            //this shouldn't happen, maybe we should do something else?
-            if(id == -1)
+            foreach (Kart kart in karts)
             {
-                player = new Kart(1200 + Game.GameSettings[2]*600);
-                player.position = track.startPos;
-                player.angle = track.startAngle;
-                id = GetPhysicsID(player.position);
+                kart.update(dt);
             }
 
             player.update(dt, terrainConsts[id]);
@@ -125,58 +134,31 @@ namespace Mooyash.Services
             Vector2 next;
             CirclePath c = new CirclePath(pastPos, player.position, player.radius);
 
-            //Handles collisions between player and walls of polygon
-            //Should implement bounding box idea
-            foreach(Polygon p in track.collidable)
+            foreach(Projectile projectile in projectiles)
             {
-                for(int i = 0; i < p.vertices; i++)
+                projectile.update(dt);
+            }
+            foreach(GameObject obj in gameObjects)
+            {
+                foreach(Kart kart in karts)
                 {
-                    //if p has the same point twice in a row, this fails
-                    cur = p.points[i];
-                    next = p.points[(i+1) % p.vertices]; 
-                    if(cur.Equals(next))
+                    if(obj.testCollision(dt, kart))
                     {
-                        throw new Exception("Polygon cannot have same point twice in a row");
+                        obj.collide(kart);
                     }
-                    if(TestCircleLine(c, cur, next))
-                    {
-                        //OPTIMIZE: This is (kinda) recalculating norm
-                        //EXCEPTION: What if cross is 0? - shouldn't happen though
-                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
-                        float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
-                        float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
-                        {
-                            minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
-                        }
-                    }
+                }
+
+                // This is scuffed for coin rotation, replace with dynamic obj later
+
+                if (obj.GetType() == typeof(Coin))
+                {
+                    
+                    Coin c = (Coin)obj;
+                    c.update(dt);
                 }
             }
 
-            if(minCollision != 1)
-            {
-                player.position = finalPos;
-                player.velocity.X = -player.velocity.X * 0.75f;
-                player.throttle /= 2;
-            }
-            
-            //This checks for crossing on every frame, probably needs to be optimized later
-            //Checks if player crosses the finish line
-            if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
-            {
-                if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
-                {
-                    player.lapCount++;
-                }
-                else
-                {
-                    player.lapCount = player.lapDisplay - 1;
-                }
-                player.lapDisplay = Math.Max(player.lapDisplay, player.lapCount);
-            }
-
-            for(int i = 0; i < aiKarts.Length; i++)
+            for(int i = 0; i < karts.Length; i++)
             {
                 if (TestLineLine(pastPosAIs[i], aiKarts[i].position, track.finish.Item1, track.finish.Item2))
                 {
@@ -191,6 +173,7 @@ namespace Mooyash.Services
                     }
                     aiKarts[i].lapDisplay = Math.Max(aiKarts[i].lapDisplay, aiKarts[i].lapCount);
                 }
+                    
             }
         }
 
@@ -204,7 +187,13 @@ namespace Mooyash.Services
                     return track.interactable[i].id;
                 }
             }
-            return -1;
+            return 0;
+        }
+
+        // distance formula
+        public static float GetDistance(Vector2 p1, Vector2 p2)
+        {
+            return (float)Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
         }
 
         //OPTIMIZATION: Should be faster to directly calculate instead of using Vector2 methods
@@ -305,6 +294,11 @@ namespace Mooyash.Services
         public static bool TestStaticCircleLine(Vector2 c, float r, Vector2 p1, Vector2 p2)
         {
             return true;
+        }
+
+        public static bool TestCircles(Vector2 c1, float r1, Vector2 c2, float r2)
+        {
+            return (c1 - c2).Length() < (r1 + r2);
         }
     }
 
