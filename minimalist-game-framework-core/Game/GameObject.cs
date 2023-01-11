@@ -160,9 +160,6 @@ namespace Mooyash.Modules
         private readonly float stunConst = 3f;
         private readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
-        //for lap completion
-        public float lapCount;
-        public float lapDisplay;
 
         //Waypoint variables for ai driving
         public int currentWaypoint;
@@ -220,8 +217,6 @@ namespace Mooyash.Modules
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);
-            lapCount = 0;
-            lapDisplay = 1;
 
             velocity = new Vector2(0, 0);
             position = new Vector2(4500, 0);
