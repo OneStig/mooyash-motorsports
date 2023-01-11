@@ -132,11 +132,14 @@ namespace Mooyash.Services
                 drawPerPolygon(p);
             }
 
-            for(int i = 0; i < t.splines.Count; i++)
+            if (Game.debugging)
             {
-                drawWaypoint(t.splines[i]);
+                for (int i = 0; i < t.splines.Count; i++)
+                {
+                    drawWaypoint(t.splines[i]);
+                }
             }
-
+            
             // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
@@ -179,8 +182,23 @@ namespace Mooyash.Services
 
             newP = project(newP);
 
-            Engine.DrawPoint(newP, Color.Orange);
+            Vector2[] offsets = new Vector2[12];
+            Vector2[] offsets2 = new Vector2[12];
+            float wpRadius = 500;
 
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                float dist = i * 2f / offsets.Length * (float)Math.PI;
+                offsets2[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist));
+                offsets[i] = offsets2[i] * wpRadius;
+
+                // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                offsets[i] += pos;
+                offsets2[i] = offsets2[i] * 10 + pos;
+            }
+
+            drawPerPolygon(new Polygon(offsets, new Color(255, 87, 51, 100)));
+            drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
         }
 
         public static bool drawObject(GameObject t)
@@ -201,7 +219,7 @@ namespace Mooyash.Services
                     float dist = i * 2f / offsets.Length * (float)Math.PI;
                     offsets[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist)) * t.radius;
 
-                    offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                    // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
                     offsets[i] += t.position;
                 }
 
