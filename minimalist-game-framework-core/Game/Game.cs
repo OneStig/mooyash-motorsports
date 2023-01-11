@@ -16,7 +16,7 @@ class Game
 
     public static bool debugging;
 
-
+    
     public static bool playing; // (saves 31 bits of overhead yay)
 
     public Game()
@@ -34,7 +34,7 @@ class Game
         //DEBUGGING
         debugging = false; // set true for diagnostics
         PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
-        RenderEngine.camera = new Camera(new Vector2(300, 100), 25, Math.PI / 2, 20);
+        RenderEngine.camera = new Camera(new Vector2(250, 150), Math.PI / 2, 20, (float) Math.PI/12);
     }
 
     public void Update()

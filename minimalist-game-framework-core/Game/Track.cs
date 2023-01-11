@@ -20,6 +20,11 @@ namespace Mooyash.Modules
 
         public Vector2[] splines;
         public Tuple<Vector2, Vector2> checkpoint;
+
+        // Stuff on the track
+
+        public Vector2[] boxes;
+        public Vector2[] coins;
     }
 
     public class Track
@@ -35,6 +40,9 @@ namespace Mooyash.Modules
 
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
+
+        public Vector2[] boxes;
+        public Vector2[] coins;
 
         public static Track[] tracks;
 
@@ -150,6 +158,9 @@ namespace Mooyash.Modules
 
                 tracks[j].startPos = loaded.startPos;
                 tracks[j].startAngle = loaded.startAngle;
+
+                tracks[j].boxes = loaded.boxes;
+                tracks[j].coins = loaded.coins;
             }
         }
     }
