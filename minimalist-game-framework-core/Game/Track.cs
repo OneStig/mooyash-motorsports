@@ -159,7 +159,7 @@ namespace Mooyash.Modules
 
                 tracks[j] = new Track(collidable, interactable, visual,
                 new List<Vector2>{
-                new Vector2(2250, 4250),
+                new Vector2(2250, 4000),
                 new Vector2(2270, 6530),
                 new Vector2(2640, 7030),
                 new Vector2(5260, 6700),

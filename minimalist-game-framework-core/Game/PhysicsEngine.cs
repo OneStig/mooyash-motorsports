@@ -40,6 +40,7 @@ namespace Mooyash.Services
             karts.Add(player);
             player.position = track.startPos;
             player.angle = track.startAngle;
+            player.currentWaypoint = 1;
 
             time = 0;
             ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");

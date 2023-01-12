@@ -171,6 +171,9 @@ namespace Mooyash.Modules
         public float curPercent;
         public float percentageAlongTrack;
 
+        //Distance from kart to closet waypoints updated every frame
+        public float[] dists;
+
         //Kart dependent lapCount and lapDisplay variables
         public int lapCount;
         public int lapDisplay;
@@ -225,7 +228,7 @@ namespace Mooyash.Modules
             //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
             currentWaypoint = 0;
-            previousWaypoint = allWaypoints.Count-1;
+            previousWaypoint = 0;
 
             newRandomWaypoint = allWaypoints[0];
             prevRandomWaypoint = allWaypoints[0];
@@ -307,26 +310,36 @@ namespace Mooyash.Modules
             }
         }
 
+        public void updateTargetWaypoints(int waypointRadius)
+        {
+            dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
+
+            if (dists[1]+waypointRadius > dists[2])
+            {
+                previousWaypoint = currentWaypoint;
+                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+            }
+            if (dists[0] < dists[1])
+            {
+                currentWaypoint = previousWaypoint;
+                previousWaypoint--;
+                if (previousWaypoint < 0)
+                {
+                    previousWaypoint = allWaypoints.Count - 1;
+                }
+
+            }
+            randomDrivingRadius = rand.Next(waypointRadius / 10);
+            randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+            newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                            (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));;
+            prevRandomWaypoint = allWaypoints[previousWaypoint];
+        }
+
         public void updateInput(float dt)
         {
-            //if(previousWaypoint == 0)
-            //{
-            //    currentWaypoint = 1;
-            //}
 
-            //float[] dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
-
-            //if (dists[0] > dists[2])
-            //{
-            //    previousWaypoint = currentWaypoint;
-            //    currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
-            //}
-            //if (dists[0] < dists[1])
-            //{
-
-            //}
-            //newRandomWaypoint = allWaypoints[currentWaypoint];
-            //prevRandomWaypoint = allWaypoints[previousWaypoint];
+            updateTargetWaypoints(0);
 
             braking = false;
 
@@ -380,7 +393,7 @@ namespace Mooyash.Modules
                 }
             }
 
-            percentDone();
+            //percentDone();
         }
 
         public void updateInputAI(float dt)
@@ -401,6 +414,8 @@ namespace Mooyash.Modules
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
+
+            //updateTargetWaypoints(rand.Next(450, 500));
 
             braking = false;
             throttle = Math.Min(1, throttle + tInputScale * dt);    
@@ -473,7 +488,8 @@ namespace Mooyash.Modules
                 steer = decay(steer, steerDecay, dt);
                 angle = angleToWaypoint;
             }
-            percentDone();
+
+            //percentDone();
         }
 
         public void update(float dt)
@@ -641,6 +657,8 @@ namespace Mooyash.Modules
             }
 
             // base.update(dt);
+
+            percentDone();
         }
 
         public void wallCollide()

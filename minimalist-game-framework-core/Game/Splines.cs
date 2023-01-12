@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 namespace Mooyash.Services
 {
@@ -12,27 +13,39 @@ namespace Mooyash.Services
             this.points = points;
         }
 
-        public static double getDistFromLinetoPoint(Vector2 a, Vector2 b, Vector2 position)
+        public static float getDistFromLinetoPoint(Vector2 a, Vector2 b, Vector2 position)
         {
-            Vector2 aToCart = position - a;
-            Vector2 aToB = b - a;
-            return 0.0;
+            float pct = getPercentageProgress(a, b, position);
+            bool isWithinBounds = pct >= 0 && pct <= 100;
+            if (isWithinBounds)
+            {
+                double m = (a.Y - b.Y) / (b.X - a.X);
+                double yInt = a.Y - (m * a.X);
+
+                // Find the shortest distance from the point to the line
+                float distance = (float)Math.Abs(m * position.X - position.Y + yInt)
+                                / (float)Math.Sqrt(Math.Pow(m, 2) + 1);
+                return distance;
+            }
+
+            return (float)Math.Min(distanceToPoint(a, position), distanceToPoint(b, position));
+
         }
 
         //gets two closest waypoints to the player
         public static float[] getClosestPoints(Vector2 position, int prevWaypoint, int curWaypoint, List<Vector2> waypoints)
         {
+            Vector2 prevPrevPoint = waypoints[(prevWaypoint + waypoints.Count - 1) % waypoints.Count];
             Vector2 prevPoint = waypoints[prevWaypoint];
             Vector2 curPoint = waypoints[curWaypoint];
             Vector2 nextPoint = waypoints[(curWaypoint + 1) % waypoints.Count];
 
-            Vector2 aToCart = position;
-            float distToLineP;
-            float distToLineC;
-            float distToLineN;
+            float distToLineP = getDistFromLinetoPoint(prevPrevPoint, prevPoint, position);
+            float distToLineC = getDistFromLinetoPoint(prevPoint, curPoint, position);
+            float distToLineN = getDistFromLinetoPoint(curPoint, nextPoint, position);
 
 
-            return null;
+            return new float[] {distToLineP, distToLineC, distToLineN};
         }
 
         //returns the distance from one point to another

@@ -311,36 +311,35 @@ namespace Mooyash.Services
             }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            if (PhysicsEngine.time / 60 > 9)
+            {
+                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            }
             if (PhysicsEngine.time % 60 < 10)
             {
                 timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                if (PhysicsEngine.time / 60 > 9)
+                {
+                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                }
             }
             timer = timer.Substring(0, 8);
 
 
-            Kart a2 = PhysicsEngine.ai2;
-
-            /*
-            Vector2 prev = a2.allWaypoints[a2.previousWaypoint];
-            Vector2 cur = a2.newRandomWaypoint;
-            Vector2 pos = a2.position;
-
-            float Totalpercentage = Splines.getPercentageProgress(prev, cur, pos);
-            */
-
-            Kart player = PhysicsEngine.player;
-
-            //Engine.DrawString(player.prevRandomWaypoint.X + " " + player.prevRandomWaypoint.Y, new Vector2(160, 80), Color.Black, Game.font);
-
             float progress = PhysicsEngine.player.percentageAlongTrack/100;
-            float lineLen = 250;
-            float start = (360-lineLen) / 3f;
+            float lineLen = 800;
+            float start = (Game.Resolution.X - 800) / 2;
 
-            Engine.DrawLine(new Vector2(start, 7), new Vector2(start + lineLen*progress, 7), Color.White);
+            Engine.DrawRectSolid(new Bounds2(start, 50, lineLen * progress, 12), Color.White);
+
+
+            //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
 
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
