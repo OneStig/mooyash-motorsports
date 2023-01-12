@@ -251,10 +251,22 @@ namespace Mooyash.Services
                 Kart k = (Kart)t;
 
                 // scuffed fix to reorient texture with collider
+                // also this does drifting particles now
 
                 if (k == PhysicsEngine.player)
                 {
                     newP.Y += 30;
+
+                    if (PhysicsEngine.player.drifting)
+                    {
+                        TextureMirror tm = PhysicsEngine.player.curTex < 0 ? TextureMirror.None : TextureMirror.Horizontal;
+
+                        Engine.DrawTexture(Kart.smoke,
+                            newP,
+                            size: new Vector2(64, 64),
+                            scaleMode: TextureScaleMode.Nearest,
+                            mirror: tm);
+                    }
                 }
 
                 if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
