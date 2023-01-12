@@ -18,7 +18,6 @@ namespace Mooyash.Modules
         public Color[] interactableColor;
         public Color[] visualColor;
 
-        public List<Vector2> splines;
         public Tuple<Vector2, Vector2> checkpoint;
 
         // Stuff on the track
@@ -37,6 +36,7 @@ namespace Mooyash.Modules
         public List<Polygon> visual;
 
         public List<Vector2> splines;
+        //public List<Vector2> barrier;
 
         public float totalLen;
         public float[] lens;
@@ -182,6 +182,20 @@ namespace Mooyash.Modules
 
                 tracks[j].lens = new float[tracks[j].splines.Count];
                 tracks[j].lensToPoint = new float[tracks[j].splines.Count];
+
+                //tracks[j].barrier = new List<Vector2> {
+                //new Vector2(300,400),
+                //new Vector2(300,600),
+                //new Vector2(325,627),
+                //new Vector2(776,628),
+                //new Vector2(777,603),
+                //new Vector2(732,553),
+                //new Vector2(526,552),
+                //new Vector2(500,500),
+                //new Vector2(500,302),
+                //new Vector2(353,301),
+                //new Vector2(301,328),
+                //};
 
                 float deltaX;
                 float deltaY;
