@@ -8,7 +8,7 @@ namespace Mooyash.Modules
     public class Sounds
     {
         public static Dictionary<string, Sound> sounds = new Dictionary<string, Sound>();
-        private static string[] soundNames = new string[] { "collide", "hit", "coin", "itemBox", "lapFinish", "throttle", "dirt"};
+        private static string[] soundNames = new string[] { "collide", "hit", "coin", "itemBox", "lapFinish", "throttle", "dirt", "road"};
         public static void loadSounds()
         {
             foreach(string s in soundNames)

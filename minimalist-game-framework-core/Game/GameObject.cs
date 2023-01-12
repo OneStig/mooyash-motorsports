@@ -183,10 +183,13 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        //for sounds
         private int revTimer;
+        private SoundInstance terrain;
 
         // score
         public int score;
+
         public Kart(float throttleConst, bool isAI, String kartName) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
@@ -316,15 +319,35 @@ namespace Mooyash.Modules
         public void update(float dt)
         {
             prevPosition = new Vector2(position.X, position.Y);
+            int id = PhysicsEngine.GetPhysicsID(position);
 
-            //handle rev sounds
+            //handle sounds
+            if(id == 0 && road == null)
+            {
+                if(dirt != null)
+                {
+                    Engine.StopSound(dirt);
+                    dirt = null;
+                }
+                road = Engine.PlaySound(Sounds.sounds["road"], repeat: true);
+            }
+            else if(id != 0 && dirt == null)
+            {
+                if(road != null)
+                {
+                    Engine.StopSound(road);
+                    road = null;
+                }
+                dirt = Engine.PlaySound(Sounds.sounds["dirt"], repeat: true);
+            }
+
             if (throttle != 0)
             {
                 revTimer--;
             }
             if(revTimer <= 0)
             {
-                Engine.PlaySound(Sounds.sounds["throttle"]);
+                //Engine.PlaySound(Sounds.sounds["throttle"]);
                 revTimer = (int)(10 - 10 * throttle);
             }
 
