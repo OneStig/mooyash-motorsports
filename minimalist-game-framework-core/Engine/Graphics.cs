@@ -87,6 +87,8 @@ static partial class Engine
     {
         DrawPrimitiveSetup(polygon.color);
 
+        SDL.SDL_Rect rect = new SDL.SDL_Rect();
+
         SDL.SDL_Point[] points = new SDL.SDL_Point[polygon.points.Length];
 
         for (int i = 0; i < points.Length; i++)
@@ -105,7 +107,7 @@ static partial class Engine
         for (int i = 0; i < points.Length; i++)
         {
             int ia = (i + 1) % points.Length;
-            SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[ia].x, points[ia].y);
+            // SDL.SDL_RenderDrawLine(Renderer, points[i].x, points[i].y, points[ia].x, points[ia].y);
 
             if (points[i].x == points[ia].x)
             {
@@ -134,7 +136,13 @@ static partial class Engine
             {
                 int y = (int)Math.Round(m * x + b);
 
-                SDL.SDL_RenderDrawPoint(Renderer, x, y);
+                rect.x = (int)x * Game.ResolutionScale;
+                rect.y = (int)y * 4;
+                rect.w = Game.ResolutionScale;
+                rect.h = Game.ResolutionScale;
+                SDL.SDL_RenderFillRect(Renderer, ref rect);
+
+                // SDL.SDL_RenderDrawPoint(Renderer, x, y);
 
                 if (xBucket[x - points[polygon.xMin].x] == Int32.MinValue)
                 {
@@ -142,12 +150,19 @@ static partial class Engine
                 }
                 else
                 {
-                    SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - points[polygon.xMin].x]);
+                    // SDL.SDL_RenderDrawLine(Renderer, x, y, x, xBucket[x - points[polygon.xMin].x]);
+
+                    rect.x = (int)x * Game.ResolutionScale;
+                    rect.y = (int)Math.Min(y, xBucket[x - points[polygon.xMin].x]) * 4;
+                    rect.w = Game.ResolutionScale;
+                    rect.h = (int)Math.Abs(y - xBucket[x - points[polygon.xMin].x]) * 4;
+                    SDL.SDL_RenderFillRect(Renderer, ref rect);
+
                 }
             }
         }
 
-        SDL.SDL_RenderDrawLine(Renderer, points[0].x, points[0].y, points[points.Length - 1].x, points[points.Length - 1].y);
+        // SDL.SDL_RenderDrawLine(Renderer, points[0].x, points[0].y, points[points.Length - 1].x, points[points.Length - 1].y);
     }
 
     // ======================================================================================

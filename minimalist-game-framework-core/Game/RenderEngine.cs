@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mooyash.Modules;
@@ -11,6 +11,7 @@ namespace Mooyash.Services
         public float height;
         public Vector2 follow; //x = followBack, y = followUp
 
+        public float tilt { get; private set; } //in radians, positive = down;
         public double hfov { get; private set; } //in radians
         public double angle { get; private set; } //0 = positive x, pi/2 = positive y
         public float screen { get; private set; } //how far (in cm) the screen is in front of camera
@@ -20,24 +21,23 @@ namespace Mooyash.Services
         public float cos { get; private set; } // of angle
         public float scale { get; private set; } //based on hfov and screen
         public float hslope { get; private set; } //for handling drawing conditions
+        public float tsin { get; private set; } // of tilt angle
+        public float tcos { get; private set; } // of tilt angle
 
+
+        
         //don't use camera until callling followKart
-        public Camera(Vector2 follow, float height, double hfov, float screen)
+        public Camera(Vector2 follow, double hfov, float screen, float tilt)
         {
             this.follow = follow;
-            this.height = height;
             this.hfov = hfov;
             this.screen = screen;
+            this.tilt = tilt;
 
             hslope = (float) Math.Tan(hfov / 2);
-            scale = Game.Resolution.X / (float)(2 * screen * hslope);
-        }
-
-        public void changeAngle(double dAngle)
-        {
-            angle += dAngle;
-            sin = (float)Math.Sin(angle);
-            cos = (float)Math.Cos(angle);
+            scale = Game.VirtualResolution.X / (float)(2 * screen * hslope);
+            tcos = (float)Math.Cos(tilt);
+            tsin = (float)Math.Sin(tilt);
         }
 
         public void followKart(Kart kart)
@@ -55,7 +55,12 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-        public static float renderDistance = 3000f;
+
+        private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
+        private static int lastItem = 0;
+        private static float lastItemTimer = 0;
+
+        public static float renderDistance = 4000f;
 
         public static Vector2 rotate(Vector2 input)
         {
@@ -74,14 +79,15 @@ namespace Mooyash.Services
         {
             Vector2 result = new Vector2();
             //project coordinates onto screen
-            result.X = camera.screen * input.X / input.Y;
-            result.Y = -camera.screen * camera.height / input.Y;
+            float distance = camera.tcos * input.Y + camera.tsin * camera.height;
+            result.X = camera.screen * input.X / distance;
+            result.Y = (camera.tsin*input.Y-camera.tcos*camera.height) * camera.screen / distance;
             //scale according to FOV
             result.X = result.X * camera.scale;
             result.Y = result.Y * camera.scale;
             //convert to MGF coordinate system
-            result.X += Game.Resolution.X / 2;
-            result.Y = Game.Resolution.Y / 2 - result.Y;
+            result.X += Game.VirtualResolution.X / 2;
+            result.Y = Game.VirtualResolution.Y / 2 - result.Y;
             return result;
         }
 
@@ -125,6 +131,16 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+
+            if (Game.debugging)
+            {
+                for (int i = 0; i < t.splines.Count; i++)
+                {
+                    drawWaypoint(t.splines[i]);
+                }
+            }
+            
+            // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
         public static bool testDraw(Polygon temp)
@@ -155,24 +171,111 @@ namespace Mooyash.Services
             return splice;
         }
 
-        public static void drawObject(GameObject t)
+        public static void drawWaypoint(Vector2 pos)
         {
-            Vector2 newP = rotate(t.position);
-            //this is repeating some code, but I don't think it needs to be in a method
-            if( (camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            Vector2 newP = rotate(pos);
+
+            if ((camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
             {
                 return;
             }
-            Vector2 newSize = (camera.screen/newP.Y)*t.size;
-            TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
 
             newP = project(newP);
+
+            Vector2[] offsets = new Vector2[12];
+            Vector2[] offsets2 = new Vector2[12];
+            float wpRadius = 500;
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                float dist = i * 2f / offsets.Length * (float)Math.PI;
+                offsets2[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist));
+                offsets[i] = offsets2[i] * wpRadius;
+
+                // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                offsets[i] += pos;
+                offsets2[i] = offsets2[i] * 10 + pos;
+            }
+
+            drawPerPolygon(new Polygon(offsets, new Color(255, 87, 51, 100)));
+            drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
+        }
+
+        public static bool drawObject(GameObject t)
+        {
+            Vector2 newP = rotate(t.position);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if( (camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            {
+                return false;
+            }
+
+            if (Game.debugging)
+            {
+                Vector2[] offsets = new Vector2[12];
+
+                for (int i = 0; i < offsets.Length; i++)
+                {
+                    float dist = i * 2f / offsets.Length * (float)Math.PI;
+                    offsets[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist)) * t.radius;
+
+                    // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                    offsets[i] += t.position;
+                }
+
+                // draw collider when debugging
+                drawPerPolygon(new Polygon(offsets, new Color(255, 0, 0, 100)));
+
+                Vector2 angleVec = project(rotate(t.position + new Vector2((float)Math.Cos(t.angle), (float)Math.Sin(t.angle)) * 100));
+
+                Engine.DrawLine(project(rotate(t.position)) * Game.ResolutionScale, angleVec * Game.ResolutionScale, Color.LimeGreen);
+            }
+
+            // those 3 mystery boxes, their positions are separated by 100 units
+
+            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
+            Vector2 newSize = (camera.screen/distance)*t.size * camera.scale * Game.ResolutionScale;
+            
+            TextureMirror m = t.curTex >= 0 ? TextureMirror.None : TextureMirror.Horizontal;
+
+            newP = project(newP) * Game.ResolutionScale;
+
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
+
+            newP.X = (float)Math.Round(newP.X);
+            newP.Y = (float)Math.Round(newP.Y);
+
+            if (t.GetType() == typeof(Kart))
+            {
+                Kart k = (Kart)t;
+
+                // scuffed fix to reorient texture with collider
+
+                if (k == PhysicsEngine.player)
+                {
+                    newP.Y += 30;
+                }
+
+                if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
+                {
+                    Engine.DrawTexture(t.texture,
+                    new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                    size: newSize, scaleMode: TextureScaleMode.Nearest,
+                    source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution),
+                    mirror: m,
+                    color: Color.Red);
+                    return true;
+                }
+            }
 
             Engine.DrawTexture(t.texture,
                 new Vector2((float) Math.Round(newP.X - newSize.X / 2), (float) Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest,
                 source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution),
                 mirror: m);
+
+            return true;
         }
 
         /*
@@ -202,22 +305,93 @@ namespace Mooyash.Services
         */
         public static void drawUI()
         {
+            if (Game.debugging)
+            {
+                Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+            }
+
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            if (PhysicsEngine.time / 60 > 9)
+            {
+                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            }
             if (PhysicsEngine.time % 60 < 10)
             {
                 timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                if (PhysicsEngine.time / 60 > 9)
+                {
+                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                }
             }
             timer = timer.Substring(0, 8);
-            Engine.DrawString(timer, new Vector2(250, 5), Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.lapDisplay + " of 3", new Vector2(240, 20), Color.White, Game.font);
+
+
+            float progress = PhysicsEngine.player.percentageAlongTrack/100;
+            float lineLen = 800;
+            float start = (Game.Resolution.X - 800) / 2;
+
+            Engine.DrawRectSolid(new Bounds2(start, 50, lineLen * progress, 12), Color.White);
+
+
+            //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
+
+
+            Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
+
+            // "banana", "projectile", "speed"
+            // 26 x 18 pixels
+
+            lastItemTimer += Engine.TimeDelta;
+
+            int ind = PhysicsEngine.player.itemHeld;
+
+            if (ind == -1)
+            {
+                if (lastItemTimer > 0.1f)
+                {
+                    lastItemTimer = 0;
+                    lastItem = (lastItem + 1) % ItemBox.validItems.Length;
+                }
+                
+                ind = lastItem + 1;
+            }
+
+            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale,
+                source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
+                scaleMode: TextureScaleMode.Nearest);
+            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
         {
+            int objDrawn = 0;
+
             objs.Sort(compareDepths);
             foreach(GameObject t in objs)
             {
-                drawObject(t);
+                if (t.GetType() == typeof(Kart))
+                {
+                    Kart k = (Kart)t;
+
+                    if (k.isAI)
+                    {
+                        t.chooseTextureCam(RenderEngine.camera);
+                    }
+                }
+                else if (t.GetType() == typeof(Coin))
+                {
+                    t.chooseTextureCam(RenderEngine.camera);
+                }
+
+                objDrawn += drawObject(t) ? 1 : 0;
+            }
+
+            if (Game.debugging)
+            {
+                Engine.DrawString("gameObj count " + objDrawn, new Vector2(5, 20), Color.Red, Game.diagnosticFont);
             }
         }
 
@@ -230,9 +404,8 @@ namespace Mooyash.Services
         {
             camera.followKart(PhysicsEngine.player);
             drawPerTrack(PhysicsEngine.track);
-            drawObjects(PhysicsEngine.gameObjects.Values.ToList<GameObject>());
+            drawObjects(PhysicsEngine.gameObjects.ToList());
             drawUI();
         }
     }
 }
-

@@ -6,14 +6,25 @@ namespace Mooyash.Services
 {
     public static class PhysicsEngine
     {
-        public static Dictionary<string, GameObject> gameObjects;
+        public static HashSet<Kart> karts = new HashSet<Kart>();
+        public static HashSet<Projectile> projectiles = new HashSet<Projectile>();
+        public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
         public static Kart player;
-        public static int lapCount;
-        public static int lapDisplay;
         public static Track track;
 
         public static float time;
         public static float finalTime;
+
+
+        public static Kart[] aiKarts = new Kart[0];
+        public static Kart ai1;
+        public static Kart ai2;
+        /*
+        public static Kart ai3;
+        public static Kart ai4;
+        public static Kart ai5;
+        public static Kart ai6;
+        */
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -21,104 +32,140 @@ namespace Mooyash.Services
 
         public static void init()
         {
+            //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart("mario", 2400 * (Game.GameSettings[2]+1), false);
-
-            gameObjects = new Dictionary<string, GameObject>();
-            gameObjects.Add("player", player);
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
+            gameObjects = new HashSet<GameObject>();
+            gameObjects.Add(player);
+            karts.Add(player);
             player.position = track.startPos;
             player.angle = track.startAngle;
+            player.currentWaypoint = 1;
 
-            lapCount = 0;
-            lapDisplay = 1; // e.g. Lap 1/3
             time = 0;
+            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
+            ai1.position = track.startPos;
+            ai1.angle = track.startAngle;
+
+            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
+            ai2.position = track.startPos - new Vector2(100, 100);
+            ai2.angle = track.startAngle;
+
+                //ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai3", ai3);
+                //ai3.position = track.startPos + new Vector2(100, 80);
+                //ai3.angle = track.startAngle;
+
+                //ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai4", ai4);
+                //ai4.position = track.startPos - new Vector2(100, 110);
+                //ai4.angle = track.startAngle;
+
+                //ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai5", ai5);
+                //ai5.position = track.startPos - new Vector2(100, 120);
+                //ai5.angle = track.startAngle;
+
+                //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
+                //gameObjects.Add("ai6", ai6);
+                //ai6.position = track.startPos - new Vector2(100, 130);
+                //ai6.angle = track.startAngle;
+
+            aiKarts = new Kart[] { ai1, ai2 };
+            if (Game.GameSettings[1] == 1)
+            {
+                gameObjects.Add(ai1);
+                gameObjects.Add(ai2);
+                karts.Add(ai1);
+                karts.Add(ai2);
+            }
+
+            for (int i = 0; i < track.boxes.Length; i++)
+            {
+                gameObjects.Add(new ItemBox(track.boxes[i]));
+            }
+
+            for (int i = 0; i < track.coins.Length; i++)
+            {
+                gameObjects.Add(new Coin(track.coins[i]));
+            }
         }
 
         public static void update(float dt)
         {
-
             time += dt;
 
-            if (lapDisplay > 3)
+            //sees if game ends
+            if (player.lapDisplay > 3)
             {
-                lapDisplay = 3;
+                player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
             }
 
-            Vector2 pastPos = new Vector2(player.position.X, player.position.Y);
-
             player.updateInput(dt);
-            
-            int id = GetPhysicsID(player.position);
 
-            //this shouldn't happen, maybe we should do something else?
-            if(id == -1)
+            foreach (Kart kart in karts)
             {
-                player = new Kart("mario", 1200 + Game.GameSettings[2]*600, false);
-                player.position = track.startPos;
-                player.angle = track.startAngle;
-                id = GetPhysicsID(player.position);
+                kart.update(dt);
             }
 
-            player.update(dt, terrainConsts[id]);
-
-            float minCollision = 1;
-            Vector2 finalPos = new Vector2();
-            Vector2 cur;
-            Vector2 next;
-            CirclePath c = new CirclePath(pastPos, player.position, player.radius);
-
-            //Handles collisions between player and walls of polygon
-            //Should implement bounding box idea
-            foreach(Polygon p in track.collidable)
+            Vector2[] pastPosAIs = new Vector2[aiKarts.Length];
+            for(int i = 0; i < aiKarts.Length; i++)
             {
-                for(int i = 0; i < p.vertices; i++)
+                pastPosAIs[i] = aiKarts[i].position;
+            }
+
+            if (Game.GameSettings[1] == 1)
+            {
+                for (int i = 0; i < aiKarts.Length; i++)
                 {
-                    //if p has the same point twice in a row, this fails
-                    cur = p.points[i];
-                    next = p.points[(i+1) % p.vertices]; 
-                    if(cur.Equals(next))
+                    aiKarts[i].updateInputAI(dt);
+                    // aiKarts[i].update(dt);
+                }
+            }
+
+            foreach(Projectile projectile in projectiles)
+            {
+                projectile.update(dt);
+            }
+            foreach(GameObject obj in gameObjects)
+            {
+                foreach(Kart kart in karts)
+                {
+                    if(obj.testCollision(dt, kart) && !obj.Equals(kart))
                     {
-                        throw new Exception("Polygon cannot have same point twice in a row");
-                    }
-                    if(TestCircleLine(c, cur, next))
-                    {
-                        //OPTIMIZE: This is (kinda) recalculating norm
-                        //EXCEPTION: What if cross is 0? - shouldn't happen though
-                        Vector2 norm = (next - cur).Rotated(Math.Sign(Vector2.Cross(next-cur,c.c1-cur)) * 90).Normalized();
-                        float norm1 = Vector2.Dot(norm, c.c1 - next) - player.radius;
-                        float norm2 = Vector2.Dot(norm, c.c2 - next) - player.radius;
-                        if (norm1 != norm2 && norm1 < minCollision*(norm1-norm2))
-                        {
-                            minCollision = norm1 / (norm1 - norm2);
-                            finalPos = c.c1 + minCollision * (c.c2 - c.c1);
-                        }
+                        obj.collide(kart);
                     }
                 }
+
+                // This is scuffed for coin rotation, replace with dynamic obj later
+
+                if (obj.GetType() == typeof(Coin))
+                {
+                    
+                    Coin c = (Coin)obj;
+                    c.update(dt);
+                }
             }
 
-            if(minCollision != 1)
+            foreach (Kart curK in karts)
             {
-                player.position = finalPos;
-                player.velocity.X = -player.velocity.X * 0.75f;
-                player.throttle /= 2;
-            }
-            
-            //This checks for crossing on every frame, probably needs to be optimized later
-            //Checks if player crosses the finish line
-            if (TestLineLine(pastPos, player.position, track.finish.Item1, track.finish.Item2))
-            {
-                if (Vector2.Dot(player.position - pastPos, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                if (TestLineLine(curK.prevPosition, curK.position, track.finish.Item1, track.finish.Item2))
                 {
-                    lapCount++;
+                    if (Vector2.Dot(curK.position - curK.prevPosition, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
+                    {
+                        curK.lapCount++;
+                        curK.distanceTraveled = 0;
+                    }
+                    else
+                    {
+                        curK.lapCount = curK.lapDisplay - 1;
+                    }
+                    curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
                 }
-                else
-                {
-                    lapCount = lapDisplay - 1;
-                }
-                lapDisplay = Math.Max(lapDisplay, lapCount);
+                    
             }
         }
 
@@ -132,7 +179,13 @@ namespace Mooyash.Services
                     return track.interactable[i].id;
                 }
             }
-            return -1;
+            return 0;
+        }
+
+        // distance formula
+        public static float GetDistance(Vector2 p1, Vector2 p2)
+        {
+            return (float)Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
         }
 
         //OPTIMIZATION: Should be faster to directly calculate instead of using Vector2 methods
@@ -233,6 +286,11 @@ namespace Mooyash.Services
         public static bool TestStaticCircleLine(Vector2 c, float r, Vector2 p1, Vector2 p2)
         {
             return true;
+        }
+
+        public static bool TestCircles(Vector2 c1, float r1, Vector2 c2, float r2)
+        {
+            return (c1 - c2).Length() < (r1 + r2);
         }
     }
 
