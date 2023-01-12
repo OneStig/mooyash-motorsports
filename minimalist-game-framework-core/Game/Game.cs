@@ -49,9 +49,8 @@ class Game
         {
             //  input handling
             //  physics handled by physics engine
-            //  rendering handled by rendering engine            
+            //  rendering handled by rendering engine       
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
-
             RenderEngine.draw();
         }
         else

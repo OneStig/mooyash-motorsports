@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mooyash.Modules;
@@ -131,6 +131,16 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+
+            if (Game.debugging)
+            {
+                for (int i = 0; i < t.splines.Count; i++)
+                {
+                    drawWaypoint(t.splines[i]);
+                }
+            }
+            
+            // Engine.DrawLine(project(rotate(Track.defaultTrack.checkpoints[0].Item1)), project(rotate(Track.defaultTrack.checkpoints[0].Item2)), Color.HotPink);
         }
 
         public static bool testDraw(Polygon temp)
@@ -161,6 +171,36 @@ namespace Mooyash.Services
             return splice;
         }
 
+        public static void drawWaypoint(Vector2 pos)
+        {
+            Vector2 newP = rotate(pos);
+
+            if ((camera.hslope * newP.Y + newP.X < 0) || (camera.hslope * newP.Y - newP.X < 0) || (newP.Y < camera.screen) || (newP.Y > renderDistance))
+            {
+                return;
+            }
+
+            newP = project(newP);
+
+            Vector2[] offsets = new Vector2[12];
+            Vector2[] offsets2 = new Vector2[12];
+            float wpRadius = 500;
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                float dist = i * 2f / offsets.Length * (float)Math.PI;
+                offsets2[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist));
+                offsets[i] = offsets2[i] * wpRadius;
+
+                // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                offsets[i] += pos;
+                offsets2[i] = offsets2[i] * 10 + pos;
+            }
+
+            drawPerPolygon(new Polygon(offsets, new Color(255, 87, 51, 100)));
+            drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
+        }
+
         public static bool drawObject(GameObject t)
         {
             Vector2 newP = rotate(t.position);
@@ -179,7 +219,7 @@ namespace Mooyash.Services
                     float dist = i * 2f / offsets.Length * (float)Math.PI;
                     offsets[i] = new Vector2((float)Math.Sin(dist), (float)Math.Cos(dist)) * t.radius;
 
-                    offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
+                    // offsets[i] = offsets[i].Rotated(t.angle / (float)Math.PI * 180 - 90);
                     offsets[i] += t.position;
                 }
 
@@ -271,14 +311,35 @@ namespace Mooyash.Services
             }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            if (PhysicsEngine.time / 60 > 9)
+            {
+                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            }
             if (PhysicsEngine.time % 60 < 10)
             {
                 timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                if (PhysicsEngine.time / 60 > 9)
+                {
+                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                }
             }
             timer = timer.Substring(0, 8);
 
+
+            float progress = PhysicsEngine.player.percentageAlongTrack/100;
+            float lineLen = 800;
+            float start = (Game.Resolution.X - 800) / 2;
+
+            Engine.DrawRectSolid(new Bounds2(start, 50, lineLen * progress, 12), Color.White);
+
+
+            //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
+
+
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
@@ -348,4 +409,3 @@ namespace Mooyash.Services
         }
     }
 }
-
