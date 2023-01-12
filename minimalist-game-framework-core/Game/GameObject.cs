@@ -94,9 +94,13 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        // particle textures
+        public static Texture smoke;
+
         public Kart(string kartName, float throttleConst, bool isAI) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
+            smoke = Engine.LoadTexture("smoke.png");
             numTex = 15;
             size = new Vector2(500, 500);
             resolution = new Vector2(32, 32);
@@ -281,6 +285,11 @@ namespace Mooyash.Modules
             else
             {
                 curTex = 0;
+            }
+
+            if (drifting)
+            {
+                curTex += Math.Sign(angularVelo) * (driftTime > 0.07f ? 2 : 1);
             }
         }
 
