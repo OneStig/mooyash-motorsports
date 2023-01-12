@@ -28,6 +28,7 @@ class Game
         // Load textures
         MenuSystem.loadTextures();
         Track.LoadTracks();
+        Sounds.loadSounds();
         
         //set playing to false
         playing = false;

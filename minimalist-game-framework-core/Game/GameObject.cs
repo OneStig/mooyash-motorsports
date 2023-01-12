@@ -160,8 +160,8 @@ namespace Mooyash.Modules
         private readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
         //for lap completion
-        public float lapCount;
-        public float lapDisplay;
+        public int lapCount;
+        public int lapDisplay;
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -488,12 +488,21 @@ namespace Mooyash.Modules
                 {
                     lapCount = lapDisplay - 1;
                 }
+                int oldLapDisplay = lapDisplay;
                 lapDisplay = Math.Max(lapDisplay, lapCount);
+                if(lapDisplay > oldLapDisplay)
+                {
+                    Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                }
             }
         }
 
         public void wallCollide(float wallAngle)
         {
+            if(!isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+            }
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
         }
@@ -526,6 +535,12 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
+        }
+
+        public void hit()
+        {
+            stunTime = 0;
+            Engine.PlaySound(Sounds.sounds["hit"]);
         }
     }
 
