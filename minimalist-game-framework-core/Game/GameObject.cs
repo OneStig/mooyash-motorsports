@@ -183,6 +183,8 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        private int revTimer;
+
         // score
         public int score;
         public Kart(float throttleConst, bool isAI, String kartName) : base()
@@ -314,6 +316,17 @@ namespace Mooyash.Modules
         public void update(float dt)
         {
             prevPosition = new Vector2(position.X, position.Y);
+
+            //handle rev sounds
+            if (throttle != 0)
+            {
+                revTimer--;
+            }
+            if(revTimer <= 0)
+            {
+                Engine.PlaySound(Sounds.sounds["throttle"]);
+                revTimer = (int)(10 - 10 * throttle);
+            }
 
             // update various timers
             stunTime += dt;
