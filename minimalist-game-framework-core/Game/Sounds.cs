@@ -11,13 +11,10 @@ namespace Mooyash.Modules
         private static string[] soundNames = new string[] { "collide", "hit", "coin", "itemBox", "lapFinish", "throttle", "dirt"};
         public static void loadSounds()
         {
-            Engine.LoadSound("coin.wav");
-            /*
             foreach(string s in soundNames)
             {
-                sounds.Add(s, Engine.LoadSound("Sounds\\" + s + ".m4a"));
+                sounds.Add(s, Engine.LoadSound(Path.Combine("Sounds", s + ".mp3")));
             }
-            */
         }
           
     }
