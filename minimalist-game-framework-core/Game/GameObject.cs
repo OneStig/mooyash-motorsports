@@ -167,6 +167,7 @@ namespace Mooyash.Modules
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
+        public List<Vector2> playerWaypoints;
 
         public float distanceTraveled;
         public float prevPercent;
@@ -229,6 +230,7 @@ namespace Mooyash.Modules
 
             //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
+            this.playerWaypoints = Track.tracks[0].playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
 
@@ -286,7 +288,7 @@ namespace Mooyash.Modules
             itemHeld = 0;
         }
 
-        public void percentDone()
+        public void percentDoneAI()
         {
             if(previousWaypoint == 0)
             {
@@ -298,6 +300,20 @@ namespace Mooyash.Modules
                             Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
             float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
             percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+        }
+
+        public void percentDonePlayer()
+        {
+            if (previousWaypoint == 0)
+            {
+                percentageAlongTrack = Track.tracks[0].pLens[0] *
+                                        Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].pTotalLen;
+                return;
+            }
+            float curDist = Track.tracks[0].pLens[previousWaypoint] *
+                            Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+            float prevDist = Track.tracks[0].pLensToPoint[previousWaypoint - 1];
+            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
         }
 
         private float decay(float value, float constant, float dt)
@@ -314,12 +330,12 @@ namespace Mooyash.Modules
 
         public void updateTargetWaypoints(int waypointRadius)
         {
-            dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
+            dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, playerWaypoints);
 
             if (dists[1]+waypointRadius > dists[2])
             {
                 previousWaypoint = currentWaypoint;
-                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+                currentWaypoint = (currentWaypoint + 1) % playerWaypoints.Count;
             }
             if (dists[0] < dists[1])
             {
@@ -327,15 +343,13 @@ namespace Mooyash.Modules
                 previousWaypoint--;
                 if (previousWaypoint < 0)
                 {
-                    previousWaypoint = allWaypoints.Count - 1;
+                    previousWaypoint = playerWaypoints.Count - 1;
                 }
 
             }
-            randomDrivingRadius = rand.Next(waypointRadius / 10);
             randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
-            newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
-                                            (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));;
-            prevRandomWaypoint = allWaypoints[previousWaypoint];
+            newRandomWaypoint = playerWaypoints[currentWaypoint];
+            prevRandomWaypoint = playerWaypoints[previousWaypoint];
         }
 
         public void updateInput(float dt)
@@ -395,7 +409,7 @@ namespace Mooyash.Modules
                 }
             }
 
-            //percentDone();
+            percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
@@ -491,7 +505,7 @@ namespace Mooyash.Modules
                 angle = angleToWaypoint;
             }
 
-            //percentDone();
+            percentDoneAI();
         }
 
         public void update(float dt)
@@ -660,7 +674,6 @@ namespace Mooyash.Modules
 
             // base.update(dt);
 
-            percentDone();
         }
 
         public void wallCollide(float wallAngle)

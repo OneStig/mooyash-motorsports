@@ -327,16 +327,19 @@ namespace Mooyash.Services
 
 
             float progress = PhysicsEngine.player.percentageAlongTrack/100;
-            float lineLen = 800;
-            float start = (Game.Resolution.X - 800) / 2;
+            float lineLen = 300;
+            float start = (Game.Resolution.X - lineLen) / 2;
 
-            Engine.DrawRectSolid(new Bounds2(start, 50, lineLen * progress, 12), Color.White);
+            Engine.DrawRectSolid(new Bounds2(start, 200, lineLen, 4), Color.White);
+            Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 195, 12, 12), Color.Red);
 
 
-            //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
-            //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
-            //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
+            Kart player = PhysicsEngine.player;
 
+            Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
+            Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
+            Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
+            Engine.DrawString(player.previousWaypoint + " " + player.currentWaypoint, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
