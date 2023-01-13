@@ -523,17 +523,17 @@ namespace Mooyash.Modules
                 if (throttle == 0 && prevThrottle != 0)
                 {
                     stopRev();
-                    rev = Engine.PlaySound(Sounds.sounds["zeroRev"]);
+                    rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat:true);
                 }
                 else if (Math.Abs(throttle) == 1 && Math.Abs(prevThrottle) != 1)
                 {
                     stopRev();
-                    rev = Engine.PlaySound(Sounds.sounds["highRev"]);
+                    rev = Engine.PlaySound(Sounds.sounds["highRev"], repeat:true);
                 }
                 else if ((0 != throttle && Math.Abs(throttle) != 1) && (0 == prevThrottle || Math.Abs(prevThrottle) == 1))
                 {
                     stopRev();
-                    rev = Engine.PlaySound(Sounds.sounds["lowRev"]);
+                    rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
                 }
             }
         }
