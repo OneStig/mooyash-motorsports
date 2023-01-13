@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mooyash.Modules;
+using Newtonsoft.Json;
 
 namespace Mooyash.Services
 {
@@ -320,6 +321,20 @@ namespace Mooyash.Services
             if (Game.debugging)
             {
                 Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+
+                string info = JsonConvert.SerializeObject(PhysicsEngine.player, Formatting.Indented);
+
+                int i = 0;
+                foreach (string s in info.Split("\n"))
+                {
+                    Engine.DrawString(s, new Vector2(5, 35 + i * 15), Color.Black, Game.diagnosticFont);
+                    i++;
+
+                    if (35 + i * 15 > Game.Resolution.Y)
+                    {
+                        break;
+                    }
+                }
             }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
