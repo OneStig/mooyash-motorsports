@@ -29,6 +29,9 @@ class Game
         MenuSystem.loadTextures();
         Track.LoadTracks();
         Sounds.loadSounds();
+
+        //start menu music
+        Sounds.playMenuMusic();
         
         //set playing to false
         playing = false;
@@ -62,6 +65,8 @@ class Game
                 GameSettings = MenuSystem.GetSettings();
                 PhysicsEngine.init();
                 playing = true;
+                //start playing game music
+                Sounds.playGameMusic();
             }
         }
     }

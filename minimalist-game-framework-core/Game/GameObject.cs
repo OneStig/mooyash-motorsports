@@ -137,6 +137,8 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+        //physicsID for the player's current position
+        public int id;
 
         public Vector2 prevPosition;
 
@@ -184,7 +186,8 @@ namespace Mooyash.Modules
         private readonly float throttleDecay = 1f;
 
         //for sounds
-        private int revTimer;
+        public float prevThrottle;
+        private SoundInstance rev;
         private SoundInstance terrain;
 
         // score
@@ -264,6 +267,7 @@ namespace Mooyash.Modules
         public void updateInput(float dt)
         {
             braking = false;
+            prevThrottle = throttle;
 
             if (Engine.GetKeyHeld(Key.W))
             {
@@ -319,37 +323,8 @@ namespace Mooyash.Modules
         public void update(float dt)
         {
             prevPosition = new Vector2(position.X, position.Y);
-            int id = PhysicsEngine.GetPhysicsID(position);
-
-            //handle sounds
-            if(id == 0 && road == null)
-            {
-                if(dirt != null)
-                {
-                    Engine.StopSound(dirt);
-                    dirt = null;
-                }
-                road = Engine.PlaySound(Sounds.sounds["road"], repeat: true);
-            }
-            else if(id != 0 && dirt == null)
-            {
-                if(road != null)
-                {
-                    Engine.StopSound(road);
-                    road = null;
-                }
-                dirt = Engine.PlaySound(Sounds.sounds["dirt"], repeat: true);
-            }
-
-            if (throttle != 0)
-            {
-                revTimer--;
-            }
-            if(revTimer <= 0)
-            {
-                //Engine.PlaySound(Sounds.sounds["throttle"]);
-                revTimer = (int)(10 - 10 * throttle);
-            }
+            float prevVelocity = velocity.X;
+            int prevId = id;
 
             // update various timers
             stunTime += dt;
@@ -526,10 +501,47 @@ namespace Mooyash.Modules
                 }
                 int oldLapDisplay = lapDisplay;
                 lapDisplay = Math.Max(lapDisplay, lapCount);
-                if(lapDisplay > oldLapDisplay)
+                if(lapDisplay > oldLapDisplay && !isAI)
                 {
                     Engine.PlaySound(Sounds.sounds["lapFinish"]);
                 }
+            }
+
+            //handle sounds
+            if(!isAI)
+            {
+                if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
+                {
+                    Engine.StopSound(terrain);
+                }
+                if (id != prevId || (prevVelocity == 0 && velocity.X != 0))
+                {
+                    terrain = Engine.PlaySound(Sounds.sounds["terrain" + id], repeat: true);
+                }
+
+                if (throttle == 0 && prevThrottle != 0)
+                {
+                    stopRev();
+                    rev = Engine.PlaySound(Sounds.sounds["idle"]);
+                }
+                else if (Math.Abs(throttle) == 1 && Math.Abs(prevThrottle) != 1)
+                {
+                    stopRev();
+                    rev = Engine.PlaySound(Sounds.sounds["highRev"]);
+                }
+                else if ((0 != throttle && Math.Abs(throttle) != 1) && (0 == prevThrottle || Math.Abs(prevThrottle) == 1))
+                {
+                    stopRev();
+                    rev = Engine.PlaySound(Sounds.sounds["lowRev"]);
+                }
+            }
+        }
+
+        public void stopRev()
+        {
+            if(rev != null)
+            {
+                Engine.StopSound(rev);
             }
         }
 
@@ -545,6 +557,10 @@ namespace Mooyash.Modules
 
         public override void collide(Kart kart)
         {
+            if (!isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+            }
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;
             position -= adjust;
@@ -576,7 +592,10 @@ namespace Mooyash.Modules
         public void hit()
         {
             stunTime = 0;
-            Engine.PlaySound(Sounds.sounds["hit"]);
+            if(!isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["hit"]);
+            }
         }
     }
 
