@@ -9,7 +9,7 @@ namespace Mooyash.Modules
     {
         public static Dictionary<string, Sound> sounds = new Dictionary<string, Sound>();
         private static readonly string[] soundNames = new string[] { 
-            "collide", "hit", "coin", "itemBox", "lapFinish", "terrain0", "terrain1", "terrain2", "idle", "lowRev", "highRev",
+            "collide", "hit", "coin", "itemBox", "lapFinish", "terrain0", "terrain1", "terrain2", "zeroRev", "lowRev", "highRev",
         "menuMusic", "gameMusic"};
 
         private static SoundInstance music;
@@ -18,7 +18,7 @@ namespace Mooyash.Modules
         {
             foreach(string s in soundNames)
             {
-                sounds.Add(s, Engine.LoadSound(Path.Combine("Sounds", s + ".mp3")));
+                sounds.Add(s, Engine.LoadSound(Path.Combine("Sounds/", s + ".mp3")));
                 System.Diagnostics.Debug.WriteLine(s);
             }
         }

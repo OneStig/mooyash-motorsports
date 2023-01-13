@@ -510,6 +510,7 @@ namespace Mooyash.Modules
             //handle sounds
             if(!isAI)
             {
+                /*
                 if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
                 {
                     Engine.StopSound(terrain);
@@ -518,11 +519,11 @@ namespace Mooyash.Modules
                 {
                     terrain = Engine.PlaySound(Sounds.sounds["terrain" + id], repeat: true);
                 }
-
+                */
                 if (throttle == 0 && prevThrottle != 0)
                 {
                     stopRev();
-                    rev = Engine.PlaySound(Sounds.sounds["idle"]);
+                    rev = Engine.PlaySound(Sounds.sounds["zeroRev"]);
                 }
                 else if (Math.Abs(throttle) == 1 && Math.Abs(prevThrottle) != 1)
                 {
