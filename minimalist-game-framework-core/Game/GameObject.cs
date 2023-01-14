@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Numerics;
 using Mooyash.Services;
 
@@ -187,8 +188,8 @@ namespace Mooyash.Modules
 
         //for sounds
         public float prevThrottle;
-        private SoundInstance rev;
-        private SoundInstance terrain;
+        public SoundInstance rev;
+        public SoundInstance terrain;
 
         // score
         public int score;
@@ -354,7 +355,8 @@ namespace Mooyash.Modules
                 stunDrag = 1f;
             }
 
-            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
+            id = PhysicsEngine.GetPhysicsID(position);
+            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[id];
 
             // when boosting
 
@@ -510,7 +512,6 @@ namespace Mooyash.Modules
             //handle sounds
             if(!isAI)
             {
-                /*
                 if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
                 {
                     Engine.StopSound(terrain);
@@ -519,30 +520,21 @@ namespace Mooyash.Modules
                 {
                     terrain = Engine.PlaySound(Sounds.sounds["terrain" + id], repeat: true);
                 }
-                */
                 if (throttle == 0 && prevThrottle != 0)
                 {
-                    stopRev();
+                    Engine.StopSound(rev);
                     rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat:true);
                 }
-                else if (Math.Abs(throttle) == 1 && Math.Abs(prevThrottle) != 1)
+                else if (Math.Abs(throttle) >= 0.75f && Math.Abs(prevThrottle) < 0.75f)
                 {
-                    stopRev();
+                    Engine.StopSound(rev);
                     rev = Engine.PlaySound(Sounds.sounds["highRev"], repeat:true);
                 }
-                else if ((0 != throttle && Math.Abs(throttle) != 1) && (0 == prevThrottle || Math.Abs(prevThrottle) == 1))
+                else if ((0 != throttle && Math.Abs(throttle) < 0.75f) && (0 == prevThrottle || Math.Abs(prevThrottle) >= 0.75f))
                 {
-                    stopRev();
+                    Engine.StopSound(rev);
                     rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
                 }
-            }
-        }
-
-        public void stopRev()
-        {
-            if(rev != null)
-            {
-                Engine.StopSound(rev);
             }
         }
 

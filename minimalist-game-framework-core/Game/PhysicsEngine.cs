@@ -40,6 +40,9 @@ namespace Mooyash.Services
             {
                 gameObjects.Add(new Coin(track.coins[i]));
             }
+
+            //start idle engine sound
+            player.rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat: true);
         }
 
         public static void update(float dt)
@@ -49,6 +52,11 @@ namespace Mooyash.Services
             //sees if game ends
             if (player.lapDisplay > 3)
             {
+                Engine.StopSound(player.rev);
+                if(player.terrain != null)
+                {
+                    Engine.StopSound(player.terrain);
+                }
                 player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;

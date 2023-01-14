@@ -14,6 +14,15 @@ namespace Mooyash.Modules
 
         private static SoundInstance music;
 
+        public static void testSounds(int n)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                sounds.Add("test" + i, Engine.LoadSound(Path.Combine("Sounds/", "test" + i + ".mp3")));
+                System.Diagnostics.Debug.WriteLine(i);
+            }
+        }
+
         public static void loadSounds()
         {
             foreach(string s in soundNames)
