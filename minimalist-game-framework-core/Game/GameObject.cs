@@ -158,6 +158,10 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
         public bool isAI;
+        
+        //drifting
+        public bool drifting;
+        public float driftTime;
         public bool camFlipped;
 
         public int place;
@@ -168,17 +172,20 @@ namespace Mooyash.Modules
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
+        public float dBoostTime = float.MaxValue / 2; // timer for drift boosting
 
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
         private readonly float boostMultiplier = 1.8f;
         private readonly float stunMultiplier = 6f;
+        private float dBoostMultiplier = 1f;
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 3f;
         private readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
+        private float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
         public int currentWaypoint;
@@ -237,13 +244,19 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
+        // particle textures
+        public static Texture smoke;
+
         // score
         public int score;
+        
         public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
+
         {
             iconColor = color;
 
             texture = Engine.LoadTexture(kartName + "_sheet.png");
+            smoke = Engine.LoadTexture("smoke2.png");
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);
@@ -420,17 +433,35 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.A))
+            if (Engine.GetKeyHeld(Key.LeftShift) && Math.Abs(steer) > 0.2f && velocity.X > 0)
             {
-                steer = Math.Max(-1, steer - sInputScale * dt);
-            }
-            else if (Engine.GetKeyHeld(Key.D))
-            {
-                steer = Math.Min(1, steer + sInputScale * dt);
+                if (drifting == false)
+                {
+                    driftTime = 0;
+                }
+                drifting = true;
+                driftTime += dt;
+                steer = Math.Sign(steer) * Math.Min(Math.Abs(steer)+sInputScale*dt, 1.2f);
             }
             else
             {
-                steer = decay(steer, steerDecay, dt);
+                if(drifting == true)
+                {
+                    driftBoost();
+                    drifting = false;
+                }
+                if (Engine.GetKeyHeld(Key.A))
+                {
+                    steer = Math.Max(-1, steer - sInputScale * dt);
+                }
+                else if (Engine.GetKeyHeld(Key.D))
+                {
+                    steer = Math.Min(1, steer + sInputScale * dt);
+                }
+                else
+                {
+                    steer = decay(steer, steerDecay, dt);
+                }
             }
 
             if (Engine.GetKeyDown(Key.Space))
@@ -559,6 +590,7 @@ namespace Mooyash.Modules
             stunTime += dt;
             boostTime += dt;
             rollItemTime += dt;
+            dBoostTime += dt;
 
             // when itemRolled
 
@@ -606,7 +638,7 @@ namespace Mooyash.Modules
             else
             {
                 //acceleration due to throttle
-                tempA += throttle * throttleConst;
+                tempA += throttle * throttleConst * (dBoostTime <= dBoostConst ? dBoostMultiplier : 1);
             }
             //static friction
             if (velocity.X == 0)
@@ -754,7 +786,7 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
-
+            
             if (camFlipped)
             {
                 if (curTex == 0)
@@ -766,6 +798,26 @@ namespace Mooyash.Modules
                     curTex = -1 * Math.Sign(curTex) * (14 - Math.Abs(curTex));
                 }
             }
+
+            if (drifting)
+            {
+                curTex += Math.Sign(angularVelo) * (driftTime > 0.07f ? 2 : 1);
+            }
+        }
+
+        public void driftBoost()
+        {
+            dBoostTime = 0;
+
+            if (driftTime > 1.1f)
+            {
+                dBoostMultiplier = 1.8f;
+            }
+            else if (driftTime > 0.3f) {
+                dBoostMultiplier = 1.3f;
+            }
+
+            dBoostConst = driftTime * 3;
         }
     }
 
