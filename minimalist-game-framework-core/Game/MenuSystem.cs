@@ -150,10 +150,13 @@ namespace Mooyash.Services
                 {
                     Settings.Add(cur.Select());
                     CurScreen++;
+                    ScreenStack[CurScreen].curButton = 0;
                 }
                 else 
                 {
                     CurScreen--;
+                    Settings.RemoveAt(Settings.Count - 1);
+                    ScreenStack[CurScreen].curButton = 0;
                 }
 
                 if (CurScreen >= 5)
@@ -163,7 +166,6 @@ namespace Mooyash.Services
                     {
                         CurScreen = 4;
                         Settings.RemoveAt(Settings.Count-1);
-
                     }
                     if (select.Equals("return"))
                     {
@@ -230,7 +232,7 @@ namespace Mooyash.Services
         private Vector2[] positions;
         private Vector2[] sizes;
         private Dictionary<int, Button> buttons;
-        private int curButton = -1;
+        public int curButton = -1;
 
 
         public Screen(Texture texture, Vector2 position)
