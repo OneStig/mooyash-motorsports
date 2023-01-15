@@ -310,17 +310,17 @@ namespace Mooyash.Services
                 Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
             }
 
-            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
             if (PhysicsEngine.time / 60 > 9)
             {
-                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
             }
             if (PhysicsEngine.time % 60 < 10)
             {
-                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
                 if (PhysicsEngine.time / 60 > 9)
                 {
-                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
                 }
             }
             timer = timer.Substring(0, 8);
@@ -350,7 +350,7 @@ namespace Mooyash.Services
             //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
-            //Engine.DrawString(player.previousWaypoint + " " + player.currentWaypoint, new Vector2(300, 400), Color.White, Game.diagnosticFont);
+            Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);

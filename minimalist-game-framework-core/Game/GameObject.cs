@@ -174,6 +174,11 @@ namespace Mooyash.Modules
         public List<Vector2> allWaypoints;
         public List<Vector2> playerWaypoints;
 
+        public int prevProgressInd;
+        public int curProgressInd;
+        public Vector2 prevProgressPoint;
+        public Vector2 curProgressPoint;
+
         public float distanceTraveled;
         public float prevPercent;
         public float curPercent;
@@ -240,6 +245,11 @@ namespace Mooyash.Modules
             this.playerWaypoints = Track.tracks[0].playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+
+            prevProgressInd = 0;
+            curProgressInd = 1;
+            prevProgressPoint = playerWaypoints[0];
+            curProgressPoint = playerWaypoints[0];
 
             newRandomWaypoint = allWaypoints[0];
             prevRandomWaypoint = allWaypoints[0];
@@ -314,15 +324,16 @@ namespace Mooyash.Modules
 
         public void percentDone()
         {
-            if (previousWaypoint == 0)
+            if (prevProgressInd == 0)
             {
                 percentageAlongTrack = Track.tracks[0].pLens[0] *
-                                        Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].pTotalLen;
+                                        Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) /
+                                        Track.tracks[0].pTotalLen;
                 return;
             }
-            float curDist = Track.tracks[0].pLens[previousWaypoint] *
-                            Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-            float prevDist = Track.tracks[0].pLensToPoint[previousWaypoint - 1];
+            float curDist = Track.tracks[0].pLens[prevProgressInd] *
+                            Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) / 100;
+            float prevDist = Track.tracks[0].pLensToPoint[prevProgressInd - 1];
             percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
         }
 
@@ -338,34 +349,33 @@ namespace Mooyash.Modules
             }
         }
 
-        public void updateTargetWaypoints(int waypointRadius)
+        public void updateTargetWaypoints()
         {
-            dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, playerWaypoints);
+            dists = Splines.getClosestPoints(position, prevProgressInd, curProgressInd, playerWaypoints);
 
-            if (dists[1]+waypointRadius > dists[2])
+            if (dists[1] > dists[2])
             {
-                previousWaypoint = currentWaypoint;
-                currentWaypoint = (currentWaypoint + 1) % playerWaypoints.Count;
+                prevProgressInd = curProgressInd;
+                curProgressInd = (curProgressInd + 1) % playerWaypoints.Count;
             }
             if (dists[0] < dists[1])
             {
-                currentWaypoint = previousWaypoint;
-                previousWaypoint--;
-                if (previousWaypoint < 0)
+                curProgressInd = prevProgressInd;
+                prevProgressInd--;
+                if (prevProgressInd < 0)
                 {
-                    previousWaypoint = playerWaypoints.Count - 1;
+                    prevProgressInd = playerWaypoints.Count - 1;
                 }
 
             }
-            randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
-            newRandomWaypoint = playerWaypoints[currentWaypoint];
-            prevRandomWaypoint = playerWaypoints[previousWaypoint];
+            curProgressPoint = playerWaypoints[curProgressInd];
+            prevProgressPoint = playerWaypoints[prevProgressInd];
         }
 
         public void updateInput(float dt)
         {
 
-            updateTargetWaypoints(0);
+            updateTargetWaypoints();
 
             braking = false;
 
@@ -433,6 +443,8 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
+            updateTargetWaypoints();
+
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
