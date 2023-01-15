@@ -489,6 +489,7 @@ namespace Mooyash.Services
                 scaleMode: TextureScaleMode.Nearest);
 
             Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("coins  " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             if (Game.GameSettings[1] == 1)
             {

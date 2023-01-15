@@ -26,6 +26,10 @@ namespace Mooyash.Modules
         public override void collide(Kart k)
         {
             k.score += 1;
+            if(k.coins < 10)
+            {
+                k.coins++;
+            }
 
             PhysicsEngine.gameObjects.Remove(this);
         }
