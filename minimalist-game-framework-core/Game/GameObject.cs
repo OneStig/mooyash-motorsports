@@ -20,6 +20,7 @@ namespace Mooyash.Modules
         public Vector2 size; // width and height of the object in game
         public Vector2 resolution; // width and height of each costume
         public int numTex; // number of textures
+        public float height; // above ground
 
         public GameObject()
         {
@@ -29,14 +30,15 @@ namespace Mooyash.Modules
             // need to add hitbox and textures later
         }
 
-        public GameObject(Vector2 position, Vector2 size, Texture texture, int curTex, int numTex)
+        public GameObject(Vector2 position, Vector2 size, Texture texture, int curTex, int numTex, float height)
         {
             this.position = position;
             this.curTex = curTex;
             this.texture = texture;
             this.size = size;
-            this.resolution = new Vector2(texture.Size.X/numTex, texture.Size.Y);
+            this.resolution = new Vector2(texture.Size.X / numTex, texture.Size.Y);
             this.numTex = numTex;
+            this.height = height;
         }
 
         public virtual void collide(Kart k) { }

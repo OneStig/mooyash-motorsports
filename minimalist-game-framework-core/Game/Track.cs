@@ -3,6 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace Mooyash.Modules
 {
@@ -37,8 +39,7 @@ namespace Mooyash.Modules
         public List<Polygon> visual;
 
         public Color background = Color.LawnGreen;
-        public List<GameObject> groundObjs;
-        public List<Tuple<GameObject, float>> skyObjs;
+        public List<GameObject> backObjs;
 
         public List<Vector2> splines;
         //public List<Vector2> barrier;
@@ -240,16 +241,15 @@ namespace Mooyash.Modules
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
 
-                tracks[j].groundObjs = generateTrees(50,12000,10000, new Vector2(1760,2260));
-                //the float represents height
-                tracks[j].skyObjs = new List<Tuple<GameObject,float>>();
+                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
             }
         }
 
-        public static List<GameObject> generateTrees(int numTrees, float minRad, float radDiff, Vector2 size)
+        public static List<GameObject> generateBackObjs(int numTrees, float minRad, float radDiff, Vector2 tSize, int numClouds, Vector2 cSize, float minHeight, float heightDiff)
         {
             Texture tree = Engine.LoadTexture("tree_sheet.png");
-            List<GameObject> trees = new List<GameObject>();
+            Texture cloud = Engine.LoadTexture("cloud_sheet.png");
+            List<GameObject> objs = new List<GameObject>();
             List<float> sort = new List<float>();
             Random rand = new Random();
 
@@ -258,20 +258,29 @@ namespace Mooyash.Modules
             int index;
             for (int i = 0; i < numTrees; i++)
             {
-                angle = (float) (2 * Math.PI * rand.NextDouble());
-                radius = minRad + (float) rand.NextDouble() * radDiff;
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
                 index = sort.BinarySearch(radius);
-                if(index < 0) { index = ~index; }
-                trees.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
-                    size, tree, rand.Next(0,2), 2));
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    tSize, tree, rand.Next(0, 2), 2, 0));
                 sort.Insert(index, radius);
             }
-            trees.Reverse();
-            return trees;
-        }
-        private static int compareDepths(float first, float second)
-        {
-            return second.CompareTo(first);
+            float height;
+            for (int i = 0; i < numClouds; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
+                height = minHeight + (float)rand.NextDouble() * heightDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    cSize, cloud, rand.Next(0, 6), 2, height));
+                sort.Insert(index, radius);
+            }
+
+            objs.Reverse();
+            return objs;
         }
     }
 

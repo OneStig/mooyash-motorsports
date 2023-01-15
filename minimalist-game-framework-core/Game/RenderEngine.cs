@@ -153,13 +153,9 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
-            foreach (GameObject o in t.groundObjs)
+            foreach (GameObject o in t.backObjs)
             {
-                drawGroundObj(o);
-            }
-            foreach (Tuple<GameObject, float> o in t.skyObjs)
-            {
-                drawSkyObj(o.Item1, o.Item2);
+                drawBackObj(o);
             }
 
             if (Game.debugging)
@@ -231,32 +227,7 @@ namespace Mooyash.Services
             drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
         }
 
-        public static void drawGroundObj(GameObject t)
-        
-        {
-            Vector2 newP = rotate(t.position);
-            //this is repeating some code, but I don't think it needs to be in a method
-            if ((camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen))
-            {
-                return;
-            }
-
-            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
-            Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
-
-            newP = project(newP) * Game.ResolutionScale;
-
-            newSize.X = (float)Math.Round(newSize.X);
-            newSize.Y = (float)Math.Round(newSize.Y);
-
-            newP.X = (float)Math.Round(newP.X);
-            newP.Y = (float)Math.Round(newP.Y);
-
-            Engine.DrawTexture(t.texture,
-                new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
-                size: newSize, scaleMode: TextureScaleMode.Nearest);
-        }
-        public static void drawSkyObj(GameObject t, float height)
+        public static void drawBackObj(GameObject t)
         {
             Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
@@ -266,7 +237,7 @@ namespace Mooyash.Services
             }
 
             //this is scuffed - i'm sure it's fine
-            camera.height -= height;
+            camera.height -= t.height;
 
             float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
             Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
@@ -281,8 +252,10 @@ namespace Mooyash.Services
 
             Engine.DrawTexture(t.texture,
                 new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
-                size: newSize, scaleMode: TextureScaleMode.Nearest);
-            camera.height += height;
+                size: newSize, scaleMode: TextureScaleMode.Nearest,
+                source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution));
+
+            camera.height += t.height;
         }
 
         public static bool drawObject(GameObject t)
