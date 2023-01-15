@@ -29,6 +29,16 @@ namespace Mooyash.Modules
             // need to add hitbox and textures later
         }
 
+        public GameObject(Vector2 position, Texture texture, Vector2 size)
+        {
+            this.position = position;
+            curTex = 0;
+            this.texture = texture;
+            this.size = size;
+            this.resolution = texture.Size;
+            numTex = 1;
+        }
+
         public virtual void collide(Kart k) { }
         
         public void chooseTextureCam(Camera c)
@@ -129,7 +139,7 @@ namespace Mooyash.Modules
 
         public void wallCollide(float wallAngle)
         {
-            angle = 2 * wallAngle - angle;
+            angle = (float) ((2 * wallAngle - angle + 2*Math.PI) % (2*Math.PI));
         }
     }
 

@@ -35,6 +35,10 @@ namespace Mooyash.Modules
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
 
+        public Color background = Color.LawnGreen; //can set for diff tracks
+        public List<Background> backgrounds; //set in loadBackgrounds
+        public List<GameObject> backObjs; 
+
         public List<Vector2> splines;
         //public List<Vector2> barrier;
 
@@ -94,7 +98,7 @@ namespace Mooyash.Modules
                 {
                     RawTrack = File.ReadAllText(Path.Combine("Assets", "Track" + j + ".json"));
                 }
-                
+
                 TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(RawTrack);
 
                 float scaleFactor = 10f;
@@ -201,15 +205,15 @@ namespace Mooyash.Modules
                 float deltaY;
                 float dist;
 
-                for(int i = 0; i < tracks[j].splines.Count-1; i++)
+                for (int i = 0; i < tracks[j].splines.Count - 1; i++)
                 {
-                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i+1].X);
-                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i+1].Y);
+                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i + 1].X);
+                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i + 1].Y);
                     dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
                     tracks[j].totalLen += dist;
                     tracks[j].lens[i] = dist;
-                    if(i == 0)
+                    if (i == 0)
                     {
                         tracks[j].lensToPoint[i] = tracks[j].lens[i];
                     }
@@ -219,7 +223,7 @@ namespace Mooyash.Modules
                     }
                 }
 
-                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
+                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count - 1].X);
                 deltaY = (tracks[j].splines[0].Y - tracks[j].splines[tracks[j].splines.Count - 1].Y);
                 dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
@@ -234,7 +238,15 @@ namespace Mooyash.Modules
 
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
+
+                tracks[j].backObjs = new List<GameObject>() { new GameObject(new Vector2(2250,5000), Engine.LoadTexture("R.jpg"), new Vector2(1000,1000)) };
+                //tracks[j].backgrounds = loadBackgrounds();
             }
+        }
+
+        public static List<Background> loadBackgrounds()
+        {
+            return new List<Background>() {new Tree(100, 0)};
         }
     }
 

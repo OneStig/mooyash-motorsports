@@ -23,7 +23,8 @@ namespace Mooyash.Services
         public float hslope { get; private set; } //for handling drawing conditions
         public float tsin { get; private set; } // of tilt angle
         public float tcos { get; private set; } // of tilt angle
-
+        public float angleScale { get; private set; } //for drawing background stuff
+        public Bounds2 ground { get; private set; } //for drawing the ground
 
         
         //don't use camera until callling followKart
@@ -38,6 +39,10 @@ namespace Mooyash.Services
             scale = Game.VirtualResolution.X / (float)(2 * screen * hslope);
             tcos = (float)Math.Cos(tilt);
             tsin = (float)Math.Sin(tilt);
+            angleScale = screen * scale * Game.ResolutionScale;
+            float groundTemp = (float)Math.Tan(tilt) * angleScale;
+            ground = new Bounds2(new Vector2(0, Game.Resolution.Y / 2 - groundTemp),
+                new Vector2(Game.Resolution.X, Game.Resolution.Y /2 + groundTemp));
         }
 
         public void followKart(Kart kart)
@@ -118,6 +123,11 @@ namespace Mooyash.Services
         public static void drawPerTrack(Track t)
         {
             Engine.DrawRectSolid(new Bounds2(Vector2.Zero, Game.Resolution), Color.DeepSkyBlue);
+            foreach(GameObject o in t.backObjs)
+            {
+                drawBackObject(o);
+            }
+            Engine.DrawRectSolid(camera.ground, t.background);
 
             foreach (Polygon p in t.interactable)
             {
@@ -131,6 +141,12 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
+            /*
+            foreach(Background b in t.backgrounds)
+            {
+                b.draw(camera);
+            }
+            */
 
             if (Game.debugging)
             {
@@ -199,6 +215,31 @@ namespace Mooyash.Services
 
             drawPerPolygon(new Polygon(offsets, new Color(255, 87, 51, 100)));
             drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
+        }
+
+        public static void drawBackObject(GameObject t)
+        {
+            Vector2 newP = rotate(t.position);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if ((camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen))
+            {
+                return;
+            }
+
+            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
+            Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
+
+            newP = project(newP) * Game.ResolutionScale;
+
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
+
+            newP.X = (float)Math.Round(newP.X);
+            newP.Y = (float)Math.Round(newP.Y);
+
+            Engine.DrawTexture(t.texture,
+                new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                size: newSize, scaleMode: TextureScaleMode.Nearest);
         }
 
         public static bool drawObject(GameObject t)
