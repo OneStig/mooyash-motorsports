@@ -146,8 +146,13 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
         public bool isAI;
+        public bool camFlipped;
+
+        public int place;
 
         public int itemHeld;
+        public Color iconColor;
+
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
@@ -217,8 +222,10 @@ namespace Mooyash.Modules
 
         // score
         public int score;
-        public Kart(float throttleConst, bool isAI, String kartName) : base()
+        public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
         {
+            iconColor = color;
+
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
@@ -244,6 +251,9 @@ namespace Mooyash.Modules
 
             itemHeld = 0;
             score = 0;
+            camFlipped = false;
+
+            place = 1;
             
             this.isAI = isAI;
             this.throttleConst = throttleConst;
@@ -288,21 +298,21 @@ namespace Mooyash.Modules
             itemHeld = 0;
         }
 
-        public void percentDoneAI()
-        {
-            if(previousWaypoint == 0)
-            {
-                percentageAlongTrack = Track.tracks[0].lens[0] *
-                                        Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
-                return;
-            }
-            float curDist = Track.tracks[0].lens[previousWaypoint] *
-                            Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-            float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
-            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
-        }
+        //public void percentDoneAI()
+        //{
+        //    if(previousWaypoint == 0)
+        //    {
+        //        percentageAlongTrack = Track.tracks[0].lens[0] *
+        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+        //        return;
+        //    }
+        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
+        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
+        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+        //}
 
-        public void percentDonePlayer()
+        public void percentDone()
         {
             if (previousWaypoint == 0)
             {
@@ -409,7 +419,16 @@ namespace Mooyash.Modules
                 }
             }
 
-            percentDonePlayer();
+            if (Engine.GetKeyHeld(Key.K))
+            {
+                camFlipped = true;
+            }
+            else
+            {
+                camFlipped = false;
+            }
+
+            // percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
@@ -505,7 +524,7 @@ namespace Mooyash.Modules
                 angle = angleToWaypoint;
             }
 
-            percentDoneAI();
+            // percentDoneAI();
         }
 
         public void update(float dt)
@@ -674,6 +693,7 @@ namespace Mooyash.Modules
 
             // base.update(dt);
 
+            percentDone();
         }
 
         public void wallCollide(float wallAngle)
@@ -709,6 +729,18 @@ namespace Mooyash.Modules
             else
             {
                 curTex = 0;
+            }
+
+            if (camFlipped)
+            {
+                if (curTex == 0)
+                {
+                    curTex = 14;
+                }
+                else
+                {
+                    curTex = -1 * Math.Sign(curTex) * (14 - Math.Abs(curTex));
+                }
             }
         }
     }

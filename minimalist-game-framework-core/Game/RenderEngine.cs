@@ -42,7 +42,7 @@ namespace Mooyash.Services
 
         public void followKart(Kart kart)
         {
-            angle = kart.angle;
+            angle = (kart.camFlipped ? (kart.angle + (float)Math.PI) % (2 * (float)Math.PI) : kart.angle);
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
@@ -326,20 +326,31 @@ namespace Mooyash.Services
             timer = timer.Substring(0, 8);
 
 
-            float progress = PhysicsEngine.player.percentageAlongTrack/100;
-            float lineLen = 300;
+            float lineLen = 500;
+            float lineHeight = 12;
+            float progress;
             float start = (Game.Resolution.X - lineLen) / 2;
+            
+            Engine.DrawRectSolid(new Bounds2(start, 30, lineLen, lineHeight), Color.White);
 
-            Engine.DrawRectSolid(new Bounds2(start, 200, lineLen, 4), Color.White);
-            Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 195, 12, 12), Color.Red);
+            foreach (Kart k in PhysicsEngine.karts)
+            {
+                progress = k.percentageAlongTrack / 100;
 
+                Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), k.iconColor);
+            }
+
+            // manually draw for player on top
 
             Kart player = PhysicsEngine.player;
+            progress = player.percentageAlongTrack / 100;
 
-            Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
-            Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
-            Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
-            Engine.DrawString(player.previousWaypoint + " " + player.currentWaypoint, new Vector2(300, 400), Color.White, Game.diagnosticFont);
+            Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), player.iconColor);
+
+            //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.previousWaypoint + " " + player.currentWaypoint, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
@@ -362,10 +373,12 @@ namespace Mooyash.Services
                 ind = lastItem + 1;
             }
 
-            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale,
+            Engine.DrawTexture(itemRoulette, new Vector2(290, 35) * Game.ResolutionScale,
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
-            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
+
+            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
