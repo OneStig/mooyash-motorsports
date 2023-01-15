@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mooyash.Modules;
+using Newtonsoft.Json;
 
 namespace Mooyash.Services
 {
@@ -308,10 +309,49 @@ namespace Mooyash.Services
                 Kart k = (Kart)t;
 
                 // scuffed fix to reorient texture with collider
+                // also this does drifting particles now
 
                 if (k == PhysicsEngine.player)
                 {
                     newP.Y += 30;
+
+                    if (PhysicsEngine.player.drifting && Math.Abs(PhysicsEngine.player.curTex) == 4)
+                    {
+                        TextureMirror tm = PhysicsEngine.player.curTex < 0 ? TextureMirror.None : TextureMirror.Horizontal;
+                        Vector2 smokePos = new Vector2(newP.X, newP.Y);
+
+                        Vector2 smokeSize = new Vector2(64, 64);
+
+                        float animTime = 0.07f;
+
+                        smokeSize *= 0.7f + ((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 0.2f;
+                        smokePos.X -= smokeSize.X / 2;
+
+                        Vector2[] offsets =
+                        {
+                            new Vector2(28, 0),
+                            new Vector2(-30, -15),
+                            new Vector2(65, -12)
+                        };
+
+                        float[] sizes = {
+                            1,
+                            0.7f,
+                            0.8f
+                        };
+
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            Engine.DrawTexture(Kart.smoke,
+                                smokePos + new Vector2(Math.Sign(PhysicsEngine.player.curTex) * offsets[i].X * -1
+                                - Math.Sign(PhysicsEngine.player.curTex) *((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 5, offsets[i].Y),
+                                size: smokeSize * sizes[i],
+                                scaleMode: TextureScaleMode.Nearest,
+                                mirror: tm);
+                        }
+
+                        
+                    }
                 }
 
                 if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
@@ -365,6 +405,20 @@ namespace Mooyash.Services
             if (Game.debugging)
             {
                 Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+
+                string info = JsonConvert.SerializeObject(PhysicsEngine.player, Formatting.Indented);
+
+                int i = 0;
+                foreach (string s in info.Split("\n"))
+                {
+                    Engine.DrawString(s, new Vector2(5, 35 + i * 11), Color.Black, Game.diagnosticFont);
+                    i++;
+
+                    if (35 + i * 11 > Game.Resolution.Y)
+                    {
+                        break;
+                    }
+                }
             }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";

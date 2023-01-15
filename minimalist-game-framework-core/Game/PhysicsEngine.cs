@@ -40,6 +40,7 @@ namespace Mooyash.Services
             karts = new HashSet<Kart>();
 
             player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario", Color.Red);
+
             gameObjects.Add(player);
             karts.Add(player);
             player.position = track.startPos;
@@ -138,7 +139,7 @@ namespace Mooyash.Services
             {
                 foreach(Kart kart in karts)
                 {
-                    if(obj.testCollision(dt, kart) && !obj.Equals(kart))
+                    if(!obj.Equals(kart) && obj.testCollision(dt, kart))
                     {
                         obj.collide(kart);
                     }
@@ -176,7 +177,6 @@ namespace Mooyash.Services
                     }
                     curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
                 }
-                    
             }
         }
 

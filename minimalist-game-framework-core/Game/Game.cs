@@ -13,7 +13,7 @@ class Game
 
     public static List<int> GameSettings;
     public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
-    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 20);
+    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
 
     public static bool debugging;
 
