@@ -139,7 +139,6 @@ namespace Mooyash.Services
         public static void drawPerTrack(Track t)
         {
             Engine.DrawRectSolid(new Bounds2(Vector2.Zero, Game.Resolution), Color.DeepSkyBlue);
-            Engine.DrawRectSolid(camera.ground, t.background);
 
             foreach (Polygon p in t.interactable)
             {
@@ -157,12 +156,10 @@ namespace Mooyash.Services
             {
                 drawGroundObj(o);
             }
-            /*
             foreach (Tuple<GameObject, float> o in t.skyObjs)
             {
                 drawSkyObj(o.Item1, o.Item2);
             }
-            */
 
             if (Game.debugging)
             {
@@ -258,8 +255,6 @@ namespace Mooyash.Services
                 new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest);
         }
-
-        /*
         public static void drawSkyObj(GameObject t, float height)
         {
             Vector2 newP = rotate(t.position);
@@ -269,12 +264,13 @@ namespace Mooyash.Services
                 return;
             }
 
-            //could avoid trig calls, but I don't think it's much more efficient
-            float angle = camera.tilt + (float) Math.Atan(height/(t.position-camera.position).Length());
-            float distance = (float) (Math.Cos(angle) * newP.Y + Math.Sin(angle) * camera.height);
+            //this is scuffed - i'm sure it's fine
+            camera.height -= height;
+
+            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
             Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
 
-            newP = project(newP, (float) Math.Cos(angle), (float) Math.Sin(angle)) * Game.ResolutionScale;
+            newP = project(newP) * Game.ResolutionScale;
 
             newSize.X = (float)Math.Round(newSize.X);
             newSize.Y = (float)Math.Round(newSize.Y);
@@ -285,8 +281,8 @@ namespace Mooyash.Services
             Engine.DrawTexture(t.texture,
                 new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest);
+            camera.height += height;
         }
-        */
 
         public static bool drawObject(GameObject t)
         {
