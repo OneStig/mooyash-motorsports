@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Mooyash.Modules;
 
@@ -34,8 +35,11 @@ namespace Mooyash.Services
         {
             //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
             gameObjects = new HashSet<GameObject>();
+            projectiles = new HashSet<Projectile>();
+            karts = new HashSet<Kart>();
+
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario", Color.Red);
             gameObjects.Add(player);
             karts.Add(player);
             player.position = track.startPos;
@@ -43,11 +47,11 @@ namespace Mooyash.Services
             player.currentWaypoint = 1;
 
             time = 0;
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
+            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Blue);
             ai1.position = track.startPos;
             ai1.angle = track.startAngle;
 
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario");
+            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Green);
             ai2.position = track.startPos - new Vector2(100, 100);
             ai2.angle = track.startAngle;
 
@@ -150,8 +154,15 @@ namespace Mooyash.Services
                 }
             }
 
-            foreach (Kart curK in karts)
+            List<Kart> kartList = PhysicsEngine.karts.ToList();
+            kartList.Sort(ComparePosition);
+
+            for (int i = 0; i < kartList.Count; i++)
             {
+                Kart curK = kartList[i];
+
+                curK.place = i + 1;
+
                 if (TestLineLine(curK.prevPosition, curK.position, track.finish.Item1, track.finish.Item2))
                 {
                     if (Vector2.Dot(curK.position - curK.prevPosition, (track.finish.Item2 - track.finish.Item1).Rotated(90)) > 0 == track.finish.Item3)
@@ -167,6 +178,16 @@ namespace Mooyash.Services
                 }
                     
             }
+        }
+
+        public static int ComparePosition(Kart k1, Kart k2)
+        {
+            if (k1.lapCount == k2.lapCount)
+            {
+                return k2.percentageAlongTrack.CompareTo(k1.percentageAlongTrack);
+            }
+
+            return k2.lapCount.CompareTo(k1.lapCount);
         }
 
         public static int GetPhysicsID(Vector2 position)

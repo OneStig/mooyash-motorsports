@@ -146,8 +146,13 @@ namespace Mooyash.Modules
         public bool stunned;
         public bool braking;
         public bool isAI;
+        public bool camFlipped;
+
+        public int place;
 
         public int itemHeld;
+        public Color iconColor;
+
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
@@ -167,6 +172,12 @@ namespace Mooyash.Modules
         public int currentWaypoint;
         public int previousWaypoint;
         public List<Vector2> allWaypoints;
+        public List<Vector2> playerWaypoints;
+
+        public int prevProgressInd;
+        public int curProgressInd;
+        public Vector2 prevProgressPoint;
+        public Vector2 curProgressPoint;
 
         public float distanceTraveled;
         public float prevPercent;
@@ -216,8 +227,10 @@ namespace Mooyash.Modules
 
         // score
         public int score;
-        public Kart(float throttleConst, bool isAI, String kartName) : base()
+        public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
         {
+            iconColor = color;
+
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
@@ -229,8 +242,14 @@ namespace Mooyash.Modules
 
             //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
+            this.playerWaypoints = Track.tracks[0].playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+
+            prevProgressInd = 0;
+            curProgressInd = 1;
+            prevProgressPoint = playerWaypoints[0];
+            curProgressPoint = playerWaypoints[0];
 
             newRandomWaypoint = allWaypoints[0];
             prevRandomWaypoint = allWaypoints[0];
@@ -242,6 +261,9 @@ namespace Mooyash.Modules
 
             itemHeld = 0;
             score = 0;
+            camFlipped = false;
+
+            place = 1;
             
             this.isAI = isAI;
             this.throttleConst = throttleConst;
@@ -286,18 +308,33 @@ namespace Mooyash.Modules
             itemHeld = 0;
         }
 
+        //public void percentDoneAI()
+        //{
+        //    if(previousWaypoint == 0)
+        //    {
+        //        percentageAlongTrack = Track.tracks[0].lens[0] *
+        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+        //        return;
+        //    }
+        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
+        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
+        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+        //}
+
         public void percentDone()
         {
-            if(previousWaypoint == 0)
+            if (prevProgressInd == 0)
             {
-                percentageAlongTrack = Track.tracks[0].lens[0] *
-                                        Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+                percentageAlongTrack = Track.tracks[0].pLens[0] *
+                                        Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) /
+                                        Track.tracks[0].pTotalLen;
                 return;
             }
-            float curDist = Track.tracks[0].lens[previousWaypoint] *
-                            Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-            float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
-            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+            float curDist = Track.tracks[0].pLens[prevProgressInd] *
+                            Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) / 100;
+            float prevDist = Track.tracks[0].pLensToPoint[prevProgressInd - 1];
+            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
         }
 
         private float decay(float value, float constant, float dt)
@@ -312,36 +349,33 @@ namespace Mooyash.Modules
             }
         }
 
-        public void updateTargetWaypoints(int waypointRadius)
+        public void updateTargetWaypoints()
         {
-            dists = Splines.getClosestPoints(position, previousWaypoint, currentWaypoint, allWaypoints);
+            dists = Splines.getClosestPoints(position, prevProgressInd, curProgressInd, playerWaypoints);
 
-            if (dists[1]+waypointRadius > dists[2])
+            if (dists[1] > dists[2])
             {
-                previousWaypoint = currentWaypoint;
-                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+                prevProgressInd = curProgressInd;
+                curProgressInd = (curProgressInd + 1) % playerWaypoints.Count;
             }
             if (dists[0] < dists[1])
             {
-                currentWaypoint = previousWaypoint;
-                previousWaypoint--;
-                if (previousWaypoint < 0)
+                curProgressInd = prevProgressInd;
+                prevProgressInd--;
+                if (prevProgressInd < 0)
                 {
-                    previousWaypoint = allWaypoints.Count - 1;
+                    prevProgressInd = playerWaypoints.Count - 1;
                 }
 
             }
-            randomDrivingRadius = rand.Next(waypointRadius / 10);
-            randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
-            newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
-                                            (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));;
-            prevRandomWaypoint = allWaypoints[previousWaypoint];
+            curProgressPoint = playerWaypoints[curProgressInd];
+            prevProgressPoint = playerWaypoints[prevProgressInd];
         }
 
         public void updateInput(float dt)
         {
 
-            updateTargetWaypoints(0);
+            updateTargetWaypoints();
 
             braking = false;
 
@@ -395,11 +429,22 @@ namespace Mooyash.Modules
                 }
             }
 
-            //percentDone();
+            if (Engine.GetKeyHeld(Key.K))
+            {
+                camFlipped = true;
+            }
+            else
+            {
+                camFlipped = false;
+            }
+
+            // percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
         {
+            updateTargetWaypoints();
+
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
@@ -491,7 +536,7 @@ namespace Mooyash.Modules
                 angle = angleToWaypoint;
             }
 
-            //percentDone();
+            // percentDoneAI();
         }
 
         public void update(float dt)
@@ -696,6 +741,18 @@ namespace Mooyash.Modules
             else
             {
                 curTex = 0;
+            }
+
+            if (camFlipped)
+            {
+                if (curTex == 0)
+                {
+                    curTex = 14;
+                }
+                else
+                {
+                    curTex = -1 * Math.Sign(curTex) * (14 - Math.Abs(curTex));
+                }
             }
         }
     }
