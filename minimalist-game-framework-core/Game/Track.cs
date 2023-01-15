@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace Mooyash.Modules
 {
@@ -38,6 +41,9 @@ namespace Mooyash.Modules
         public List<Polygon> collidable;
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
+
+        public Color background = Color.LawnGreen;
+        public List<GameObject> backObjs;
 
         public List<Vector2> splines;
         public List<Vector2> playerSplines;
@@ -105,7 +111,7 @@ namespace Mooyash.Modules
                 {
                     RawTrack = File.ReadAllText(Path.Combine("Assets", "Track" + j + ".json"));
                 }
-                
+
                 TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(RawTrack);
 
                 float scaleFactor = 10f;
@@ -184,15 +190,15 @@ namespace Mooyash.Modules
                 float deltaY;
                 float dist;
 
-                for(int i = 0; i < tracks[j].splines.Count-1; i++)
+                for (int i = 0; i < tracks[j].splines.Count - 1; i++)
                 {
-                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i+1].X);
-                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i+1].Y);
+                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i + 1].X);
+                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i + 1].Y);
                     dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
                     tracks[j].totalLen += dist;
                     tracks[j].lens[i] = dist;
-                    if(i == 0)
+                    if (i == 0)
                     {
                         tracks[j].lensToPoint[i] = tracks[j].lens[i];
                     }
@@ -202,7 +208,7 @@ namespace Mooyash.Modules
                     }
                 }
 
-                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
+                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count - 1].X);
                 deltaY = (tracks[j].splines[0].Y - tracks[j].splines[tracks[j].splines.Count - 1].Y);
                 dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
@@ -246,11 +252,51 @@ namespace Mooyash.Modules
 
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
+
+                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
             }
+        }
+
+        public static List<GameObject> generateBackObjs(int numTrees, float minRad, float radDiff, Vector2 tSize, int numClouds, Vector2 cSize, float minHeight, float heightDiff)
+        {
+            Texture tree = Engine.LoadTexture("tree_sheet.png");
+            Texture cloud = Engine.LoadTexture("cloud_sheet.png");
+            List<GameObject> objs = new List<GameObject>();
+            List<float> sort = new List<float>();
+            Random rand = new Random();
+
+            float angle;
+            float radius;
+            int index;
+            for (int i = 0; i < numTrees; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    tSize, tree, rand.Next(0, 2), 2, 0));
+                sort.Insert(index, radius);
+            }
+            float height;
+            for (int i = 0; i < numClouds; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
+                height = minHeight + (float)rand.NextDouble() * heightDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    cSize, cloud, rand.Next(0, 6), 2, height));
+                sort.Insert(index, radius);
+            }
+
+            objs.Reverse();
+            return objs;
         }
     }
 
-    public class PhysicsPolygon : Polygon
+        public class PhysicsPolygon : Polygon
     {
         public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
