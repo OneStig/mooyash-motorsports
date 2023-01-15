@@ -350,7 +350,7 @@ namespace Mooyash.Services
             //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
-            Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
+            //Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
@@ -378,7 +378,12 @@ namespace Mooyash.Services
                 scaleMode: TextureScaleMode.Nearest);
 
             Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
+
+            if (Game.GameSettings[1] == 1)
+            {
+                Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
+
+            }
         }
 
         public static void drawObjects(List<GameObject> objs)
