@@ -230,7 +230,7 @@ namespace Mooyash.Modules
         public Kart(float throttleConst, bool isAI, String kartName) : base()
         {
             texture = Engine.LoadTexture(kartName + "_sheet.png");
-            smoke = Engine.LoadTexture("smoke.png");
+            smoke = Engine.LoadTexture("smoke2.png");
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);

@@ -258,15 +258,42 @@ namespace Mooyash.Services
                 {
                     newP.Y += 30;
 
-                    if (PhysicsEngine.player.drifting)
+                    if (PhysicsEngine.player.drifting && Math.Abs(PhysicsEngine.player.curTex) == 4)
                     {
                         TextureMirror tm = PhysicsEngine.player.curTex < 0 ? TextureMirror.None : TextureMirror.Horizontal;
+                        Vector2 smokePos = new Vector2(newP.X, newP.Y);
 
-                        Engine.DrawTexture(Kart.smoke,
-                            newP,
-                            size: new Vector2(64, 64),
-                            scaleMode: TextureScaleMode.Nearest,
-                            mirror: tm);
+                        Vector2 smokeSize = new Vector2(64, 64);
+
+                        float animTime = 0.07f;
+
+                        smokeSize *= 0.7f + ((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 0.2f;
+                        smokePos.X -= smokeSize.X / 2;
+
+                        Vector2[] offsets =
+                        {
+                            new Vector2(28, 0),
+                            new Vector2(-30, -15),
+                            new Vector2(65, -12)
+                        };
+
+                        float[] sizes = {
+                            1,
+                            0.7f,
+                            0.8f
+                        };
+
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            Engine.DrawTexture(Kart.smoke,
+                                smokePos + new Vector2(Math.Sign(PhysicsEngine.player.curTex) * offsets[i].X * -1
+                                - Math.Sign(PhysicsEngine.player.curTex) *((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 5, offsets[i].Y),
+                                size: smokeSize * sizes[i],
+                                scaleMode: TextureScaleMode.Nearest,
+                                mirror: tm);
+                        }
+
+                        
                     }
                 }
 
@@ -327,10 +354,10 @@ namespace Mooyash.Services
                 int i = 0;
                 foreach (string s in info.Split("\n"))
                 {
-                    Engine.DrawString(s, new Vector2(5, 35 + i * 15), Color.Black, Game.diagnosticFont);
+                    Engine.DrawString(s, new Vector2(5, 35 + i * 11), Color.Black, Game.diagnosticFont);
                     i++;
 
-                    if (35 + i * 15 > Game.Resolution.Y)
+                    if (35 + i * 11 > Game.Resolution.Y)
                     {
                         break;
                     }
