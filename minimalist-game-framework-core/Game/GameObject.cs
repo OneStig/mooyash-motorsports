@@ -152,6 +152,7 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+        public int coins;
 
         public Vector2 prevPosition;
 
@@ -251,6 +252,7 @@ namespace Mooyash.Modules
             velocity = new Vector2(0, 0);
             position = new Vector2(4500, 0);
             radius = 24f;
+            coins = 0;
 
             //Waypoint initialiazation
             this.allWaypoints = Track.tracks[0].splines;
@@ -606,7 +608,7 @@ namespace Mooyash.Modules
             else
             {
                 //acceleration due to throttle
-                tempA += throttle * throttleConst;
+                tempA += throttle * throttleConst * (1+coins/50);
             }
             //static friction
             if (velocity.X == 0)
