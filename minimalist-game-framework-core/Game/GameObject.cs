@@ -155,17 +155,20 @@ namespace Mooyash.Modules
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
+        public float dBoostTime = float.MaxValue / 2; // timer for drift boosting
 
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
         private readonly float boostMultiplier = 1.8f;
         private readonly float stunMultiplier = 6f;
+        private float dBoostMultiplier = 1f;
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 3f;
         private readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
+        private float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
         public int currentWaypoint;
@@ -383,7 +386,7 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.LeftShift) && steer != 0)
+            if (Engine.GetKeyHeld(Key.LeftShift) && steer != 0 && velocity.X > 0)
             {
                 if (drifting == false)
                 {
@@ -397,7 +400,7 @@ namespace Mooyash.Modules
             {
                 if(drifting == true)
                 {
-                    boost(1.5f);
+                    driftBoost();
                     drifting = false;
                 }
                 if (Engine.GetKeyHeld(Key.A))
@@ -529,6 +532,7 @@ namespace Mooyash.Modules
             stunTime += dt;
             boostTime += dt;
             rollItemTime += dt;
+            dBoostTime += dt;
 
             // when itemRolled
 
@@ -576,7 +580,7 @@ namespace Mooyash.Modules
             else
             {
                 //acceleration due to throttle
-                tempA += throttle * throttleConst;
+                tempA += throttle * throttleConst * (dBoostTime <= dBoostConst ? dBoostMultiplier : 1);
             }
             //static friction
             if (velocity.X == 0)
@@ -731,9 +735,19 @@ namespace Mooyash.Modules
             }
         }
 
-        public void boost(float multiplier)
+        public void driftBoost()
         {
-            //steve;
+            dBoostTime = 0;
+
+            if (driftTime > 1.1f)
+            {
+                dBoostMultiplier = 1.8f;
+            }
+            else if (driftTime > 0.3f) {
+                dBoostMultiplier = 1.2f;
+            }
+
+            dBoostConst = driftTime * 3;
         }
     }
 

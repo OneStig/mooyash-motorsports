@@ -34,8 +34,12 @@ namespace Mooyash.Services
         {
             //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
-            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
             gameObjects = new HashSet<GameObject>();
+            projectiles = new HashSet<Projectile>();
+            karts = new HashSet<Kart>();
+
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
+            
             gameObjects.Add(player);
             karts.Add(player);
             player.position = track.startPos;
@@ -134,7 +138,7 @@ namespace Mooyash.Services
             {
                 foreach(Kart kart in karts)
                 {
-                    if(obj.testCollision(dt, kart) && !obj.Equals(kart))
+                    if(!obj.Equals(kart) && obj.testCollision(dt, kart))
                     {
                         obj.collide(kart);
                     }
@@ -165,7 +169,6 @@ namespace Mooyash.Services
                     }
                     curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
                 }
-                    
             }
         }
 
