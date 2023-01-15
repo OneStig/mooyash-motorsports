@@ -29,14 +29,14 @@ namespace Mooyash.Modules
             // need to add hitbox and textures later
         }
 
-        public GameObject(Vector2 position, Texture texture, Vector2 size)
+        public GameObject(Vector2 position, Vector2 size, Texture texture, int curTex, int numTex)
         {
             this.position = position;
-            curTex = 0;
+            this.curTex = curTex;
             this.texture = texture;
             this.size = size;
-            this.resolution = texture.Size;
-            numTex = 1;
+            this.resolution = new Vector2(texture.Size.X/numTex, texture.Size.Y);
+            this.numTex = numTex;
         }
 
         public virtual void collide(Kart k) { }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace Mooyash.Modules
 {
@@ -35,6 +36,7 @@ namespace Mooyash.Modules
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
 
+        public Color background = Color.LawnGreen;
         public List<GameObject> groundObjs;
         public List<Tuple<GameObject, float>> skyObjs;
 
@@ -238,14 +240,42 @@ namespace Mooyash.Modules
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
 
-                tracks[j].groundObjs = new List<GameObject>() { new GameObject(new Vector2(2250,10000), Engine.LoadTexture("R.jpg"), new Vector2(100,100)) };
+                tracks[j].groundObjs = generateTrees(50,12000,10000, new Vector2(1760,2260));
                 //the float represents height
-                tracks[j].skyObjs = new List<Tuple<GameObject,float>>() { new Tuple<GameObject, float>(new GameObject(new Vector2(2250, 10000), Engine.LoadTexture("R.jpg"), new Vector2(1000, 1000)), 200) };
+                tracks[j].skyObjs = new List<Tuple<GameObject,float>>();
             }
+        }
+
+        public static List<GameObject> generateTrees(int numTrees, float minRad, float radDiff, Vector2 size)
+        {
+            Texture tree = Engine.LoadTexture("tree_sheet.png");
+            List<GameObject> trees = new List<GameObject>();
+            List<float> sort = new List<float>();
+            Random rand = new Random();
+
+            float angle;
+            float radius;
+            int index;
+            for (int i = 0; i < numTrees; i++)
+            {
+                angle = (float) (2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float) rand.NextDouble() * radDiff;
+                index = sort.BinarySearch(radius);
+                if(index < 0) { index = ~index; }
+                trees.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    size, tree, rand.Next(0,2), 2));
+                sort.Insert(index, radius);
+            }
+            trees.Reverse();
+            return trees;
+        }
+        private static int compareDepths(float first, float second)
+        {
+            return second.CompareTo(first);
         }
     }
 
-    public class PhysicsPolygon : Polygon
+        public class PhysicsPolygon : Polygon
     {
         public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
