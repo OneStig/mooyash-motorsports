@@ -386,7 +386,7 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.LeftShift) && steer != 0 && velocity.X > 0)
+            if (Engine.GetKeyHeld(Key.LeftShift) && Math.Abs(steer) > 0.2f && velocity.X > 0)
             {
                 if (drifting == false)
                 {
@@ -744,7 +744,7 @@ namespace Mooyash.Modules
                 dBoostMultiplier = 1.8f;
             }
             else if (driftTime > 0.3f) {
-                dBoostMultiplier = 1.2f;
+                dBoostMultiplier = 1.3f;
             }
 
             dBoostConst = driftTime * 3;
