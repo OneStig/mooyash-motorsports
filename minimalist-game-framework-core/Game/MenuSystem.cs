@@ -24,16 +24,20 @@ namespace Mooyash.Services
 
             SettingtoID["timetrial"] = 0;
             SettingtoID["grandprix"] = 1;
+            SettingtoID["back"] = 2;
 
             SettingtoID["50cc"] = 0;
             SettingtoID["100cc"] = 1;
+            SettingtoID["back"] = 2;
 
             SettingtoID["william"] = 0;
             SettingtoID["suyash"] = 1;
+            SettingtoID["back"] = 2;
 
             SettingtoID["map1"] = 0;
             SettingtoID["map2"] = 1;
             SettingtoID["map3"] = 2;
+            SettingtoID["back"] = 3;
 
             SettingtoID["replay"] = 0;
             SettingtoID["return"] = 1;
@@ -56,6 +60,8 @@ namespace Mooyash.Services
             Dictionary<int, Button> GamemodeButtons = new Dictionary<int, Button>();
             GamemodeButtons[0] = new Button(Color.Black, new Vector2(45, 60), new Vector2(100, 30), "timetrial", Color.White);
             GamemodeButtons[1] = new Button(Color.Black, new Vector2(175, 60), new Vector2(100, 30), "grandprix", Color.White);
+
+            GamemodeButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(100, 30), "back", Color.White); 
             ScreenStack[1] = new Screen(GamemodeTextures, GamemodeTexturePositions, GamemodeTextureSizes, GamemodeButtons, 0);
 
             //cc
@@ -65,6 +71,8 @@ namespace Mooyash.Services
             Dictionary<int, Button> CCButtons = new Dictionary<int, Button>();
             CCButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "50cc", Color.White);
             CCButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "100cc", Color.White);
+
+            CCButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(100, 30), "back", Color.White);
             ScreenStack[2] = new Screen(CCTextures, CCTexturePositions, CCTextureSizes, CCButtons, 0);
 
             //character
@@ -74,6 +82,8 @@ namespace Mooyash.Services
             Dictionary<int, Button> CharacterButtons = new Dictionary<int, Button>();
             CharacterButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "william", Color.White);
             CharacterButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "suyash", Color.White);
+
+            CharacterButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(100, 30), "back", Color.White);
             ScreenStack[3] = new Screen(CharacterTextures, CharacterTexturePosition, CharacterTextureSizes, CharacterButtons, 0);
 
             //map
@@ -84,7 +94,9 @@ namespace Mooyash.Services
             MapButtons[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1", Color.White);
             MapButtons[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2", Color.White);
             MapButtons[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3", Color.White);
-            
+
+            MapButtons[3] = new Button(Color.Black, new Vector2(125, 100), new Vector2(100, 30), "back", Color.White);
+
             ScreenStack[4] = new Screen(MapTextures, MapTexturePositions, MapTextureSizes, MapButtons, 0);
 
             //return
@@ -107,14 +119,6 @@ namespace Mooyash.Services
             Dictionary<int, Button> CreditButtons = new Dictionary<int, Button>();
             CreditButtons[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "replay", Color.White);
             CreditButtons[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "return", Color.White);
-
-            /*
-            CreditButtons[2] = new Button(new Color(0, 0, 0, 0), new Vector2(175,10), new Vector2(1,1), "attribution - mario kart 1992", Color.Black);
-            CreditButtons[3] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 35), new Vector2(1, 1), "created by - steven h sebastian k ", Color.Black);
-            CreditButtons[4] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 60), new Vector2(1, 1), "william g suyash m and davis y", Color.Black);
-            CreditButtons[5] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 85), new Vector2(1, 1), "special thanks to - andrew martz", Color.Black);
-            CreditButtons[6] = new Button(new Color(0, 0, 0, 0), new Vector2(175, 110), new Vector2(1, 1), "and mrs. kankelborg", Color.Black);
-            */
 
             ScreenStack[6] = new Screen(CreditTextures, CreditTexturePositions, CreditTextureSizes, CreditButtons, 0);
 
@@ -140,14 +144,17 @@ namespace Mooyash.Services
             {
                 cur.Down();
             }
-            if (Engine.GetKeyDown(Key.Return))
+            if (Engine.GetKeyDown(Key.Space))
             {
-                if(CurScreen < 5)
+                if (CurScreen < 5 && !cur.Select().Equals("back"))
                 {
                     Settings.Add(cur.Select());
+                    CurScreen++;
                 }
-
-                CurScreen++;
+                else 
+                {
+                    CurScreen--;
+                }
 
                 if (CurScreen >= 5)
                 {
@@ -178,6 +185,10 @@ namespace Mooyash.Services
                     }
                     return true; //create new way to move on
                 }
+            }
+            if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
+            {
+                CurScreen--;
             }
             return false;
         }

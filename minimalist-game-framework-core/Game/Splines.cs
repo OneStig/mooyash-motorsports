@@ -49,7 +49,7 @@ namespace Mooyash.Services
         }
 
         //returns the distance from one point to another
-        private static float distanceToPoint(Vector2 point1, Vector2 point2)
+        public static float distanceToPoint(Vector2 point1, Vector2 point2)
         {
             double a = point2.X - point1.X;
             double b = point2.Y - point1.Y;

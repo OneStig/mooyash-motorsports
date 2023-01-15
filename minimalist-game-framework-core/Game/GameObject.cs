@@ -192,6 +192,8 @@ namespace Mooyash.Modules
         public Vector2 prevRandomWaypoint;
 
         public float angleToWaypoint;
+        public float angleToPlayer;
+        public float distanceToPlayer;
         public Random rand = new Random();
 
         //determines acceleration
@@ -247,6 +249,7 @@ namespace Mooyash.Modules
             this.throttleConst = throttleConst;
         }
 
+        //do not call itemHeld unless the item is greater than 0
         private void useItem()
         {
             // "nothing", "banana", "green shell", "mushroom"
@@ -400,6 +403,7 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
+            //itemHeld = 3;
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
@@ -425,6 +429,21 @@ namespace Mooyash.Modules
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
+
+            angleToPlayer = (float)Math.Atan2(PhysicsEngine.player.position.Y - position.Y,
+                                                PhysicsEngine.player.position.X - position.X);
+            angleToPlayer %= 2 * (float)Math.PI;
+
+            distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
+
+            if (itemHeld == 3)
+            {
+                useItem();
+            }
+            else if (distanceToPlayer < 2000 && itemHeld > 0 && itemHeld != 3)
+            {
+                useItem();
+            }
 
 
             if (Math.Abs(angleToWaypoint - angle) > .1)
