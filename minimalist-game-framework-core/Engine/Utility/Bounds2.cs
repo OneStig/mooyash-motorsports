@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-struct Bounds2
+public struct Bounds2
 {
     public Vector2 Position;
     public Vector2 Size;

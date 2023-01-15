@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace Mooyash.Modules
 {
@@ -20,6 +24,9 @@ namespace Mooyash.Modules
 
         public Tuple<Vector2, Vector2> checkpoint;
 
+        public Vector2[] splines;
+        public Vector2[] playerSplines;
+
         // Stuff on the track
 
         public Vector2[] boxes;
@@ -35,12 +42,22 @@ namespace Mooyash.Modules
         public List<PhysicsPolygon> interactable;
         public List<Polygon> visual;
 
+        public Color background = Color.LawnGreen;
+        public List<GameObject> backObjs;
+
         public List<Vector2> splines;
+        public List<Vector2> playerSplines;
         //public List<Vector2> barrier;
+
 
         public float totalLen;
         public float[] lens;
         public float[] lensToPoint;
+
+        public float pTotalLen;
+        public float[] pLens;
+        public float[] pLensToPoint;
+
 
         //the bool is true if the correct normal direction is 90 degrees clockwise of Item2-Item1
         public Tuple<Vector2, Vector2, bool> finish;
@@ -94,7 +111,7 @@ namespace Mooyash.Modules
                 {
                     RawTrack = File.ReadAllText(Path.Combine("Assets", "Track" + j + ".json"));
                 }
-                
+
                 TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(RawTrack);
 
                 float scaleFactor = 10f;
@@ -157,59 +174,31 @@ namespace Mooyash.Modules
                     visual.Add(new Polygon(loaded.visual[i], loaded.visualColor[i]));
                 }
 
-                tracks[j] = new Track(collidable, interactable, visual,
-                new List<Vector2>{
-                new Vector2(2250, 4000),
-                new Vector2(2270, 6530),
-                new Vector2(2640, 7030),
-                new Vector2(5260, 6700),
-                new Vector2(7260, 7100),
-                new Vector2(8600, 7000),
-                new Vector2(9020, 6650),
-                new Vector2(9000, 6120),
-                new Vector2(7410, 4760),
-                new Vector2(6730, 5040),
-                new Vector2(6030, 5050),
-                new Vector2(5510, 4600),
-                new Vector2(5720, 3960),
-                new Vector2(6200, 3350),
-                new Vector2(6000, 2590),
-                new Vector2(4870, 2340),
-                new Vector2(2860, 2220),
-                new Vector2(2260, 2760),
-                },
+                tracks[j] = new Track(collidable, interactable, visual, loaded.splines.ToList(),
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
                 tracks[j].lens = new float[tracks[j].splines.Count];
                 tracks[j].lensToPoint = new float[tracks[j].splines.Count];
 
-                //tracks[j].barrier = new List<Vector2> {
-                //new Vector2(300,400),
-                //new Vector2(300,600),
-                //new Vector2(325,627),
-                //new Vector2(776,628),
-                //new Vector2(777,603),
-                //new Vector2(732,553),
-                //new Vector2(526,552),
-                //new Vector2(500,500),
-                //new Vector2(500,302),
-                //new Vector2(353,301),
-                //new Vector2(301,328),
-                //};
+                //implement pLen, pLenToPoints, etc.
+                tracks[j].playerSplines = loaded.playerSplines.ToList();
+
+                tracks[j].pLens = new float[tracks[j].playerSplines.Count];
+                tracks[j].pLensToPoint = new float[tracks[j].playerSplines.Count];
 
                 float deltaX;
                 float deltaY;
                 float dist;
 
-                for(int i = 0; i < tracks[j].splines.Count-1; i++)
+                for (int i = 0; i < tracks[j].splines.Count - 1; i++)
                 {
-                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i+1].X);
-                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i+1].Y);
+                    deltaX = (tracks[j].splines[i].X - tracks[j].splines[i + 1].X);
+                    deltaY = (tracks[j].splines[i].Y - tracks[j].splines[i + 1].Y);
                     dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
                     tracks[j].totalLen += dist;
                     tracks[j].lens[i] = dist;
-                    if(i == 0)
+                    if (i == 0)
                     {
                         tracks[j].lensToPoint[i] = tracks[j].lens[i];
                     }
@@ -219,7 +208,7 @@ namespace Mooyash.Modules
                     }
                 }
 
-                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count-1].X);
+                deltaX = (tracks[j].splines[0].X - tracks[j].splines[tracks[j].splines.Count - 1].X);
                 deltaY = (tracks[j].splines[0].Y - tracks[j].splines[tracks[j].splines.Count - 1].Y);
                 dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
@@ -228,17 +217,86 @@ namespace Mooyash.Modules
 
                 tracks[j].lensToPoint[tracks[j].splines.Count - 1] = tracks[j].totalLen;
 
+
+                for (int i = 0; i < tracks[j].playerSplines.Count - 1; i++)
+                {
+                    deltaX = (tracks[j].playerSplines[i].X - tracks[j].playerSplines[i + 1].X);
+                    deltaY = (tracks[j].playerSplines[i].Y - tracks[j].playerSplines[i + 1].Y);
+                    dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                    tracks[j].pTotalLen += dist;
+                    tracks[j].pLens[i] = dist;
+                    if (i == 0)
+                    {
+                        tracks[j].pLensToPoint[i] = tracks[j].pLens[i];
+                    }
+                    else
+                    {
+                        tracks[j].pLensToPoint[i] = tracks[j].pLens[i] + tracks[j].pLensToPoint[i - 1];
+                    }
+                }
+
+                deltaX = (tracks[j].playerSplines[0].X - tracks[j].playerSplines[tracks[j].playerSplines.Count - 1].X);
+                deltaY = (tracks[j].playerSplines[0].Y - tracks[j].playerSplines[tracks[j].playerSplines.Count - 1].Y);
+                dist = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                tracks[j].pTotalLen += dist;
+                tracks[j].pLens[tracks[j].playerSplines.Count - 1] = dist;
+
+                tracks[j].pLensToPoint[tracks[j].playerSplines.Count - 1] = tracks[j].pTotalLen;
+
+
                 tracks[j].startPos = loaded.startPos;
 
                 tracks[j].startAngle = loaded.startAngle;
 
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
+
+                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
             }
+        }
+
+        public static List<GameObject> generateBackObjs(int numTrees, float minRad, float radDiff, Vector2 tSize, int numClouds, Vector2 cSize, float minHeight, float heightDiff)
+        {
+            Texture tree = Engine.LoadTexture("tree_sheet.png");
+            Texture cloud = Engine.LoadTexture("cloud_sheet.png");
+            List<GameObject> objs = new List<GameObject>();
+            List<float> sort = new List<float>();
+            Random rand = new Random();
+
+            float angle;
+            float radius;
+            int index;
+            for (int i = 0; i < numTrees; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    tSize, tree, rand.Next(0, 2), 2, 0));
+                sort.Insert(index, radius);
+            }
+            float height;
+            for (int i = 0; i < numClouds; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = minRad + (float)rand.NextDouble() * radDiff;
+                height = minHeight + (float)rand.NextDouble() * heightDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    cSize, cloud, rand.Next(0, 6), 2, height));
+                sort.Insert(index, radius);
+            }
+
+            objs.Reverse();
+            return objs;
         }
     }
 
-    public class PhysicsPolygon : Polygon
+        public class PhysicsPolygon : Polygon
     {
         public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
