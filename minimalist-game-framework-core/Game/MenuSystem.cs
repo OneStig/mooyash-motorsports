@@ -8,10 +8,12 @@ namespace Mooyash.Services
     {
         private static Screen[] ScreenStack = new Screen[7];
 
-        private static int CurScreen = 0;
+        public static int CurScreen = 0;
 
         public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
         public static List<string> Settings = new List<String>();
+
+        public static string finTime;
         
 
         public static void loadTextures()
@@ -20,24 +22,22 @@ namespace Mooyash.Services
             Texture MenuWithoutLogo = Engine.LoadTexture("fallinggong.png");
             Texture CreditsScreen = Engine.LoadTexture("Credits.png");
 
+            SettingtoID["back"] = 0;
+
             SettingtoID["play"] = 0;
 
             SettingtoID["timetrial"] = 0;
             SettingtoID["grandprix"] = 1;
-            SettingtoID["back"] = 2;
 
             SettingtoID["50cc"] = 0;
             SettingtoID["100cc"] = 1;
-            SettingtoID["back"] = 2;
 
             SettingtoID["william"] = 0;
             SettingtoID["suyash"] = 1;
-            SettingtoID["back"] = 2;
 
             SettingtoID["map1"] = 0;
             SettingtoID["map2"] = 1;
             SettingtoID["map3"] = 2;
-            SettingtoID["back"] = 3;
 
             SettingtoID["replay"] = 0;
             SettingtoID["return"] = 1;
@@ -108,7 +108,7 @@ namespace Mooyash.Services
             EndButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "return", Color.White);
             EndButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "credits", Color.White);
                 //score
-                EndButtons[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.White);
+                //EndButtons[3] = new Button(new Color(0,0,0,0), new Vector2(152.5f, 30), new Vector2(20, 20), "", Color.White);
             
             ScreenStack[5] = new Screen(EndTextures, EndTexturePositions, EndTextureSizes, EndButtons, 0);
 
@@ -136,6 +136,12 @@ namespace Mooyash.Services
             }
 
             cur.DrawScreen();
+
+            if (CurScreen == 5)
+            {
+                Engine.DrawString(finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.White, Game.font,TextAlignment.Center);
+            }
+
             if (Engine.GetKeyDown(Key.W) || Engine.GetKeyDown(Key.Up) || Engine.GetKeyDown(Key.Left) || Engine.GetKeyDown(Key.A))
             {
                 cur.Up();
@@ -146,26 +152,13 @@ namespace Mooyash.Services
             }
             if (Engine.GetKeyDown(Key.Space))
             {
-                if (CurScreen < 5 && !cur.Select().Equals("back"))
-                {
-                    Settings.Add(cur.Select());
-                    CurScreen++;
-                    ScreenStack[CurScreen].curButton = 0;
-                }
-                else 
-                {
-                    CurScreen--;
-                    Settings.RemoveAt(Settings.Count - 1);
-                    ScreenStack[CurScreen].curButton = 0;
-                }
-
                 if (CurScreen >= 5)
                 {
                     String select = cur.Select();
                     if (select.Equals("replay"))
                     {
                         CurScreen = 4;
-                        Settings.RemoveAt(Settings.Count-1);
+                        Settings.RemoveAt(Settings.Count - 1);
                     }
                     if (select.Equals("return"))
                     {
@@ -178,8 +171,21 @@ namespace Mooyash.Services
                         CurScreen = 6;
                     }
                 }
+                else if (CurScreen < 5 && !cur.Select().Equals("back"))
+                {
+                    Settings.Add(cur.Select());
+                    CurScreen++;
+                    ScreenStack[CurScreen].curButton = 0;
+                }
+                else 
+                {
+                    CurScreen--;
+                    Settings.RemoveAt(Settings.Count - 1);
+                    ScreenStack[CurScreen].curButton = 0;
+                }
 
-                if(CurScreen == 5)
+
+                if (CurScreen == 5)
                 {
                     for(int i = 0; i < ScreenStack.Length; i++)
                     {
@@ -208,14 +214,22 @@ namespace Mooyash.Services
         public static void SetFinalTime(float finalTime)
         {
             float time = finalTime;
-            String timer = "0" + (int)time / 60 + "." + time % 60 + "000";
+            String timer = "0" + (int)time / 60 + "." + time % 60 + "00000000";
+            if (time / 60 > 9)
+            {
+                timer = (int)time / 60 + "." + time % 60 + "00000000";
+            }
             if (time % 60 < 10)
             {
-                timer = "0" + (int)time / 60 + ".0" + time % 60 + "000";
+                timer = "0" + (int)time / 60 + ".0" + time % 60 + "00000000";
+                if (time / 60 > 9)
+                {
+                    timer = (int)time / 60 + ".0" + time % 60 + "00000000";
+                }
             }
             timer = timer.Substring(0, 8);
-            Dictionary<int, Button> buttons = ScreenStack[CurScreen].getButton();
-            buttons[buttons.Count - 1].Function(timer);
+
+            finTime = timer;
         }
 
         public static bool SettingsContain(string key)
@@ -292,7 +306,7 @@ namespace Mooyash.Services
 
         public void Down()
         {
-            if(curButton == buttons.Count-2 && buttons.Count == 4)
+            if(curButton == buttons.Count-1)
             {
                 return;
             }
