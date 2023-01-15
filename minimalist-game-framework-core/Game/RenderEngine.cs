@@ -96,6 +96,22 @@ namespace Mooyash.Services
             return result;
         }
 
+        public static Vector2 project(Vector2 input, float cos, float sin)
+        {
+            Vector2 result = new Vector2();
+            //project coordinates onto screen
+            float distance = cos * input.Y + sin * camera.height;
+            result.X = camera.screen * input.X / distance;
+            result.Y = (sin * input.Y - cos * camera.height) * camera.screen / distance;
+            //scale according to FOV
+            result.X = result.X * camera.scale;
+            result.Y = result.Y * camera.scale;
+            //convert to MGF coordinate system
+            result.X += Game.VirtualResolution.X / 2;
+            result.Y = Game.VirtualResolution.Y / 2 - result.Y;
+            return result;
+        }
+
         public static void drawPerPolygon(Polygon p)
         {
             Vector2[] tempPoints = new Vector2[p.vertices];
@@ -123,10 +139,6 @@ namespace Mooyash.Services
         public static void drawPerTrack(Track t)
         {
             Engine.DrawRectSolid(new Bounds2(Vector2.Zero, Game.Resolution), Color.DeepSkyBlue);
-            foreach(GameObject o in t.backObjs)
-            {
-                drawBackObject(o);
-            }
             Engine.DrawRectSolid(camera.ground, t.background);
 
             foreach (Polygon p in t.interactable)
@@ -141,10 +153,14 @@ namespace Mooyash.Services
             {
                 drawPerPolygon(p);
             }
-            /*
-            foreach(Background b in t.backgrounds)
+            foreach (GameObject o in t.groundObjs)
             {
-                b.draw(camera);
+                drawGroundObj(o);
+            }
+            /*
+            foreach (Tuple<GameObject, float> o in t.skyObjs)
+            {
+                drawSkyObj(o.Item1, o.Item2);
             }
             */
 
@@ -217,7 +233,7 @@ namespace Mooyash.Services
             drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
         }
 
-        public static void drawBackObject(GameObject t)
+        public static void drawGroundObj(GameObject t)
         {
             Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
@@ -241,6 +257,35 @@ namespace Mooyash.Services
                 new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
                 size: newSize, scaleMode: TextureScaleMode.Nearest);
         }
+
+        /*
+        public static void drawSkyObj(GameObject t, float height)
+        {
+            Vector2 newP = rotate(t.position);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if ((camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen))
+            {
+                return;
+            }
+
+            //could avoid trig calls, but I don't think it's much more efficient
+            float angle = camera.tilt + (float) Math.Atan(height/(t.position-camera.position).Length());
+            float distance = (float) (Math.Cos(angle) * newP.Y + Math.Sin(angle) * camera.height);
+            Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
+
+            newP = project(newP, (float) Math.Cos(angle), (float) Math.Sin(angle)) * Game.ResolutionScale;
+
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
+
+            newP.X = (float)Math.Round(newP.X);
+            newP.Y = (float)Math.Round(newP.Y);
+
+            Engine.DrawTexture(t.texture,
+                new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                size: newSize, scaleMode: TextureScaleMode.Nearest);
+        }
+        */
 
         public static bool drawObject(GameObject t)
         {

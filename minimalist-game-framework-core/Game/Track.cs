@@ -36,8 +36,8 @@ namespace Mooyash.Modules
         public List<Polygon> visual;
 
         public Color background = Color.LawnGreen; //can set for diff tracks
-        public List<Background> backgrounds; //set in loadBackgrounds
-        public List<GameObject> backObjs; 
+        public List<GameObject> groundObjs;
+        //public List<Tuple<GameObject, float>> skyObjs;
 
         public List<Vector2> splines;
         //public List<Vector2> barrier;
@@ -239,14 +239,10 @@ namespace Mooyash.Modules
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
 
-                tracks[j].backObjs = new List<GameObject>() { new GameObject(new Vector2(2250,5000), Engine.LoadTexture("R.jpg"), new Vector2(1000,1000)) };
-                //tracks[j].backgrounds = loadBackgrounds();
+                tracks[j].groundObjs = new List<GameObject>() { new GameObject(new Vector2(2250,10000), Engine.LoadTexture("R.jpg"), new Vector2(100,100)) };
+                //the float represents height
+                //tracks[j].skyObjs = new List<Tuple<GameObject,float>>() { new Tuple<GameObject, float>(new GameObject(new Vector2(2250, 5000), Engine.LoadTexture("R.jpg"), new Vector2(1000, 1000)), 200) };
             }
-        }
-
-        public static List<Background> loadBackgrounds()
-        {
-            return new List<Background>() {new Tree(100, 0)};
         }
     }
 
