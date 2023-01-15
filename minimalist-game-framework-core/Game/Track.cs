@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -19,6 +20,9 @@ namespace Mooyash.Modules
         public Color[] visualColor;
 
         public Tuple<Vector2, Vector2> checkpoint;
+
+        public Vector2[] splines;
+        public Vector2[] playerSplines;
 
         // Stuff on the track
 
@@ -164,53 +168,14 @@ namespace Mooyash.Modules
                     visual.Add(new Polygon(loaded.visual[i], loaded.visualColor[i]));
                 }
 
-                tracks[j] = new Track(collidable, interactable, visual,
-                new List<Vector2>{
-                new Vector2(2250, 4000),
-                new Vector2(2270, 6530),
-                new Vector2(2640, 7030),
-                new Vector2(5260, 6700),
-                new Vector2(7260, 7100),
-                new Vector2(8600, 7000),
-                new Vector2(9020, 6650),
-                new Vector2(9000, 6120),
-                new Vector2(7410, 4760),
-                new Vector2(6730, 5040),
-                new Vector2(6030, 5050),
-                new Vector2(5510, 4600),
-                new Vector2(5720, 3960),
-                new Vector2(6200, 3350),
-                new Vector2(6000, 2590),
-                new Vector2(4870, 2340),
-                new Vector2(2860, 2220),
-                new Vector2(2260, 2760),
-                },
+                tracks[j] = new Track(collidable, interactable, visual, loaded.splines.ToList(),
                     new Tuple<Vector2, Vector2, bool>(loaded.checkpoint.Item1, loaded.checkpoint.Item2, true));
 
                 tracks[j].lens = new float[tracks[j].splines.Count];
                 tracks[j].lensToPoint = new float[tracks[j].splines.Count];
 
                 //implement pLen, pLenToPoints, etc.
-                tracks[j].playerSplines = new List<Vector2>{
-                                        new Vector2(2250, 4000),
-                                        new Vector2(2270, 6530),
-                                        new Vector2(2640, 7030),
-                                        new Vector2(5260, 6700),
-                                        new Vector2(7260, 7100),
-
-                                        new Vector2(8120, 6110),
-
-                                        new Vector2(7410, 4760),
-                                        new Vector2(6730, 5040),
-                                        new Vector2(6030, 5050),
-                                        new Vector2(5510, 4600),
-                                        new Vector2(5720, 3960),
-                                        new Vector2(6200, 3350),
-                                        new Vector2(6000, 2590),
-                                        new Vector2(4870, 2340),
-                                        new Vector2(2860, 2220),
-                                        new Vector2(2260, 2760),
-                                        };
+                tracks[j].playerSplines = loaded.playerSplines.ToList();
 
                 tracks[j].pLens = new float[tracks[j].playerSplines.Count];
                 tracks[j].pLensToPoint = new float[tracks[j].playerSplines.Count];
