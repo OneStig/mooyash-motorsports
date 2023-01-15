@@ -234,6 +234,7 @@ namespace Mooyash.Services
         }
 
         public static void drawGroundObj(GameObject t)
+        
         {
             Vector2 newP = rotate(t.position);
             //this is repeating some code, but I don't think it needs to be in a method
