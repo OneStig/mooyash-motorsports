@@ -20,12 +20,10 @@ namespace Mooyash.Services
         public static Kart[] aiKarts = new Kart[0];
         public static Kart ai1;
         public static Kart ai2;
-        /*
         public static Kart ai3;
         public static Kart ai4;
         public static Kart ai5;
-        public static Kart ai6;
-        */
+        //public static Kart ai6;
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -48,41 +46,47 @@ namespace Mooyash.Services
             player.currentWaypoint = 1;
 
             time = 0;
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Blue);
-            ai1.position = track.startPos;
+
+            Random rand = new Random();
+
+            int aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
+            ai1 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Blue);
+            ai1.position = track.startPos - new Vector2(100,-25);
             ai1.angle = track.startAngle;
 
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Green);
+            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
+            ai2 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Green);
             ai2.position = track.startPos - new Vector2(100, 100);
             ai2.angle = track.startAngle;
 
-                //ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai3", ai3);
-                //ai3.position = track.startPos + new Vector2(100, 80);
-                //ai3.angle = track.startAngle;
+            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
+            ai3 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Orange);
+            ai3.position = track.startPos - new Vector2(-100, 50);
+            ai3.angle = track.startAngle;
 
-                //ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai4", ai4);
-                //ai4.position = track.startPos - new Vector2(100, 110);
-                //ai4.angle = track.startAngle;
+            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
+            ai4 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Yellow);
+            ai4.position = track.startPos - new Vector2(-100, 175);
+            ai4.angle = track.startAngle;
 
-                //ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai5", ai5);
-                //ai5.position = track.startPos - new Vector2(100, 120);
-                //ai5.angle = track.startAngle;
+            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
+            ai5 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Purple);
+            ai5.position = track.startPos - new Vector2(0, 150);
+            ai5.angle = track.startAngle;
 
-                //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai6", ai6);
-                //ai6.position = track.startPos - new Vector2(100, 130);
-                //ai6.angle = track.startAngle;
+            //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
+            //gameObjects.Add("ai6", ai6);
+            //ai6.position = track.startPos - new Vector2(100, 130);
+            //ai6.angle = track.startAngle;
 
-            aiKarts = new Kart[] { ai1, ai2 };
+            aiKarts = new Kart[] { ai1, ai2, ai3, ai4, ai5 };
             if (Game.GameSettings[1] == 1)
             {
-                gameObjects.Add(ai1);
-                gameObjects.Add(ai2);
-                karts.Add(ai1);
-                karts.Add(ai2);
+                foreach (Kart aiKart in aiKarts)
+                {
+                    gameObjects.Add(aiKart);
+                    karts.Add(aiKart);
+                }
             }
 
             for (int i = 0; i < track.boxes.Length; i++)
