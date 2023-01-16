@@ -213,10 +213,6 @@ namespace Mooyash.Modules
         //Distance from kart to closet waypoints updated every frame
         public float[] dists;
 
-        //Kart dependent lapCount and lapDisplay variables
-        public int lapCount;
-        public int lapDisplay;
-
         /*
          * two separate variables, controls the radius at which a random point is found around a waypoint
          * and the radius at which the kart will decide it reaches the waypoint.
@@ -262,9 +258,6 @@ namespace Mooyash.Modules
 
         // particle textures
         public static Texture smoke;
-
-        // score
-        public int score;
         
         public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
         {

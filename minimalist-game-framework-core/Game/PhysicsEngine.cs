@@ -183,7 +183,12 @@ namespace Mooyash.Services
                     {
                         curK.lapCount = curK.lapDisplay - 1;
                     }
+                    int oldLapDisplay = curK.lapDisplay;
                     curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
+                    if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
+                    {
+                        Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                    }
                 }
             }
         }
