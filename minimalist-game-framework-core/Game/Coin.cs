@@ -30,6 +30,10 @@ namespace Mooyash.Modules
                 Engine.PlaySound(Sounds.sounds["coin"]);
             }
             k.score += 1;
+            if(k.coins < 10)
+            {
+                k.coins++;
+            }
 
             PhysicsEngine.gameObjects.Remove(this);
         }

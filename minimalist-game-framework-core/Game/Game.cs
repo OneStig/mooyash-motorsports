@@ -13,7 +13,7 @@ class Game
 
     public static List<int> GameSettings;
     public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
-    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 20);
+    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
 
     public static bool debugging;
 
@@ -66,9 +66,8 @@ class Game
         {
             //  input handling
             //  physics handled by physics engine
-            //  rendering handled by rendering engine            
+            //  rendering handled by rendering engine       
             PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
-
             RenderEngine.draw();
         }
         else

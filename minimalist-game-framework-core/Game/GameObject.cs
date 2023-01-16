@@ -1,5 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Numerics;
 using Mooyash.Services;
 
@@ -18,6 +21,7 @@ namespace Mooyash.Modules
         public Vector2 size; // width and height of the object in game
         public Vector2 resolution; // width and height of each costume
         public int numTex; // number of textures
+        public float height; // above ground
 
         public GameObject()
         {
@@ -25,6 +29,17 @@ namespace Mooyash.Modules
             angle = 0;
             curTex = 0;
             // need to add hitbox and textures later
+        }
+
+        public GameObject(Vector2 position, Vector2 size, Texture texture, int curTex, int numTex, float height)
+        {
+            this.position = position;
+            this.curTex = curTex;
+            this.texture = texture;
+            this.size = size;
+            this.resolution = new Vector2(texture.Size.X / numTex, texture.Size.Y);
+            this.numTex = numTex;
+            this.height = height;
         }
 
         public virtual void collide(Kart k) { }
@@ -127,7 +142,7 @@ namespace Mooyash.Modules
 
         public void wallCollide(float wallAngle)
         {
-            angle = 2 * wallAngle - angle;
+            angle = (float) ((2 * wallAngle - angle + 2*Math.PI) % (2*Math.PI));
         }
     }
 
@@ -140,23 +155,35 @@ namespace Mooyash.Modules
         public float steer;
         //physicsID for the player's current position
         public int id;
+        public int coins;
 
         public Vector2 prevPosition;
 
         public bool stunned;
         public bool braking;
         public bool isAI;
+        
+        //drifting
+        public bool drifting;
+        public float driftTime;
+        public bool camFlipped;
+
+        public int place;
 
         public int itemHeld;
+        public Color iconColor;
+
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
+        public float dBoostTime = float.MaxValue / 2; // timer for drift boosting
 
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
         private readonly float boostMultiplier = 1.8f;
         private readonly float stunMultiplier = 6f;
+        private float dBoostMultiplier = 1f;
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 3f;
@@ -165,6 +192,44 @@ namespace Mooyash.Modules
         //for lap completion
         public int lapCount;
         public int lapDisplay;
+        private float dBoostConst = 1f;
+
+        //Waypoint variables for ai driving
+        public int currentWaypoint;
+        public int previousWaypoint;
+        public List<Vector2> allWaypoints;
+        public List<Vector2> playerWaypoints;
+
+        public int prevProgressInd;
+        public int curProgressInd;
+        public Vector2 prevProgressPoint;
+        public Vector2 curProgressPoint;
+
+        public float distanceTraveled;
+        public float prevPercent;
+        public float curPercent;
+        public float percentageAlongTrack;
+
+        //Distance from kart to closet waypoints updated every frame
+        public float[] dists;
+
+        //Kart dependent lapCount and lapDisplay variables
+        public int lapCount;
+        public int lapDisplay;
+
+        /*
+         * two separate variables, controls the radius at which a random point is found around a waypoint
+         * and the radius at which the kart will decide it reaches the waypoint.
+         * */
+        public float minDistanceToReachWaypoint;
+        public float randomDrivingRadius;
+
+        public float randAngle;
+        public Vector2 newRandomWaypoint;
+        public Vector2 prevRandomWaypoint;
+
+        public float angleToWaypoint;
+        public Random rand = new Random();
 
         //determines acceleration
         private readonly float throttleConst = 1200; //multiplies throttle
@@ -195,21 +260,51 @@ namespace Mooyash.Modules
         // score
         public int score;
 
-        public Kart(float throttleConst, bool isAI, String kartName) : base()
+        // particle textures
+        public static Texture smoke;
+
+        // score
+        public int score;
+        
+        public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
         {
+            iconColor = color;
+
             texture = Engine.LoadTexture(kartName + "_sheet.png");
+            smoke = Engine.LoadTexture("smoke2.png");
             numTex = 15;
             size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);
-            lapCount = 0;
-            lapDisplay = 1;
 
             velocity = new Vector2(0, 0);
             position = new Vector2(4500, 0);
             radius = 24f;
+            coins = 0;
+
+            //Waypoint initialiazation
+            this.allWaypoints = Track.tracks[0].splines;
+            this.playerWaypoints = Track.tracks[0].playerSplines;
+            currentWaypoint = 0;
+            previousWaypoint = 0;
+
+            prevProgressInd = 0;
+            curProgressInd = 1;
+            prevProgressPoint = playerWaypoints[0];
+            curProgressPoint = playerWaypoints[0];
+
+            newRandomWaypoint = allWaypoints[0];
+            prevRandomWaypoint = allWaypoints[0];
+            minDistanceToReachWaypoint = 500;
+
+            //Kart-dependent lap
+            lapCount = 0;
+            lapDisplay = 1;
 
             itemHeld = 0;
             score = 0;
+            camFlipped = false;
+
+            place = 1;
             
             this.isAI = isAI;
             this.throttleConst = throttleConst;
@@ -258,6 +353,35 @@ namespace Mooyash.Modules
             itemHeld = 0;
         }
 
+        //public void percentDoneAI()
+        //{
+        //    if(previousWaypoint == 0)
+        //    {
+        //        percentageAlongTrack = Track.tracks[0].lens[0] *
+        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
+        //        return;
+        //    }
+        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
+        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
+        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
+        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
+        //}
+
+        public void percentDone()
+        {
+            if (prevProgressInd == 0)
+            {
+                percentageAlongTrack = Track.tracks[0].pLens[0] *
+                                        Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) /
+                                        Track.tracks[0].pTotalLen;
+                return;
+            }
+            float curDist = Track.tracks[0].pLens[prevProgressInd] *
+                            Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) / 100;
+            float prevDist = Track.tracks[0].pLensToPoint[prevProgressInd - 1];
+            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
+        }
+
         private float decay(float value, float constant, float dt)
         {
             if (Math.Abs(value) - constant * dt < 0)
@@ -270,14 +394,40 @@ namespace Mooyash.Modules
             }
         }
 
+        public void updateTargetWaypoints()
+        {
+            dists = Splines.getClosestPoints(position, prevProgressInd, curProgressInd, playerWaypoints);
+
+            if (dists[1] > dists[2])
+            {
+                prevProgressInd = curProgressInd;
+                curProgressInd = (curProgressInd + 1) % playerWaypoints.Count;
+            }
+            if (dists[0] < dists[1])
+            {
+                curProgressInd = prevProgressInd;
+                prevProgressInd--;
+                if (prevProgressInd < 0)
+                {
+                    prevProgressInd = playerWaypoints.Count - 1;
+                }
+
+            }
+            curProgressPoint = playerWaypoints[curProgressInd];
+            prevProgressPoint = playerWaypoints[prevProgressInd];
+        }
+
         public void updateInput(float dt)
         {
+
+            updateTargetWaypoints();
+
             braking = false;
             prevThrottle = throttle;
 
             if (Engine.GetKeyHeld(Key.W))
             {
-                if(velocity.X < 0)
+                if (velocity.X < 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -289,7 +439,7 @@ namespace Mooyash.Modules
             }
             else if (Engine.GetKeyHeld(Key.S))
             {
-                if(velocity.X > 0)
+                if (velocity.X > 0)
                 {
                     throttle = 0;
                     braking = true;
@@ -304,17 +454,35 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.A))
+            if (Engine.GetKeyHeld(Key.LeftShift) && Math.Abs(steer) > 0.2f && velocity.X > 0)
             {
-                steer = Math.Max(-1, steer - sInputScale * dt);
-            }
-            else if (Engine.GetKeyHeld(Key.D))
-            {
-                steer = Math.Min(1, steer + sInputScale * dt);
+                if (drifting == false)
+                {
+                    driftTime = 0;
+                }
+                drifting = true;
+                driftTime += dt;
+                steer = Math.Sign(steer) * Math.Min(Math.Abs(steer)+sInputScale*dt, 1.2f);
             }
             else
             {
-                steer = decay(steer, steerDecay, dt);
+                if(drifting == true)
+                {
+                    driftBoost();
+                    drifting = false;
+                }
+                if (Engine.GetKeyHeld(Key.A))
+                {
+                    steer = Math.Max(-1, steer - sInputScale * dt);
+                }
+                else if (Engine.GetKeyHeld(Key.D))
+                {
+                    steer = Math.Min(1, steer + sInputScale * dt);
+                }
+                else
+                {
+                    steer = decay(steer, steerDecay, dt);
+                }
             }
 
             if (Engine.GetKeyDown(Key.Space))
@@ -324,6 +492,115 @@ namespace Mooyash.Modules
                     useItem();
                 }
             }
+
+            if (Engine.GetKeyHeld(Key.K))
+            {
+                camFlipped = true;
+            }
+            else
+            {
+                camFlipped = false;
+            }
+
+            // percentDonePlayer();
+        }
+
+        public void updateInputAI(float dt)
+        {
+            updateTargetWaypoints();
+
+            angle %= 2*(float)Math.PI;
+            //target is current waypoint
+
+            Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
+            if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
+            {
+                minDistanceToReachWaypoint = rand.Next(450, 500);
+                previousWaypoint = currentWaypoint;
+                currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
+
+                randomDrivingRadius = rand.Next(0, 30);
+                randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                prevRandomWaypoint = newRandomWaypoint;
+                newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                                (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
+            }
+
+            //updateTargetWaypoints(rand.Next(450, 500));
+
+            braking = false;
+            throttle = Math.Min(1, throttle + tInputScale * dt);    
+
+            angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
+                                                    newRandomWaypoint.X - position.X);
+            angleToWaypoint %= 2 * (float)Math.PI;
+
+
+            if (Math.Abs(angleToWaypoint - angle) > .1)
+            { 
+                float angleDiff = (angleToWaypoint - angle) % (2 * (float)Math.PI);
+                if (Math.Abs(angleDiff) < Math.PI)
+                {
+                    if (angleToWaypoint - angle < 0)
+                    {
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
+                    }
+                    else if (angleToWaypoint - angle > 0)
+                    {
+                        if(Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
+                    }
+                }
+                else
+                {
+                    if (angleToWaypoint - angle > 0)
+                    {
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn left
+                            steer = Math.Max(-1, steer - sInputScale * dt);
+                        }
+                    }
+                    else if (angleToWaypoint - angle < 0)
+                    {
+                        if (Math.Abs(angleDiff) < .15)
+                        {
+                            steer = decay(steer, steerDecay, dt);
+                        }
+                        else
+                        {
+                            //turn right
+                            steer = Math.Min(1, steer + sInputScale * dt);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                steer = decay(steer, steerDecay, dt);
+                angle = angleToWaypoint;
+            }
+
+            // percentDoneAI();
         }
 
         public void update(float dt)
@@ -340,6 +617,7 @@ namespace Mooyash.Modules
             {
                 collideTimer -= dt;
             }
+            dBoostTime += dt;
 
             // when itemRolled
 
@@ -388,12 +666,12 @@ namespace Mooyash.Modules
             else
             {
                 //acceleration due to throttle
-                tempA += throttle * throttleConst;
+                tempA += throttle * throttleConst * (dBoostTime <= dBoostConst ? dBoostMultiplier : 1) * (1+coins/50);
             }
             //static friction
-            if(velocity.X == 0)
+            if (velocity.X == 0)
             {
-                if(Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
+                if (Math.Abs(tempA) <= terrainConst.Item3 * naturalDecel)
                 {
                     tempA = 0;
                 }
@@ -403,7 +681,7 @@ namespace Mooyash.Modules
                 }
             }
             //if acceleration and tempA have opposite signs
-            if (Math.Sign(acceleration)*Math.Sign(tempA) == -1)
+            if (Math.Sign(acceleration) * Math.Sign(tempA) == -1)
             {
                 acceleration = 0;
             }
@@ -414,7 +692,7 @@ namespace Mooyash.Modules
 
             float tempV = velocity.X + acceleration * dt;
             //if velocity and tempV have opposite signs
-            if (Math.Sign(velocity.X)*Math.Sign(tempV) == -1)
+            if (Math.Sign(velocity.X) * Math.Sign(tempV) == -1)
             {
                 velocity = new Vector2(0, 0);
             }
@@ -500,26 +778,7 @@ namespace Mooyash.Modules
             }
 
             // base.update(dt);
-
-            if (PhysicsEngine.TestLineLine(prevPosition, position, PhysicsEngine.track.finish.Item1, PhysicsEngine.track.finish.Item2))
-            {
-                if (Vector2.Dot(position - prevPosition, (PhysicsEngine.track.finish.Item2 - PhysicsEngine.track.finish.Item1).Rotated(90)) > 0
-                    == PhysicsEngine.track.finish.Item3)
-                {
-                    lapCount++;
-                }
-                else
-                {
-                    lapCount = lapDisplay - 1;
-                }
-                int oldLapDisplay = lapDisplay;
-                lapDisplay = Math.Max(lapDisplay, lapCount);
-                if(lapDisplay > oldLapDisplay && !isAI)
-                {
-                    Engine.PlaySound(Sounds.sounds["lapFinish"]);
-                }
-            }
-
+            
             //handle sounds
             if(!isAI && !collided)
             {
@@ -593,6 +852,38 @@ namespace Mooyash.Modules
             {
                 curTex = 0;
             }
+            
+            if (camFlipped)
+            {
+                if (curTex == 0)
+                {
+                    curTex = 14;
+                }
+                else
+                {
+                    curTex = -1 * Math.Sign(curTex) * (14 - Math.Abs(curTex));
+                }
+            }
+
+            if (drifting)
+            {
+                curTex += Math.Sign(angularVelo) * (driftTime > 0.07f ? 2 : 1);
+            }
+        }
+
+        public void driftBoost()
+        {
+            dBoostTime = 0;
+
+            if (driftTime > 1.1f)
+            {
+                dBoostMultiplier = 1.8f;
+            }
+            else if (driftTime > 0.3f) {
+                dBoostMultiplier = 1.3f;
+            }
+
+            dBoostConst = driftTime * 3;
         }
 
         public void hit()
