@@ -190,6 +190,7 @@ namespace Mooyash.Modules
         public float prevThrottle;
         public SoundInstance rev;
         public SoundInstance terrain;
+        public float collideTimer;
 
         // score
         public int score;
@@ -216,6 +217,10 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
+            if (itemHeld != 0)
+            {
+                Engine.PlaySound(Sounds.sounds["useItem"]);
+            }
             // "nothing", "banana", "green shell", "mushroom"
             if (itemHeld == 1) // banana
             {
@@ -331,6 +336,10 @@ namespace Mooyash.Modules
             stunTime += dt;
             boostTime += dt;
             rollItemTime += dt;
+            if(collideTimer > 0)
+            {
+                collideTimer -= dt;
+            }
 
             // when itemRolled
 
@@ -482,10 +491,12 @@ namespace Mooyash.Modules
                 }
             }
 
+            bool collided = false;
             if (minCollision != 1)
             {
                 position = finalPos;
                 wallCollide(0);
+                collided = true;
             }
 
             // base.update(dt);
@@ -510,7 +521,7 @@ namespace Mooyash.Modules
             }
 
             //handle sounds
-            if(!isAI)
+            if(!isAI && !collided)
             {
                 if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
                 {
@@ -540,9 +551,10 @@ namespace Mooyash.Modules
 
         public void wallCollide(float wallAngle)
         {
-            if(!isAI)
+            if (!isAI && collideTimer <= 0)
             {
                 Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
             }
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
@@ -550,9 +562,10 @@ namespace Mooyash.Modules
 
         public override void collide(Kart kart)
         {
-            if (!isAI)
+            if (!isAI && collideTimer <= 0)
             {
                 Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
             }
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;

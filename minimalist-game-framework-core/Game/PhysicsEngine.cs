@@ -21,7 +21,6 @@ namespace Mooyash.Services
 
         public static void init()
         {
-            //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
             player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario");
             gameObjects = new HashSet<GameObject>();
@@ -57,6 +56,7 @@ namespace Mooyash.Services
                 {
                     Engine.StopSound(player.terrain);
                 }
+                Sounds.playMenuMusic();
                 player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
