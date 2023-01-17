@@ -99,9 +99,9 @@ namespace Mooyash.Services
             Vector2[] EndTexturePositions = new Vector2[] { };
             Vector2[] EndTextureSizes = new Vector2[] { };
             Dictionary<int, Button> EndButtons = new Dictionary<int, Button>();
-            EndButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "Replay", Color.White);
-            EndButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "Return", Color.White);
-            EndButtons[2] = new Button(Color.Black, new Vector2(125, 100), new Vector2(75, 30), "Credits", Color.White);
+            EndButtons[0] = new Button(Color.Black, new Vector2(15.5f, 150), new Vector2(75, 24), "Replay", Color.White);
+            EndButtons[1] = new Button(Color.Black, new Vector2(122, 150), new Vector2(75, 24), "Return", Color.White);
+            EndButtons[2] = new Button(Color.Black, new Vector2(228, 150), new Vector2(75, 24), "Credits", Color.White);
 
             ScreenStack[5] = new Screen(EndTextures, EndTexturePositions, EndTextureSizes, EndButtons, 0);
 
@@ -110,9 +110,8 @@ namespace Mooyash.Services
             Vector2[] CreditTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CreditTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CreditButtons = new Dictionary<int, Button>();
-            CreditButtons[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(75, 30), "Replay", Color.White);
-            CreditButtons[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(75, 30), "Return", Color.White);
-            CreditButtons[2] = new Button(Color.Black, new Vector2(160, 120), new Vector2(50, 25), "Back", Color.White);
+            CreditButtons[0] = new Button(Color.Black, new Vector2(76, 140), new Vector2(60, 30), "Replay", Color.White);
+            CreditButtons[1] = new Button(Color.Black, new Vector2(176, 140), new Vector2(60, 30), "Return", Color.White);
 
 
             ScreenStack[6] = new Screen(CreditTextures, CreditTexturePositions, CreditTextureSizes, CreditButtons, 0);
@@ -135,13 +134,14 @@ namespace Mooyash.Services
 
             if (CurScreen == 5)
             {
+                Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115*Game.ResolutionScale), Color.Black);
                 if (GetSettings()[1] == 0)
                 {
                     Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
                 }
                 else
                 {
-                    Engine.DrawString(finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
+                    Engine.DrawString("1 - " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
                 }
             }
 
@@ -353,7 +353,7 @@ namespace Mooyash.Services
         private Color color;
         private Color fontColor;
 
-        private static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 18 * Game.ResolutionScale);
+        private static Font font = Game.font;
 
         public Button(Color color, Vector2 position, Vector2 size, string func, Color fontColor)
         {
@@ -367,14 +367,14 @@ namespace Mooyash.Services
         public void DrawButton()
         {
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color);
-            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+Game.VirtualResolution.Y/22) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+size.Y/2-6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
         }
 
         public void DrawSelectedButton()
         {
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue);
             Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color);
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + Game.VirtualResolution.Y / 22) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2-6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
         }
 
         public string Function()
