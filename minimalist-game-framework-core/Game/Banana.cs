@@ -26,7 +26,11 @@ namespace Mooyash.Modules
                 k.coins -= 2;
             }
 
-            k.hit();
+            if(!k.isLarge)
+            {
+                k.hit();
+            }
+            
 
             PhysicsEngine.gameObjects.Remove(this);
         }

@@ -192,7 +192,7 @@ namespace Mooyash.Modules
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 1.8f;
         public readonly float speedBoostConst = 2f;
-        private readonly float largeConst = 6f;
+        private readonly float largeConst = 4f;
         private readonly float rollConst = 2f;
         //for lap completion
         public int lapCount;
@@ -263,6 +263,9 @@ namespace Mooyash.Modules
 
         // score
         public int score;
+
+        //enlargement
+        public bool isLarge = false;
 
         // particle textures
         public static Texture smoke;
@@ -703,11 +706,13 @@ namespace Mooyash.Modules
                 size = new Vector2(62.5f * largeMultiplier, 62.5f * largeMultiplier);
                 terrainConst = PhysicsEngine.terrainConsts[0];
                 radius = 48f;
+                isLarge = true;
             }
             else
             {
                 size = new Vector2(62.5f, 62.5f);
                 radius = 24f;
+                isLarge = false;
             }
 
             //acceleration due to drag (quadratic) and friction
