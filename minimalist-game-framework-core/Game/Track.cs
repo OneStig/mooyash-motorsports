@@ -253,14 +253,19 @@ namespace Mooyash.Modules
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
 
-                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(5625,4500), new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
+                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(5625,4500), new Vector2(1760, 2260),
+                    35, new Vector2(4000, 1600), 500, 1500,
+                    2, 30000, 10000, new Vector2(18000,6000));
             }
         }
 
-        public static List<GameObject> generateBackObjs(int numTrees, float minRad, float radDiff, Vector2 center, Vector2 tSize, int numClouds, Vector2 cSize, float minHeight, float heightDiff)
+        public static List<GameObject> generateBackObjs(int numTrees, float minRad, float radDiff, Vector2 center, Vector2 tSize,
+            int numClouds, Vector2 cSize, float minHeight, float heightDiff,
+            int numMountains, float mtnRad, float mtnRadDiff, Vector2 mSize)
         {
             Texture tree = Engine.LoadTexture("tree_sheet.png");
             Texture cloud = Engine.LoadTexture("cloud_sheet.png");
+            Texture mountain = Engine.LoadTexture("mountain_sheet.png");
             List<GameObject> objs = new List<GameObject>();
             List<float> sort = new List<float>();
             Random rand = new Random();
@@ -287,7 +292,17 @@ namespace Mooyash.Modules
                 index = sort.BinarySearch(radius);
                 if (index < 0) { index = ~index; }
                 objs.Insert(index, new GameObject(center + radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
-                    cSize, cloud, rand.Next(0, 6), 2, height));
+                    cSize, cloud, rand.Next(0, 6), 6, height));
+                sort.Insert(index, radius);
+            }
+            for (int i = 0; i < numMountains; i++)
+            {
+                angle = (float)(2 * Math.PI * rand.NextDouble());
+                radius = mtnRad + (float)rand.NextDouble() * mtnRadDiff;
+                index = sort.BinarySearch(radius);
+                if (index < 0) { index = ~index; }
+                objs.Insert(index, new GameObject(center + radius * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle)),
+                    mSize, mountain, rand.Next(0, 3), 3, 0));
                 sort.Insert(index, radius);
             }
 
