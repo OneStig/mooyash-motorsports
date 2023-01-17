@@ -193,6 +193,10 @@ namespace Mooyash.Services
                         }
                         else
                         {
+                            if (places[i].finTime == 0)
+                            {
+                                places[i].finTime = calcAITime(places[i]);
+                            }
                             Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
 
                             Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
