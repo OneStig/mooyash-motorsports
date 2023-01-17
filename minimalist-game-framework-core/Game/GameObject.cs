@@ -515,7 +515,7 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
-
+            updateTargetWaypoints();
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
@@ -548,7 +548,11 @@ namespace Mooyash.Modules
 
             distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
 
-            if (itemHeld == 3)
+            if (itemHeld == 4)
+            {
+                useItem();
+            }
+            else if (itemHeld == 3)
             {
                 if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < 700)
                 {

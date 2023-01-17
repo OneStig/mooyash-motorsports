@@ -253,19 +253,6 @@ namespace Mooyash.Services
                     Settings.RemoveAt(Settings.Count - 1);
                     ScreenStack[CurScreen].curButton = 0;
                 }
-                else if (CurScreen < 5 && !cur.Select().Equals("Back"))
-                {
-                    Settings.Add(cur.Select());
-                    CurScreen++;
-                    ScreenStack[CurScreen].curButton = 0;
-                }
-                else 
-                {
-                    CurScreen--;
-                    Settings.RemoveAt(Settings.Count - 1);
-                    ScreenStack[CurScreen].curButton = 0;
-                }
-
 
                 if (CurScreen == 5)
                 {
