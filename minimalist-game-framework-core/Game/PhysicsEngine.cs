@@ -105,6 +105,8 @@ namespace Mooyash.Services
             {
                 player.lapDisplay = 3;
                 Game.playing = false;
+                Game.countDown = 0;
+                Game.go = 0;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
             }
