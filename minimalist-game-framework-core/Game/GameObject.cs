@@ -228,6 +228,8 @@ namespace Mooyash.Modules
         public Vector2 prevRandomWaypoint;
 
         public float angleToWaypoint;
+        public float angleToPlayer;
+        public float distanceToPlayer;
         public Random rand = new Random();
 
         //determines acceleration
@@ -307,6 +309,7 @@ namespace Mooyash.Modules
             this.throttleConst = throttleConst;
         }
 
+        //do not call itemHeld unless the item is greater than 0
         private void useItem()
         {
             if (itemHeld != 0)
@@ -507,7 +510,6 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
-            updateTargetWaypoints();
 
             angle %= 2*(float)Math.PI;
             //target is current waypoint
@@ -534,6 +536,31 @@ namespace Mooyash.Modules
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
+
+            angleToPlayer = (float)Math.Atan2(PhysicsEngine.player.position.Y - position.Y,
+                                                PhysicsEngine.player.position.X - position.X);
+            angleToPlayer %= 2 * (float)Math.PI;
+
+            distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
+
+            if (itemHeld == 3)
+            {
+                if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < 700)
+                {
+                    useItem();
+                }
+            }
+            else if (distanceToPlayer < 700 && itemHeld > 0)
+            {
+                if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
+                {
+                    useItem();
+                }
+                else if (itemHeld == 2 && Math.Abs(angleToPlayer - angle) < .1) //shell
+                {
+                    useItem();
+                }
+            }
 
 
             if (Math.Abs(angleToWaypoint - angle) > .1)
