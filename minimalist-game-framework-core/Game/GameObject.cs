@@ -445,7 +445,11 @@ namespace Mooyash.Modules
             }
             else if (distanceToPlayer < 2000 && itemHeld > 0)
             {
-                if (((angleToPlayer - angle) < .1) && itemHeld != 3)
+                if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
+                {
+                    useItem();
+                }
+                else if (itemHeld == 2 && Math.Abs(angleToPlayer - angle) < .1) //shell
                 {
                     useItem();
                 }
