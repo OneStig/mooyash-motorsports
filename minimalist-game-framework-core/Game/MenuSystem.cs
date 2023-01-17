@@ -18,7 +18,6 @@ namespace Mooyash.Services
 
         public static string finTime;
 
-
         public static void loadTextures()
         {
             Texture Menu = Engine.LoadTexture("fallengong.png");
@@ -39,6 +38,7 @@ namespace Mooyash.Services
 
             SettingtoID["50CC"] = 0;
             SettingtoID["100CC"] = 1;
+
 
             SettingtoID["William"] = 0;
             SettingtoID["Suyash"] = 1;
@@ -127,6 +127,7 @@ namespace Mooyash.Services
 
 
 
+
         }
 
         public static string timeToString(float time)
@@ -206,7 +207,7 @@ namespace Mooyash.Services
                         }
                     }
 
-                    Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100,123) * Game.ResolutionScale, Color.White, Game.font);
+                    Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100,123) * Game.ResolutionScale, Color.White, Game.font);      
                 }
             }
 
@@ -247,6 +248,18 @@ namespace Mooyash.Services
                     ScreenStack[CurScreen].curButton = 0;
                 }
                 else
+                {
+                    CurScreen--;
+                    Settings.RemoveAt(Settings.Count - 1);
+                    ScreenStack[CurScreen].curButton = 0;
+                }
+                else if (CurScreen < 5 && !cur.Select().Equals("Back"))
+                {
+                    Settings.Add(cur.Select());
+                    CurScreen++;
+                    ScreenStack[CurScreen].curButton = 0;
+                }
+                else 
                 {
                     CurScreen--;
                     Settings.RemoveAt(Settings.Count - 1);
@@ -433,7 +446,9 @@ namespace Mooyash.Services
         public void DrawButton()
         {
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color);
+
             Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+
         }
 
         public void DrawSelectedButton()
@@ -441,6 +456,7 @@ namespace Mooyash.Services
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue);
             Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color);
             Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+
         }
 
         public string Function()

@@ -107,11 +107,13 @@ namespace Mooyash.Services
             //sees if game ends
             if (player.lapDisplay > 3)
             {
-                Engine.StopSound(player.rev);
+                Engine.StopSound(player.rev, fadeTime: 0.2f);
                 if(player.terrain != null)
                 {
-                    Engine.StopSound(player.terrain);
+                    Engine.StopSound(player.terrain,fadeTime:0.2f);
                 }
+                player.boostTime = float.MaxValue / 2;
+                player.dBoostTime = float.MaxValue / 2;
                 Sounds.playMenuMusic();
                 player.lapDisplay = 3;
                 Game.playing = false;

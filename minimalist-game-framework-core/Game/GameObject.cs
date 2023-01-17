@@ -191,13 +191,13 @@ namespace Mooyash.Modules
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 1.8f;
-        private readonly float speedBoostConst = 2f;
+        public readonly float speedBoostConst = 2f;
         private readonly float largeConst = 6f;
         private readonly float rollConst = 2f;
         //for lap completion
         public int lapCount;
         public int lapDisplay;
-        private float dBoostConst = 1f;
+        public float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
         public int currentWaypoint;
@@ -230,6 +230,8 @@ namespace Mooyash.Modules
         public Vector2 prevRandomWaypoint;
 
         public float angleToWaypoint;
+        public float angleToPlayer;
+        public float distanceToPlayer;
         public Random rand = new Random();
 
         //determines acceleration
@@ -256,6 +258,7 @@ namespace Mooyash.Modules
         public float prevThrottle;
         public SoundInstance rev;
         public SoundInstance terrain;
+        public SoundInstance driftSound;
         public float collideTimer;
 
         // score
@@ -311,6 +314,7 @@ namespace Mooyash.Modules
             this.throttleConst = throttleConst;
         }
 
+        //do not call itemHeld unless the item is greater than 0
         private void useItem()
         {
             if (itemHeld != 0)
@@ -462,6 +466,7 @@ namespace Mooyash.Modules
                 if (drifting == false)
                 {
                     driftTime = 0;
+                    driftSound = Engine.PlaySound(Sounds.sounds["drift"], repeat: true);
                 }
                 drifting = true;
                 driftTime += dt;
@@ -473,6 +478,7 @@ namespace Mooyash.Modules
                 {
                     driftBoost();
                     drifting = false;
+                    Engine.StopSound(driftSound, fadeTime: 0.2f);
                 }
                 if (Engine.GetKeyHeld(Key.A))
                 {
@@ -509,7 +515,6 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
-            updateTargetWaypoints();
 
             angle %= 2*(float)Math.PI;
             //target is current waypoint
@@ -536,6 +541,31 @@ namespace Mooyash.Modules
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
             angleToWaypoint %= 2 * (float)Math.PI;
+
+            angleToPlayer = (float)Math.Atan2(PhysicsEngine.player.position.Y - position.Y,
+                                                PhysicsEngine.player.position.X - position.X);
+            angleToPlayer %= 2 * (float)Math.PI;
+
+            distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
+
+            if (itemHeld == 3)
+            {
+                if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < 700)
+                {
+                    useItem();
+                }
+            }
+            else if (distanceToPlayer < 700 && itemHeld > 0)
+            {
+                if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
+                {
+                    useItem();
+                }
+                else if (itemHeld == 2 && Math.Abs(angleToPlayer - angle) < .1) //shell
+                {
+                    useItem();
+                }
+            }
 
 
             if (Math.Abs(angleToWaypoint - angle) > .1)
@@ -801,13 +831,17 @@ namespace Mooyash.Modules
             }
 
             // base.update(dt);
-            
+
             //handle sounds
-            if(!isAI && !collided)
+            if (!isAI && !collided)
             {
-                if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
+                if (id != prevId)
                 {
                     Engine.StopSound(terrain);
+                }
+                else if (velocity.X == 0 && prevVelocity != 0)
+                {
+                    Engine.StopSound(terrain, fadeTime: 0.2f);
                 }
                 if (id != prevId || (prevVelocity == 0 && velocity.X != 0))
                 {
