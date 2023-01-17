@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -152,6 +153,8 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+        //physicsID for the player's current position
+        public int id;
         public int coins;
 
         public Vector2 prevPosition;
@@ -173,19 +176,25 @@ namespace Mooyash.Modules
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
+        public float largeTime = float.MaxValue / 2; // time passed since last enlargement
         public float dBoostTime = float.MaxValue / 2; // timer for drift boosting
 
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
         private readonly float boostMultiplier = 1.8f;
+        private readonly float largeMultiplier = 2f;
         private readonly float stunMultiplier = 6f;
         private float dBoostMultiplier = 1f;
 
         // Constants to determine how long certain effects will last (in seconds)
-        private readonly float stunConst = 3f;
-        private readonly float speedBoostConst = 3f;
+        private readonly float stunConst = 1.8f;
+        private readonly float speedBoostConst = 2f;
+        private readonly float largeConst = 6f;
         private readonly float rollConst = 2f;
+        //for lap completion
+        public int lapCount;
+        public int lapDisplay;
         private float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
@@ -206,10 +215,6 @@ namespace Mooyash.Modules
 
         //Distance from kart to closet waypoints updated every frame
         public float[] dists;
-
-        //Kart dependent lapCount and lapDisplay variables
-        public int lapCount;
-        public int lapDisplay;
 
         /*
          * two separate variables, controls the radius at which a random point is found around a waypoint
@@ -245,14 +250,19 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        // particle textures
-        public static Texture smoke;
+        //for sounds
+        public float prevThrottle;
+        public SoundInstance rev;
+        public SoundInstance terrain;
+        public float collideTimer;
 
         // score
         public int score;
+
+        // particle textures
+        public static Texture smoke;
         
         public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
-
         {
             iconColor = color;
 
@@ -298,7 +308,11 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
-            // "nothing", "banana", "green shell", "mushroom"
+            if (itemHeld != 0)
+            {
+                Engine.PlaySound(Sounds.sounds["useItem"]);
+            }
+            // "nothing", "banana", "green shell", "mushroom", "bread"
             if (itemHeld == 1) // banana
             {
                 float sin = (float)Math.Sin(angle);
@@ -310,12 +324,19 @@ namespace Mooyash.Modules
             }
             else if (itemHeld == 2) // green shell
             {
-                float sin = (float)Math.Sin(angle);
-                float cos = (float)Math.Cos(angle);
+                float shellAngle = angle;
+
+                if (camFlipped)
+                {
+                    shellAngle = (angle + (float)Math.PI) % (2 * (float)Math.PI);
+                }
+
+                float sin = (float)Math.Sin(shellAngle);
+                float cos = (float)Math.Cos(shellAngle);
 
                 Vector2 spawnPosition = position + new Vector2(cos, sin) * 100;
 
-                Shell sh = new Shell(spawnPosition, angle);
+                Shell sh = new Shell(spawnPosition, shellAngle);
 
                 PhysicsEngine.gameObjects.Add(sh);
                 PhysicsEngine.projectiles.Add(sh);
@@ -330,24 +351,20 @@ namespace Mooyash.Modules
                 {
                     boostTime = 0;
                 }
-            }
+            } else if (itemHeld == 4) // bread
+            {
+                if(largeTime < largeConst)
+                {
+                    largeTime -= largeConst;
+                } else
+                {
+                    largeTime = 0;
+                }
 
+            }
+            
             itemHeld = 0;
         }
-
-        //public void percentDoneAI()
-        //{
-        //    if(previousWaypoint == 0)
-        //    {
-        //        percentageAlongTrack = Track.tracks[0].lens[0] *
-        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
-        //        return;
-        //    }
-        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
-        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
-        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
-        //}
 
         public void percentDone()
         {
@@ -401,10 +418,10 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
-
             updateTargetWaypoints();
 
             braking = false;
+            prevThrottle = throttle;
 
             if (Engine.GetKeyHeld(Key.W))
             {
@@ -483,7 +500,6 @@ namespace Mooyash.Modules
                 camFlipped = false;
             }
 
-            // percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
@@ -496,21 +512,21 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(450, 500);
+                minDistanceToReachWaypoint = rand.Next(400, 500);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
-                randomDrivingRadius = rand.Next(0, 30);
+                randomDrivingRadius = rand.Next(0, 100);
                 randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
                 prevRandomWaypoint = newRandomWaypoint;
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
 
-            //updateTargetWaypoints(rand.Next(450, 500));
 
             braking = false;
-            throttle = Math.Min(1, throttle + tInputScale * dt);    
+
+            throttle = Math.Min(1, throttle + tInputScale * dt);
 
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
@@ -579,19 +595,34 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
                 angle = angleToWaypoint;
+                
             }
 
-            // percentDoneAI();
+            if (rand.Next(0, 100) < 7)
+            {
+                randomDrivingRadius = rand.Next(0, 100);
+                randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                prevRandomWaypoint = newRandomWaypoint;
+                newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                                (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
+            }
         }
 
         public void update(float dt)
         {
             prevPosition = new Vector2(position.X, position.Y);
+            float prevVelocity = velocity.X;
+            int prevId = id;
 
             // update various timers
             stunTime += dt;
             boostTime += dt;
+            largeTime += dt;
             rollItemTime += dt;
+            if(collideTimer > 0)
+            {
+                collideTimer -= dt;
+            }
             dBoostTime += dt;
 
             // when itemRolled
@@ -617,7 +648,8 @@ namespace Mooyash.Modules
                 stunDrag = 1f;
             }
 
-            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
+            id = PhysicsEngine.GetPhysicsID(position);
+            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[id];
 
             // when boosting
 
@@ -625,6 +657,18 @@ namespace Mooyash.Modules
             {
                 throttle *= boostMultiplier;
                 terrainConst = PhysicsEngine.terrainConsts[0];
+            }
+
+            if (largeTime < largeConst)
+            {
+                size = new Vector2(62.5f * largeMultiplier, 62.5f * largeMultiplier);
+                terrainConst = PhysicsEngine.terrainConsts[0];
+                radius = 48f;
+            }
+            else
+            {
+                size = new Vector2(62.5f, 62.5f);
+                radius = 24f;
             }
 
             //acceleration due to drag (quadratic) and friction
@@ -743,25 +787,75 @@ namespace Mooyash.Modules
                 }
             }
 
+            bool collided = false;
             if (minCollision != 1)
             {
                 position = finalPos;
                 wallCollide(0);
+                collided = true;
             }
 
             // base.update(dt);
+            
+            //handle sounds
+            if(!isAI && !collided)
+            {
+                if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
+                {
+                    Engine.StopSound(terrain);
+                }
+                if (id != prevId || (prevVelocity == 0 && velocity.X != 0))
+                {
+                    terrain = Engine.PlaySound(Sounds.sounds["terrain" + id], repeat: true);
+                }
+                if (throttle == 0 && prevThrottle != 0)
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat:true);
+                }
+                else if (Math.Abs(throttle) >= 0.75f && Math.Abs(prevThrottle) < 0.75f)
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["highRev"], repeat:true);
+                }
+                else if ((0 != throttle && Math.Abs(throttle) < 0.75f) && (0 == prevThrottle || Math.Abs(prevThrottle) >= 0.75f))
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
+                }
+            }
 
             percentDone();
         }
 
         public void wallCollide(float wallAngle)
         {
+            if (!isAI && collideTimer <= 0)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
+            }
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
         }
 
         public override void collide(Kart kart)
         {
+            if (!isAI && collideTimer <= 0)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
+            }
+
+            if (kart.largeTime < kart.largeConst)
+            {
+                stunTime = 0;
+            }
+            else if (largeTime < largeConst)
+            {
+                kart.stunTime = 0;
+            }
+
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;
             position -= adjust;
@@ -820,6 +914,15 @@ namespace Mooyash.Modules
             }
 
             dBoostConst = driftTime * 3;
+        }
+
+        public void hit()
+        {
+            stunTime = 0;
+            if(!isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["hit"]);
+            }
         }
     }
 
