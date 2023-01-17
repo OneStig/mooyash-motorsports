@@ -278,6 +278,11 @@ namespace Mooyash.Services
                     if (select.Equals("Credits"))
                     {
                         CurScreen = 6;
+                        Engine.StopSound(PhysicsEngine.player.rev, fadeTime: 0.2f);
+                        if (PhysicsEngine.player.terrain != null)
+                        {
+                            Engine.StopSound(PhysicsEngine.player.terrain, fadeTime: 0.2f);
+                        }
                     }
                     Game.go = 0;
                 }
