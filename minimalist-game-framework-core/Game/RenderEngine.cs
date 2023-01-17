@@ -323,15 +323,7 @@ namespace Mooyash.Services
                     if (PhysicsEngine.player.drifting && Math.Abs(PhysicsEngine.player.curTex) == 4)
                     {
                         TextureMirror tm = PhysicsEngine.player.curTex < 0 ? TextureMirror.None : TextureMirror.Horizontal;
-                        Vector2 smokePos = new Vector2(newP.X, newP.Y);
-
-                        Vector2 smokeSize = new Vector2(64, 64);
-
-                        float animTime = 0.07f;
-
-                        smokeSize *= 0.7f + ((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 0.2f;
-                        smokePos.X -= smokeSize.X / 2;
-
+                        
                         Vector2[] offsets =
                         {
                             new Vector2(28, 0),
@@ -345,11 +337,25 @@ namespace Mooyash.Services
                             0.8f
                         };
 
+                        float[] animTimes =
+                        {
+                            0.07f,
+                            0.06f,
+                            0.08f
+                        };
+
                         for (int i = 0; i < offsets.Length; i++)
                         {
+                            Vector2 smokePos = new Vector2(newP.X, newP.Y);
+
+                            Vector2 smokeSize = new Vector2(64, 64);
+
+                            smokeSize *= 0.7f + ((int)(PhysicsEngine.player.driftTime / animTimes[i]) % 3) * 0.2f;
+                            smokePos.X -= smokeSize.X / 2;
+
                             Engine.DrawTexture(Kart.smoke,
                                 smokePos + new Vector2(Math.Sign(PhysicsEngine.player.curTex) * offsets[i].X * -1
-                                - Math.Sign(PhysicsEngine.player.curTex) *((int)(PhysicsEngine.player.driftTime / animTime) % 3) * 5, offsets[i].Y),
+                                - Math.Sign(PhysicsEngine.player.curTex) *((int)(PhysicsEngine.player.driftTime / animTimes[i]) % 3) * 5, offsets[i].Y),
                                 size: smokeSize * sizes[i],
                                 scaleMode: TextureScaleMode.Nearest,
                                 mirror: tm);
@@ -487,7 +493,7 @@ namespace Mooyash.Services
 
             foreach (Kart k in PhysicsEngine.karts)
             {
-                progress = k.percentageAlongTrack / 100;
+                progress = (k.percentageAlongTrack / 100 + 0.005f) % 1f;
 
                 Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), k.iconColor);
             }
@@ -495,7 +501,7 @@ namespace Mooyash.Services
             // manually draw for player on top
 
             Kart player = PhysicsEngine.player;
-            progress = player.percentageAlongTrack / 100;
+            progress = (player.percentageAlongTrack / 100 + 0.005f) % 1f;
 
             Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), player.iconColor);
 

@@ -176,18 +176,21 @@ namespace Mooyash.Modules
         public float stunTime = float.MaxValue / 2; // time passed since last stun
         public float boostTime = float.MaxValue / 2; // time passed since last speed boost
         public float rollItemTime = float.MaxValue / 2; // time passed since rolled item
+        public float largeTime = float.MaxValue / 2; // time passed since last enlargement
         public float dBoostTime = float.MaxValue / 2; // timer for drift boosting
 
         private float stunDrag = 1f;
 
         // Constants to determine effect intensity
         private readonly float boostMultiplier = 1.8f;
+        private readonly float largeMultiplier = 2f;
         private readonly float stunMultiplier = 6f;
         private float dBoostMultiplier = 1f;
 
         // Constants to determine how long certain effects will last (in seconds)
-        private readonly float stunConst = 3f;
-        public readonly float speedBoostConst = 3f;
+        private readonly float stunConst = 1.8f;
+        private readonly float speedBoostConst = 2f;
+        private readonly float largeConst = 6f;
         private readonly float rollConst = 2f;
         //for lap completion
         public int lapCount;
@@ -310,7 +313,7 @@ namespace Mooyash.Modules
             {
                 Engine.PlaySound(Sounds.sounds["useItem"]);
             }
-            // "nothing", "banana", "green shell", "mushroom"
+            // "nothing", "banana", "green shell", "mushroom", "bread"
             if (itemHeld == 1) // banana
             {
                 float sin = (float)Math.Sin(angle);
@@ -322,12 +325,19 @@ namespace Mooyash.Modules
             }
             else if (itemHeld == 2) // green shell
             {
-                float sin = (float)Math.Sin(angle);
-                float cos = (float)Math.Cos(angle);
+                float shellAngle = angle;
+
+                if (camFlipped)
+                {
+                    shellAngle = (angle + (float)Math.PI) % (2 * (float)Math.PI);
+                }
+
+                float sin = (float)Math.Sin(shellAngle);
+                float cos = (float)Math.Cos(shellAngle);
 
                 Vector2 spawnPosition = position + new Vector2(cos, sin) * 100;
 
-                Shell sh = new Shell(spawnPosition, angle);
+                Shell sh = new Shell(spawnPosition, shellAngle);
 
                 PhysicsEngine.gameObjects.Add(sh);
                 PhysicsEngine.projectiles.Add(sh);
@@ -342,24 +352,20 @@ namespace Mooyash.Modules
                 {
                     boostTime = 0;
                 }
-            }
+            } else if (itemHeld == 4) // bread
+            {
+                if(largeTime < largeConst)
+                {
+                    largeTime -= largeConst;
+                } else
+                {
+                    largeTime = 0;
+                }
 
+            }
+            
             itemHeld = 0;
         }
-
-        //public void percentDoneAI()
-        //{
-        //    if(previousWaypoint == 0)
-        //    {
-        //        percentageAlongTrack = Track.tracks[0].lens[0] *
-        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
-        //        return;
-        //    }
-        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
-        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
-        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
-        //}
 
         public void percentDone()
         {
@@ -413,7 +419,6 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
-
             updateTargetWaypoints();
 
             braking = false;
@@ -498,7 +503,6 @@ namespace Mooyash.Modules
                 camFlipped = false;
             }
 
-            // percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
@@ -511,21 +515,21 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(450, 500);
+                minDistanceToReachWaypoint = rand.Next(400, 500);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
-                randomDrivingRadius = rand.Next(0, 30);
+                randomDrivingRadius = rand.Next(0, 100);
                 randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
                 prevRandomWaypoint = newRandomWaypoint;
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
 
-            //updateTargetWaypoints(rand.Next(450, 500));
 
             braking = false;
-            throttle = Math.Min(1, throttle + tInputScale * dt);    
+
+            throttle = Math.Min(1, throttle + tInputScale * dt);
 
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
@@ -594,9 +598,17 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
                 angle = angleToWaypoint;
+                
             }
 
-            // percentDoneAI();
+            if (rand.Next(0, 100) < 7)
+            {
+                randomDrivingRadius = rand.Next(0, 100);
+                randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                prevRandomWaypoint = newRandomWaypoint;
+                newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                                (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
+            }
         }
 
         public void update(float dt)
@@ -608,6 +620,7 @@ namespace Mooyash.Modules
             // update various timers
             stunTime += dt;
             boostTime += dt;
+            largeTime += dt;
             rollItemTime += dt;
             if(collideTimer > 0)
             {
@@ -647,6 +660,18 @@ namespace Mooyash.Modules
             {
                 throttle *= boostMultiplier;
                 terrainConst = PhysicsEngine.terrainConsts[0];
+            }
+
+            if (largeTime < largeConst)
+            {
+                size = new Vector2(62.5f * largeMultiplier, 62.5f * largeMultiplier);
+                terrainConst = PhysicsEngine.terrainConsts[0];
+                radius = 48f;
+            }
+            else
+            {
+                size = new Vector2(62.5f, 62.5f);
+                radius = 24f;
             }
 
             //acceleration due to drag (quadratic) and friction
@@ -806,6 +831,8 @@ namespace Mooyash.Modules
                     rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
                 }
             }
+
+            percentDone();
         }
 
         public void wallCollide(float wallAngle)
@@ -826,6 +853,16 @@ namespace Mooyash.Modules
                 Engine.PlaySound(Sounds.sounds["collide"]);
                 collideTimer = 0.5f;
             }
+
+            if (kart.largeTime < kart.largeConst)
+            {
+                stunTime = 0;
+            }
+            else if (largeTime < largeConst)
+            {
+                kart.stunTime = 0;
+            }
+
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;
             position -= adjust;
