@@ -10,6 +10,8 @@ namespace Mooyash.Services
         public static HashSet<Kart> karts = new HashSet<Kart>();
         public static HashSet<Projectile> projectiles = new HashSet<Projectile>();
         public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
+        public static HashSet<Spawner> spawners = new HashSet<Spawner>();
+
         public static Kart player;
         public static Track track;
 
@@ -38,6 +40,7 @@ namespace Mooyash.Services
             gameObjects = new HashSet<GameObject>();
             projectiles = new HashSet<Projectile>();
             karts = new HashSet<Kart>();
+            spawners = new HashSet<Spawner>();
 
             player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario", Color.Red);
 
@@ -129,6 +132,11 @@ namespace Mooyash.Services
                     aiKarts[i].updateInputAI(dt);
                     // aiKarts[i].update(dt);
                 }
+            }
+
+            foreach (Spawner spawner in spawners)
+            {
+                spawner.update(player);
             }
 
             foreach(Projectile projectile in projectiles)

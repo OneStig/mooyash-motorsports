@@ -25,6 +25,7 @@ namespace Mooyash.Modules
 				k.rollItemTime = 0;
 				k.itemHeld = -1;
 
+				PhysicsEngine.spawners.Add(new Spawner(new ItemBox(position)));
 				PhysicsEngine.gameObjects.Remove(this);
             }
 		}

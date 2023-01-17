@@ -31,6 +31,7 @@ namespace Mooyash.Modules
                 k.coins++;
             }
 
+            PhysicsEngine.spawners.Add(new Spawner(new Coin(position)));
             PhysicsEngine.gameObjects.Remove(this);
         }
     }
