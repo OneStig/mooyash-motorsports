@@ -80,22 +80,27 @@ namespace Mooyash.Services
                 //ai6.angle = track.startAngle;
 
             aiKarts = new Kart[] { ai1, ai2 };
+
             if (Game.GameSettings[1] == 1)
             {
                 gameObjects.Add(ai1);
                 gameObjects.Add(ai2);
                 karts.Add(ai1);
                 karts.Add(ai2);
-            }
 
-            for (int i = 0; i < track.boxes.Length; i++)
-            {
-                gameObjects.Add(new ItemBox(track.boxes[i]));
-            }
+                for (int i = 0; i < track.boxes.Length; i++)
+                {
+                    gameObjects.Add(new ItemBox(track.boxes[i]));
+                }
 
-            for (int i = 0; i < track.coins.Length; i++)
+                for (int i = 0; i < track.coins.Length; i++)
+                {
+                    gameObjects.Add(new Coin(track.coins[i]));
+                }
+            }
+            else
             {
-                gameObjects.Add(new Coin(track.coins[i]));
+                player.itemHeld = 3;
             }
         }
 
