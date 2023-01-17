@@ -189,7 +189,7 @@ namespace Mooyash.Modules
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 1.8f;
-        private readonly float speedBoostConst = 2f;
+        public readonly float speedBoostConst = 2f;
         private readonly float largeConst = 6f;
         private readonly float rollConst = 2f;
         //for lap completion
