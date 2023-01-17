@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Mooyash.Modules;
+using Newtonsoft.Json;
 
 namespace Mooyash.Services
 {
@@ -23,7 +25,8 @@ namespace Mooyash.Services
         public float hslope { get; private set; } //for handling drawing conditions
         public float tsin { get; private set; } // of tilt angle
         public float tcos { get; private set; } // of tilt angle
-
+        public float angleScale { get; private set; } //for drawing background stuff
+        public Bounds2 ground { get; private set; } //for drawing the ground
 
         
         //don't use camera until callling followKart
@@ -38,11 +41,15 @@ namespace Mooyash.Services
             scale = Game.VirtualResolution.X / (float)(2 * screen * hslope);
             tcos = (float)Math.Cos(tilt);
             tsin = (float)Math.Sin(tilt);
+            angleScale = screen * scale * Game.ResolutionScale;
+            float groundTemp = (float)Math.Tan(tilt) * angleScale;
+            ground = new Bounds2(new Vector2(0, Game.Resolution.Y / 2 - groundTemp),
+                new Vector2(Game.Resolution.X, Game.Resolution.Y /2 + groundTemp));
         }
 
         public void followKart(Kart kart)
         {
-            angle = kart.angle;
+            angle = (kart.camFlipped ? (kart.angle + (float)Math.PI) % (2 * (float)Math.PI) : kart.angle);
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
@@ -55,10 +62,14 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-
         private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
         private static int lastItem = 0;
         private static float lastItemTimer = 0;
+
+        //just has to be greater than 0.1f to avoid error
+        private static float boostLineTimer = 0.2f;
+        private static float[] angles = new float[] { -0.5f, 0, 0.5f, 2.5f, 3, 3.5f };
+        private static Polygon[] boostLines = new Polygon[angles.Length];
 
         public static float renderDistance = 4000f;
 
@@ -82,6 +93,22 @@ namespace Mooyash.Services
             float distance = camera.tcos * input.Y + camera.tsin * camera.height;
             result.X = camera.screen * input.X / distance;
             result.Y = (camera.tsin*input.Y-camera.tcos*camera.height) * camera.screen / distance;
+            //scale according to FOV
+            result.X = result.X * camera.scale;
+            result.Y = result.Y * camera.scale;
+            //convert to MGF coordinate system
+            result.X += Game.VirtualResolution.X / 2;
+            result.Y = Game.VirtualResolution.Y / 2 - result.Y;
+            return result;
+        }
+
+        public static Vector2 project(Vector2 input, float cos, float sin)
+        {
+            Vector2 result = new Vector2();
+            //project coordinates onto screen
+            float distance = cos * input.Y + sin * camera.height;
+            result.X = camera.screen * input.X / distance;
+            result.Y = (sin * input.Y - cos * camera.height) * camera.screen / distance;
             //scale according to FOV
             result.X = result.X * camera.scale;
             result.Y = result.Y * camera.scale;
@@ -118,6 +145,7 @@ namespace Mooyash.Services
         public static void drawPerTrack(Track t)
         {
             Engine.DrawRectSolid(new Bounds2(Vector2.Zero, Game.Resolution), Color.DeepSkyBlue);
+            Engine.DrawRectSolid(camera.ground, t.background);
 
             foreach (Polygon p in t.interactable)
             {
@@ -130,6 +158,10 @@ namespace Mooyash.Services
             foreach (Polygon p in t.visual)
             {
                 drawPerPolygon(p);
+            }
+            foreach (GameObject o in t.backObjs)
+            {
+                drawBackObj(o);
             }
 
             if (Game.debugging)
@@ -201,6 +233,37 @@ namespace Mooyash.Services
             drawPerPolygon(new Polygon(offsets2, new Color(255, 87, 51, 255)));
         }
 
+        public static void drawBackObj(GameObject t)
+        {
+            Vector2 newP = rotate(t.position);
+            //this is repeating some code, but I don't think it needs to be in a method
+            if ((camera.hslope * newP.Y + newP.X + t.size.X < 0) || (camera.hslope * newP.Y - newP.X + t.size.X < 0) || (newP.Y < camera.screen))
+            {
+                return;
+            }
+
+            //this is scuffed - i'm sure it's fine
+            camera.height -= t.height;
+
+            float distance = camera.tcos * newP.Y + camera.tsin * camera.height;
+            Vector2 newSize = (camera.screen / distance) * t.size * camera.scale * Game.ResolutionScale;
+
+            newP = project(newP) * Game.ResolutionScale;
+
+            newSize.X = (float)Math.Round(newSize.X);
+            newSize.Y = (float)Math.Round(newSize.Y);
+
+            newP.X = (float)Math.Round(newP.X);
+            newP.Y = (float)Math.Round(newP.Y);
+
+            Engine.DrawTexture(t.texture,
+                new Vector2((float)Math.Round(newP.X - newSize.X / 2), (float)Math.Round(newP.Y - newSize.Y)),
+                size: newSize, scaleMode: TextureScaleMode.Nearest,
+                source: new Bounds2(new Vector2(Math.Abs(t.curTex) * t.resolution.X, 0), t.resolution));
+
+            camera.height += t.height;
+        }
+
         public static bool drawObject(GameObject t)
         {
             Vector2 newP = rotate(t.position);
@@ -251,10 +314,55 @@ namespace Mooyash.Services
                 Kart k = (Kart)t;
 
                 // scuffed fix to reorient texture with collider
+                // also this does drifting particles now
 
                 if (k == PhysicsEngine.player)
                 {
                     newP.Y += 30;
+
+                    if (PhysicsEngine.player.drifting && Math.Abs(PhysicsEngine.player.curTex) == 4)
+                    {
+                        TextureMirror tm = PhysicsEngine.player.curTex < 0 ? TextureMirror.None : TextureMirror.Horizontal;
+                        
+                        Vector2[] offsets =
+                        {
+                            new Vector2(28, 0),
+                            new Vector2(-30, -15),
+                            new Vector2(65, -12)
+                        };
+
+                        float[] sizes = {
+                            1,
+                            0.7f,
+                            0.8f
+                        };
+
+                        float[] animTimes =
+                        {
+                            0.07f,
+                            0.06f,
+                            0.08f
+                        };
+
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            Vector2 smokePos = new Vector2(newP.X, newP.Y);
+
+                            Vector2 smokeSize = new Vector2(64, 64);
+
+                            smokeSize *= 0.7f + ((int)(PhysicsEngine.player.driftTime / animTimes[i]) % 3) * 0.2f;
+                            smokePos.X -= smokeSize.X / 2;
+
+                            Engine.DrawTexture(Kart.smoke,
+                                smokePos + new Vector2(Math.Sign(PhysicsEngine.player.curTex) * offsets[i].X * -1
+                                - Math.Sign(PhysicsEngine.player.curTex) *((int)(PhysicsEngine.player.driftTime / animTimes[i]) % 3) * 5, offsets[i].Y),
+                                size: smokeSize * sizes[i],
+                                scaleMode: TextureScaleMode.Nearest,
+                                mirror: tm);
+                        }
+
+                        
+                    }
                 }
 
                 if (k.stunned && (int)(k.stunTime / 0.2) % 2 == 0)
@@ -303,40 +411,104 @@ namespace Mooyash.Services
             Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
         */
+
+        //rads as proportion of Game.Resolution.X
+        public static void createBoostLines(float rad1, float rad2, float width)
+        {
+            Random rand = new Random();
+
+            float curRad1;
+            float curRad2;
+            float angle;
+            float distance = camera.tcos * camera.follow.X + camera.tsin * camera.height;
+            //based on kart texture size
+            float kartY = project(new Vector2(0, camera.follow.X)).Y - (camera.screen / distance) * 31.25f * camera.scale;
+            Vector2[] points;
+            for (int i = 0; i < angles.Length; i++)
+            {
+                curRad1 = Game.VirtualResolution.X * (rad1 + (float)(rand.NextDouble() - 0.5) / 45);
+                curRad2 = Game.VirtualResolution.X * (rad2 + (float)(rand.NextDouble() - 0.5) / 12.5f);
+                angle = angles[i] + (float)(rand.NextDouble() - 0.5) / 3.5f;
+                points = new Vector2[] { new Vector2(curRad1, -width*Game.VirtualResolution.Y), new Vector2(curRad1,width*Game.VirtualResolution.Y),
+                    new Vector2(curRad2, width * Game.VirtualResolution.Y), new Vector2(curRad2, - width * Game.VirtualResolution.Y) };
+                for (int j = 0; j < points.Length; j++)
+                {
+                    points[j] = points[j].Rotated(-angle * 180 / (float)Math.PI) + new Vector2(Game.VirtualResolution.X/2, kartY);
+                }
+                boostLines[i] = new Polygon(points,new Color(0xC8, 0xF0, 0xFF));
+            }
+        }
+
+        public static void drawBoostLines()
+        {
+            foreach (Polygon p in boostLines)
+            {
+                Engine.DrawConvexPolygon(p);
+            }
+        }
+
         public static void drawUI()
         {
             if (Game.debugging)
             {
                 Engine.DrawString("fps " + Math.Round(1 / Engine.TimeDelta), new Vector2(5, 5), Color.Red, Game.diagnosticFont);
+
+                string info = JsonConvert.SerializeObject(PhysicsEngine.player, Formatting.Indented);
+
+                int i = 0;
+                foreach (string s in info.Split("\n"))
+                {
+                    Engine.DrawString(s, new Vector2(5, 35 + i * 11), Color.Black, Game.diagnosticFont);
+                    i++;
+
+                    if (35 + i * 11 > Game.Resolution.Y)
+                    {
+                        break;
+                    }
+                }
             }
 
-            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
             if (PhysicsEngine.time / 60 > 9)
             {
-                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "000";
+                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
             }
             if (PhysicsEngine.time % 60 < 10)
             {
-                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
                 if (PhysicsEngine.time / 60 > 9)
                 {
-                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "000";
+                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
                 }
             }
             timer = timer.Substring(0, 8);
 
 
-            float progress = PhysicsEngine.player.percentageAlongTrack/100;
-            float lineLen = 800;
-            float start = (Game.Resolution.X - 800) / 2;
+            float lineLen = 500;
+            float lineHeight = 12;
+            float progress;
+            float start = (Game.Resolution.X - lineLen) / 2;
+            
+            Engine.DrawRectSolid(new Bounds2(start, 30, lineLen, lineHeight), Color.White);
 
-            Engine.DrawRectSolid(new Bounds2(start, 50, lineLen * progress, 12), Color.White);
+            foreach (Kart k in PhysicsEngine.karts)
+            {
+                progress = (k.percentageAlongTrack / 100 + 0.005f) % 1f;
 
+                Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), k.iconColor);
+            }
+
+            // manually draw for player on top
+
+            Kart player = PhysicsEngine.player;
+            progress = (player.percentageAlongTrack / 100 + 0.005f) % 1f;
+
+            Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), player.iconColor);
 
             //Engine.DrawString(player.dists[0] + " ", new Vector2(300, 250), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[1] + " ", new Vector2(300, 300), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
-
+            //Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
@@ -359,10 +531,29 @@ namespace Mooyash.Services
                 ind = lastItem + 1;
             }
 
-            Engine.DrawTexture(itemRoulette, new Vector2(210, 5) * Game.ResolutionScale,
+            Engine.DrawTexture(itemRoulette, new Vector2(290, 35) * Game.ResolutionScale,
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
-            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
+
+            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("coins  " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
+
+            if (Game.GameSettings[1] == 1)
+            {
+                Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
+
+            }
+
+            if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)
+            {
+                boostLineTimer += Engine.TimeDelta;
+                if (boostLineTimer > 0.05f)
+                {
+                    createBoostLines(0.15f, 0.35f, 0.003f);
+                    boostLineTimer = 0;
+                }
+                drawBoostLines();
+            }
         }
 
         public static void drawObjects(List<GameObject> objs)

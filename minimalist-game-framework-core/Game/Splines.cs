@@ -13,19 +13,13 @@ namespace Mooyash.Services
             this.points = points;
         }
 
-        public static float getDistFromLinetoPoint(Vector2 a, Vector2 b, Vector2 position)
+        public static float getDistFromPointToLine(Vector2 a, Vector2 b, Vector2 position)
         {
             float pct = getPercentageProgress(a, b, position);
             bool isWithinBounds = pct >= 0 && pct <= 100;
             if (isWithinBounds)
             {
-                double m = (a.Y - b.Y) / (b.X - a.X);
-                double yInt = a.Y - (m * a.X);
-
-                // Find the shortest distance from the point to the line
-                float distance = (float)Math.Abs(m * position.X - position.Y + yInt)
-                                / (float)Math.Sqrt(Math.Pow(m, 2) + 1);
-                return distance;
+                return Math.Abs(Vector2.Cross(b - a, position - a) / (b-a).Length());
             }
 
             return (float)Math.Min(distanceToPoint(a, position), distanceToPoint(b, position));
@@ -40,9 +34,9 @@ namespace Mooyash.Services
             Vector2 curPoint = waypoints[curWaypoint];
             Vector2 nextPoint = waypoints[(curWaypoint + 1) % waypoints.Count];
 
-            float distToLineP = getDistFromLinetoPoint(prevPrevPoint, prevPoint, position);
-            float distToLineC = getDistFromLinetoPoint(prevPoint, curPoint, position);
-            float distToLineN = getDistFromLinetoPoint(curPoint, nextPoint, position);
+            float distToLineP = getDistFromPointToLine(prevPrevPoint, prevPoint, position);
+            float distToLineC = getDistFromPointToLine(prevPoint, curPoint, position);
+            float distToLineN = getDistFromPointToLine(curPoint, nextPoint, position);
 
 
             return new float[] {distToLineP, distToLineC, distToLineN};
@@ -60,13 +54,13 @@ namespace Mooyash.Services
         //where p is the cartLocation, finds the distance to the closest point on a line from a to b to the cart
         public static float getPercentageProgress(Vector2 a, Vector2 b, Vector2 cartLocation) 
         {
-            Vector2 aToCart = cartLocation - a;
+            Vector2 aToKart = cartLocation - a;
             Vector2 aToB = b - a;
 
             float atbMagnitude = aToB.Length();
-            float dotProduct = Vector2.Dot(aToCart, aToB);
+            float dotProduct = Vector2.Dot(aToKart, aToB);
 
-            if (dotProduct == 0)
+            if (atbMagnitude == 0)
             {
                 return 0;
             }

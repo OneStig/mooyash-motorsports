@@ -61,6 +61,11 @@ public struct Vector2
         }
     }
 
+    public static Vector2 angleToVector(float angle)
+    {
+        return new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+    }
+
     /// <summary>
     /// Returns the dot product of two vectors.
     /// </summary>

@@ -25,8 +25,17 @@ namespace Mooyash.Modules
 
         public override void collide(Kart k)
         {
+            if (!k.isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["coin"]);
+            }
             k.score += 1;
+            if(k.coins < 10)
+            {
+                k.coins++;
+            }
 
+            PhysicsEngine.spawners.Add(new Spawner(new Coin(position)));
             PhysicsEngine.gameObjects.Remove(this);
         }
     }

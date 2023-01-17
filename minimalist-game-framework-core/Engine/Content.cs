@@ -343,7 +343,7 @@ class Font
 /// <summary>
 /// A handle to a sound file. These should only be created by calling LoadSound().
 /// </summary>
-class Sound
+public class Sound
 {
     public readonly IntPtr Handle;
 

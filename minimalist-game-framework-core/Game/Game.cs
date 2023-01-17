@@ -13,21 +13,33 @@ class Game
 
     public static List<int> GameSettings;
     public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
-    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 20);
+    public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
 
     public static bool debugging;
 
     
     public static bool playing; // (saves 31 bits of overhead yay)
 
+    public static bool testing;
     public Game()
     {
+        testing = false;
+        if(testing)
+        {
+            Sounds.testSounds(0);
+            return;
+        }
+
         Engine.Fullscreen = true;
         SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
         // Load textures
         MenuSystem.loadTextures();
         Track.LoadTracks();
+        Sounds.loadSounds();
+
+        //start menu music
+        Sounds.playMenuMusic();
         
         //set playing to false
         playing = false;
@@ -40,6 +52,11 @@ class Game
 
     public void Update()
     {
+        if (testing)
+        {
+            return;
+        }
+
         if (Engine.GetKeyDown(Key.P))
         {
             debugging = !debugging;
@@ -60,6 +77,8 @@ class Game
                 GameSettings = MenuSystem.GetSettings();
                 PhysicsEngine.init();
                 playing = true;
+                //start playing game music
+                Sounds.playGameMusic();
             }
         }
     }

@@ -1,0 +1,18 @@
+sound attributions:
+Engine Sound - "Engine" by MarlonHJ from Pixabay
+Dirt Sound - "Car On Dirt Track" by TOC1 from Pixabay
+Item Box Sound - "8 Bit Blast" by Aceton41k from Pixabay
+Collide Sound - "Ball on Table" by NeatoEnt from Pixabay
+Hit Sound - "Failfare" by Wagna from Pixabay
+Lap Complete Sound - "Success" by Gamer127 from Pixabay
+Coin Sound - "Ding 1" by GreenVWBeetle from Pixabay
+Drift Sound - "Volvo 740 GLE Handbrake Turn 3" by Audible-Edge from Pixabay
+
+visual attributions:
+Trees - "Pixelated Trees" by Alekksall from Freepik
+Clouds - "Pixel Art Semi-Realistic Clouds" by LateNightCoffee from itch.io
+Mountains - "Mountains and Rocks Flat Icon Collection" by Pch-Vector from Freepik
+
+temporary?:
+fesliyanSTUDIOS - 8 Bit Menu by David Renda
+fesliyanSTUDIOS - 8 Bit Surf by David Renda

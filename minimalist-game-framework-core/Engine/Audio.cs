@@ -81,6 +81,6 @@ static partial class Engine
     }
 }
 
-class SoundInstance
+public class SoundInstance
 {
 }
