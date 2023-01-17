@@ -172,6 +172,10 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
+                        if(curK.lapCount == 3)
+                        {
+                            curK.finTime = time;
+                        }
                     }
                     else
                     {
