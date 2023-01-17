@@ -413,15 +413,15 @@ namespace Mooyash.Services
             
             
             Random rand = new Random();
-            rad1 = Game.Resolution.X * (rad1 + (float)(rand.NextDouble() - 0.5)/10);
-            rad2 = Game.Resolution.X * (rad2 + (float)(rand.NextDouble() - 0.5)/10);
+            rad1 = Game.Resolution.X * (rad1 + (float)(rand.NextDouble() - 0.5)/60);
+            rad2 = Game.Resolution.X * (rad2 + (float)(rand.NextDouble() - 0.5)/15);
 
             float angle1;
             float angle2;
             for (int i = 0; i < angles.Length; i++)
             {
-                angle1 = angles[i] + (float)(rand.NextDouble() - 0.5) / 2;
-                angle2 = angles[i] + (float)(rand.NextDouble() - 0.5) / 2;
+                angle1 = angles[i] + (float)(rand.NextDouble() - 0.5) / 4;
+                angle2 = angles[i] + (float)(rand.NextDouble() - 0.5) / 4;
                 boostLines[i] = new Tuple<Vector2, Vector2>(rad1 * Vector2.angleToVector(angle1) + Game.Resolution / 2, rad2 * Vector2.angleToVector(angle2) + Game.Resolution / 2);
             }
         }
@@ -430,7 +430,8 @@ namespace Mooyash.Services
         {
             foreach (Tuple<Vector2, Vector2> line in boostLines)
             {
-                Engine.DrawLine(line.Item1, line.Item2, Color.White);
+                //new Color(0x87, 0xCE, 0xEB)
+                Engine.DrawLine(line.Item1, line.Item2, new Color(0xC8, 0xF0, 0xFF));
             }
         }
 
@@ -534,7 +535,7 @@ namespace Mooyash.Services
             if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)
             {
                 boostLineTimer += Engine.TimeDelta;
-                if (boostLineTimer > 0.1f)
+                if (boostLineTimer > 0.05f)
                 {
                     createBoostLines(0.1f, 0.3f);
                     boostLineTimer = 0;
