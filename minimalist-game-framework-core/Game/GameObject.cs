@@ -425,7 +425,6 @@ namespace Mooyash.Modules
 
         public void updateInput(float dt)
         {
-
             updateTargetWaypoints();
 
             braking = false;
@@ -664,6 +663,12 @@ namespace Mooyash.Modules
             {
                 size = new Vector2(62.5f * largeMultiplier, 62.5f * largeMultiplier);
                 terrainConst = PhysicsEngine.terrainConsts[0];
+                radius = 48f;
+            }
+            else
+            {
+                size = new Vector2(62.5f, 62.5f);
+                radius = 24f;
             }
 
             //acceleration due to drag (quadratic) and friction
@@ -735,14 +740,6 @@ namespace Mooyash.Modules
             {
                 throttle /= boostMultiplier;
             }
-
-            if(largeTime > largeConst)
-            {
-                size = new Vector2(62.5f, 62.5f);
-            }
-            
-            
-            
 
             if (!isAI)
             {
@@ -847,6 +844,16 @@ namespace Mooyash.Modules
                 Engine.PlaySound(Sounds.sounds["collide"]);
                 collideTimer = 0.5f;
             }
+
+            if (kart.largeTime < kart.largeConst)
+            {
+                stunTime = 0;
+            }
+            else if (largeTime < largeConst)
+            {
+                kart.stunTime = 0;
+            }
+
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;
             position -= adjust;
