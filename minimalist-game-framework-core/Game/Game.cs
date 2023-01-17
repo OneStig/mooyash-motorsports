@@ -32,21 +32,6 @@ class Game
     public static bool testing;
     public Game()
     {
-        testing = true;
-
-        if(testing)
-        {
-            LeaderboardLoader.setScores();
-            LeaderboardLoader.saveScore(38.1f,0,0);
-            LeaderboardLoader.saveScore(39.95f, 0, 0);
-            LeaderboardLoader.saveScore(40.2f, 0, 0);
-            LeaderboardLoader.saveScore(41.3f, 0, 0);
-            LeaderboardLoader.saveScore(42.2424f, 0, 0);
-            LeaderboardLoader.saveScore(43, 0, 0);
-            LeaderboardLoader.readScores(0,0);
-            return;
-        }
-
         Engine.Fullscreen = true;
         SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
@@ -72,11 +57,6 @@ class Game
 
     public void Update()
     {
-        if (testing)
-        {
-            return;
-        }
-
         if (Engine.GetKeyDown(Key.P))
         {
             debugging = !debugging;

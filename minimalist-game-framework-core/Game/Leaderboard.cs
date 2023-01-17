@@ -5,6 +5,7 @@ using Mooyash.Services;
 using Mooyash.Modules;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Net.Sockets;
 
 namespace Mooyash.Modules
 {
@@ -16,14 +17,17 @@ namespace Mooyash.Modules
         public Leaderboard()
         {
             scores = new List<float>[3,2];
+            for (int i = 0; i < scores.GetLength(0); i++)
+            {
+                for(int j = 0; j < scores.GetLength(1); j++)
+                {
+                    scores[i,j] = new List<float>();
+                }
+            }
         }
 
         public void addScore(float score, int map, int cc)
         {
-            if (scores[map, cc] == null)
-            {
-                scores[map, cc] = new List<float>();
-            }
             int index = scores[map,cc].BinarySearch(score);
             if (index < 0) { index = ~index; }
             scores[map, cc].Insert(index, score);
@@ -40,21 +44,44 @@ namespace Mooyash.Modules
 
         public static void setScores()
         {
-            File.WriteAllText("scores.json", JsonConvert.SerializeObject(new Leaderboard(), Formatting.Indented));
+            File.WriteAllText(Path.Combine("Assets","scores.json"), JsonConvert.SerializeObject(new Leaderboard(), Formatting.Indented));
         }
 
         public static void saveScore(float score, int map, int cc)
         {
-            Leaderboard l = JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText("scores.json"));
+            Leaderboard l = readScores();
             l.addScore(score, map, cc);
-            File.WriteAllText("scores.json", JsonConvert.SerializeObject(l, Formatting.Indented));
+            writeScores(l);
         }
 
-        public static List<float> readScores(int map, int cc)
+        public static List<float> getScores(int map, int cc)
         {
-            List<float> output = JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText("scores.json")).scores[map, cc];
-            System.Diagnostics.Debug.WriteLine(String.Join(",", output));
-            return output;
+            //System.Diagnostics.Debug.WriteLine(String.Join(",", readScores().scores[map, cc]));
+            return readScores().scores[map, cc];
+        }
+
+        private static void writeScores(Leaderboard l)
+        {
+            if (Engine.MacOS)
+            {
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "scores.json"), JsonConvert.SerializeObject(l, Formatting.Indented));
+            }
+            else
+            {
+                File.WriteAllText(Path.Combine("Assets", "scores.json"), JsonConvert.SerializeObject(l, Formatting.Indented));
+            }
+        }
+
+        private static Leaderboard readScores()
+        {
+            if (Engine.MacOS)
+            {
+                return JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "scores.json")));
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText(Path.Combine("Assets", "scores.json")));
+            }
         }
     }
 }

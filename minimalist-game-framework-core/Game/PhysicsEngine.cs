@@ -105,7 +105,7 @@ namespace Mooyash.Services
             time += dt;
 
             //sees if game ends
-            if (player.lapDisplay > 3)
+            if (player.lapDisplay > 1)
             {
                 Engine.StopSound(player.rev, fadeTime: 0.2f);
                 if(player.terrain != null)
@@ -119,6 +119,11 @@ namespace Mooyash.Services
                 Game.playing = false;
                 Game.countDown = 1;
                 finalTime = time;
+                if (Game.GameSettings[1] == 0)
+                {
+                    LeaderboardLoader.saveScore(finalTime, Game.GameSettings[4], Game.GameSettings[2]);
+                    System.Diagnostics.Debug.WriteLine(String.Join(",", LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2])));
+                }
                 MenuSystem.SetFinalTime(finalTime);
             }
 
