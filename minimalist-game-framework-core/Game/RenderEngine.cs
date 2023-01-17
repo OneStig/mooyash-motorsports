@@ -488,8 +488,8 @@ namespace Mooyash.Services
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
 
-            Engine.DrawString("Score:" + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("Coins:" + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("Score " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("Coins " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             if (Game.GameSettings[1] == 1)
             {

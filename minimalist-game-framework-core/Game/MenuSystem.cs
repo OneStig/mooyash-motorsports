@@ -145,19 +145,19 @@ namespace Mooyash.Services
                 if (CurScreen >= 5)
                 {
                     String select = cur.Select();
-                    if (select.Equals("replay"))
+                    if (select.Equals("Replay"))
                     {
                         CurScreen = 4;
                         Settings.RemoveAt(Settings.Count-1);
 
                     }
-                    if (select.Equals("return"))
+                    if (select.Equals("Return"))
                     {
                         Settings.Clear();
                         CurScreen = 0;
                         Settings.Clear();
                     }
-                    if (select.Equals("credits"))
+                    if (select.Equals("Credits"))
                     {
                         CurScreen = 6;
                     }
