@@ -298,7 +298,7 @@ namespace Mooyash.Modules
             minDistanceToReachWaypoint = 500;
 
             //Kart-dependent lap
-            lapCount = 3;
+            lapCount = 0;
             lapDisplay = 1;
 
             itemHeld = 0;

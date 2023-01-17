@@ -116,7 +116,6 @@ namespace Mooyash.Services
                 player.lapDisplay = 3;
                 Game.playing = false;
                 Game.countDown = 1;
-                Game.go = 0;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
             }
@@ -187,7 +186,7 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
-                        if(curK.lapCount >= 3)
+                        if(curK.lapCount > 3)
                         {
                             curK.finTime = time;
                         }

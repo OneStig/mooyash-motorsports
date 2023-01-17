@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Modules;
 namespace Mooyash.Services
 
@@ -147,6 +148,13 @@ namespace Mooyash.Services
             return timer;
         }
 
+        public static float calcAITime(Kart aiKart)
+        {
+            float avgSpeed = (aiKart.lapCount * Track.tracks[0].totalLen + aiKart.percentageAlongTrack/100 * Track.tracks[0].totalLen)/PhysicsEngine.finalTime;
+            float additionalTime = (1 - aiKart.percentageAlongTrack / 100) * Track.tracks[0].totalLen / avgSpeed;
+            return PhysicsEngine.finalTime + additionalTime;
+        }
+
         public static bool UpdateMenu()
         {
 
@@ -164,31 +172,26 @@ namespace Mooyash.Services
                 Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black);
                 if (GetSettings()[1] == 0)
                 {
-                    Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
+                    Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
                 }
                 else
                 {
                     Kart player = PhysicsEngine.player;
-                    Kart[] aiKarts = PhysicsEngine.aiKarts;
-                    Kart[] places = new Kart[aiKarts.Length+1];
-                    for (int i = 0; i < aiKarts.Length; i++)
+                    Kart[] karts = PhysicsEngine.karts.ToArray();
+                    Kart[] places = new Kart[karts.Length];
+
+                    for(int i = 0; i < karts.Length; i++)
                     {
-                        for (int j = 0; j < aiKarts.Length; j++)
-                        {
-                            if (aiKarts[j].place-1 == i)
-                            {
-                                places[i] = aiKarts[j];
-                            }
-                        }
+                        places[karts[i].place - 1] = karts[i];
                     }
-                    places[player.place-1] = player;
+
                     for (int i = 0; i < places.Length; i++)
                     {
-                        if (places[i].Equals(player))
+                        if (places[i].selfId.Equals(player.selfId))
                         {
-                            Engine.DrawString(displayNames[places[i].selfId] , new Vector2(100, 33 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font);
+                            Engine.DrawString(displayNames[places[i].selfId] , new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font);
 
-                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 33 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Right);
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Right);
                             
                         }
                         else
@@ -197,11 +200,13 @@ namespace Mooyash.Services
                             {
                                 places[i].finTime = calcAITime(places[i]);
                             }
-                            Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
+                            Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
 
-                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
                         }
                     }
+
+                    Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100,123) * Game.ResolutionScale, Color.White, Game.font);
                 }
             }
 
@@ -233,6 +238,7 @@ namespace Mooyash.Services
                     {
                         CurScreen = 6;
                     }
+                    Game.go = 0;
                 }
                 else if (CurScreen < 5 && !cur.Select().Equals("Back"))
                 {

@@ -510,11 +510,11 @@ namespace Mooyash.Services
                 }
                 else if(place == 3)
                 {
-                    Engine.DrawString(place + "rd", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                    Engine.DrawString(place + "rd", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
                 }
                 else
                 {
-                    Engine.DrawString(place + "th", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                    Engine.DrawString(place + "th", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
                 }
             }
         }
