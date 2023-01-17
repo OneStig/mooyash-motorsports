@@ -29,6 +29,7 @@ namespace Mooyash.Modules
 					Engine.PlaySound(Sounds.sounds["itemBox"]);
 				}
 
+				PhysicsEngine.spawners.Add(new Spawner(new ItemBox(position)));
 				PhysicsEngine.gameObjects.Remove(this);
             }
 		}

@@ -10,6 +10,8 @@ namespace Mooyash.Services
         public static HashSet<Kart> karts = new HashSet<Kart>();
         public static HashSet<Projectile> projectiles = new HashSet<Projectile>();
         public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
+        public static HashSet<Spawner> spawners = new HashSet<Spawner>();
+
         public static Kart player;
         public static Track track;
 
@@ -18,12 +20,6 @@ namespace Mooyash.Services
 
 
         public static Kart[] aiKarts = new Kart[0];
-        public static Kart ai1;
-        public static Kart ai2;
-        public static Kart ai3;
-        public static Kart ai4;
-        public static Kart ai5;
-        //public static Kart ai6;
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -35,8 +31,9 @@ namespace Mooyash.Services
             gameObjects = new HashSet<GameObject>();
             projectiles = new HashSet<Projectile>();
             karts = new HashSet<Kart>();
+            spawners = new HashSet<Spawner>();
 
-            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario", Color.Red);
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mooyash_red", Color.Red);
 
             gameObjects.Add(player);
             karts.Add(player);
@@ -44,58 +41,59 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             player.currentWaypoint = 1;
 
+            string[] allNames = // determines which textures each Kart should use, and its corresponding color
+            {
+                "mooyash_blue",
+                "mooyash_green",
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red"
+            };
+
+            Color[] allColors = {
+                Color.Blue,
+                Color.Green,
+                Color.Orange,
+                Color.Yellow,
+                Color.Purple,
+                Color.Red
+            };
+
+            aiKarts = new Kart[track.startingGrid.Length];
+
+            for (int i = 0; i < track.startingGrid.Length; i++)
+            {
+                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[i], allColors[i]);
+                tempAI.position = track.startingGrid[i];
+                tempAI.angle = track.startAngle;
+
+                aiKarts[i] = tempAI;
+            }
+
             time = 0;
 
-            Random rand = new Random();
-
-            int aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
-            ai1 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Blue);
-            ai1.position = track.startPos - new Vector2(100,-25);
-            ai1.angle = track.startAngle;
-
-            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
-            ai2 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Green);
-            ai2.position = track.startPos - new Vector2(100, 100);
-            ai2.angle = track.startAngle;
-
-            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
-            ai3 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Orange);
-            ai3.position = track.startPos - new Vector2(-100, 50);
-            ai3.angle = track.startAngle;
-
-            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
-            ai4 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Yellow);
-            ai4.position = track.startPos - new Vector2(-100, 175);
-            ai4.angle = track.startAngle;
-
-            aiKartThrottle = 2400 + rand.Next(100, 450) * (Game.GameSettings[2]);
-            ai5 = new Kart(aiKartThrottle * (Game.GameSettings[2] + 1), true, "mario", Color.Purple);
-            ai5.position = track.startPos - new Vector2(0, 150);
-            ai5.angle = track.startAngle;
-
-            //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
-            //gameObjects.Add("ai6", ai6);
-            //ai6.position = track.startPos - new Vector2(100, 130);
-            //ai6.angle = track.startAngle;
-
-            aiKarts = new Kart[] { ai1, ai2, ai3, ai4, ai5 };
             if (Game.GameSettings[1] == 1)
             {
-                foreach (Kart aiKart in aiKarts)
+                for (int i = 0; i < aiKarts.Length; i++)
                 {
-                    gameObjects.Add(aiKart);
-                    karts.Add(aiKart);
+                    gameObjects.Add(aiKarts[i]);
+                    karts.Add(aiKarts[i]);
+                }
+
+                for (int i = 0; i < track.boxes.Length; i++)
+                {
+                    gameObjects.Add(new ItemBox(track.boxes[i]));
+                }
+
+                for (int i = 0; i < track.coins.Length; i++)
+                {
+                    gameObjects.Add(new Coin(track.coins[i]));
                 }
             }
-
-            for (int i = 0; i < track.boxes.Length; i++)
+            else
             {
-                gameObjects.Add(new ItemBox(track.boxes[i]));
-            }
-
-            for (int i = 0; i < track.coins.Length; i++)
-            {
-                gameObjects.Add(new Coin(track.coins[i]));
+                player.itemHeld = 3;
             }
 
             //start idle engine sound
@@ -141,6 +139,11 @@ namespace Mooyash.Services
                     aiKarts[i].updateInputAI(dt);
                     // aiKarts[i].update(dt);
                 }
+            }
+
+            foreach (Spawner spawner in spawners)
+            {
+                spawner.update(player);
             }
 
             foreach(Projectile projectile in projectiles)

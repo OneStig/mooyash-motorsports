@@ -321,12 +321,19 @@ namespace Mooyash.Modules
             }
             else if (itemHeld == 2) // green shell
             {
-                float sin = (float)Math.Sin(angle);
-                float cos = (float)Math.Cos(angle);
+                float shellAngle = angle;
+
+                if (camFlipped)
+                {
+                    shellAngle = (angle + (float)Math.PI) % (2 * (float)Math.PI);
+                }
+
+                float sin = (float)Math.Sin(shellAngle);
+                float cos = (float)Math.Cos(shellAngle);
 
                 Vector2 spawnPosition = position + new Vector2(cos, sin) * 100;
 
-                Shell sh = new Shell(spawnPosition, angle);
+                Shell sh = new Shell(spawnPosition, shellAngle);
 
                 PhysicsEngine.gameObjects.Add(sh);
                 PhysicsEngine.projectiles.Add(sh);
@@ -792,6 +799,8 @@ namespace Mooyash.Modules
                     rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
                 }
             }
+
+            percentDone();
         }
 
         public void wallCollide(float wallAngle)
