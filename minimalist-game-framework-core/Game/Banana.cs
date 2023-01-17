@@ -18,12 +18,12 @@ namespace Mooyash.Modules
 
         public override void collide(Kart k)
         {
-            if(k.score < 2)
+            if (k.coins < 2)
             {
-                k.score = 0;
+                k.coins = 0;
             } else
             {
-                k.score -= 2;
+                k.coins -= 2;
             }
 
             k.stunTime = 0;

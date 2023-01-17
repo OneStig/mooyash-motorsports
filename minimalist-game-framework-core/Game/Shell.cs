@@ -40,10 +40,19 @@ namespace Mooyash.Modules
 
         public override void collide(Kart k)
         {
-            PhysicsEngine.gameObjects.Remove(this);
-            PhysicsEngine.projectiles.Remove(this);
+            if (k.coins < 2)
+            {
+                k.coins = 0;
+            }
+            else
+            {
+                k.coins -= 2;
+            }
 
             k.stunTime = 0;
+
+            PhysicsEngine.gameObjects.Remove(this);
+            PhysicsEngine.projectiles.Remove(this);
         }
     }
 }
