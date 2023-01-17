@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Mooyash.Modules;
 using Newtonsoft.Json;
 
@@ -65,6 +66,11 @@ namespace Mooyash.Services
         private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
         private static int lastItem = 0;
         private static float lastItemTimer = 0;
+
+        //just has to be greater than 0.1f to avoid error
+        private static float boostLineTimer = 0.2f;
+        private static float[] angles = new float[] { -0.5f, 0, 0.5f, 2.5f, 3, 3.5f };
+        private static Tuple<Vector2, Vector2>[] boostLines = new Tuple<Vector2, Vector2>[angles.Length];
 
         public static float renderDistance = 4000f;
 
@@ -400,6 +406,34 @@ namespace Mooyash.Services
             Engine.DrawTexture(PhysicsEngine.player.textures[PhysicsEngine.player.curTex], new Vector2(-15, -24)+ screenPlayer);
         }
         */
+
+        //rads as proportion of Game.Resolution.X
+        public static void createBoostLines(float rad1, float rad2)
+        {
+            
+            
+            Random rand = new Random();
+            rad1 = Game.Resolution.X * (rad1 + (float)(rand.NextDouble() - 0.5)/10);
+            rad2 = Game.Resolution.X * (rad2 + (float)(rand.NextDouble() - 0.5)/10);
+
+            float angle1;
+            float angle2;
+            for (int i = 0; i < angles.Length; i++)
+            {
+                angle1 = angles[i] + (float)(rand.NextDouble() - 0.5) / 2;
+                angle2 = angles[i] + (float)(rand.NextDouble() - 0.5) / 2;
+                boostLines[i] = new Tuple<Vector2, Vector2>(rad1 * Vector2.angleToVector(angle1) + Game.Resolution / 2, rad2 * Vector2.angleToVector(angle2) + Game.Resolution / 2);
+            }
+        }
+
+        public static void drawBoostLines()
+        {
+            foreach (Tuple<Vector2, Vector2> line in boostLines)
+            {
+                Engine.DrawLine(line.Item1, line.Item2, Color.White);
+            }
+        }
+
         public static void drawUI()
         {
             if (Game.debugging)
@@ -495,6 +529,17 @@ namespace Mooyash.Services
             {
                 Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
 
+            }
+
+            if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)
+            {
+                boostLineTimer += Engine.TimeDelta;
+                if (boostLineTimer > 0.1f)
+                {
+                    createBoostLines(0.1f, 0.3f);
+                    boostLineTimer = 0;
+                }
+                drawBoostLines();
             }
         }
 

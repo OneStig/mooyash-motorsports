@@ -187,12 +187,12 @@ namespace Mooyash.Modules
 
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 3f;
-        private readonly float speedBoostConst = 3f;
+        public readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
         //for lap completion
         public int lapCount;
         public int lapDisplay;
-        private float dBoostConst = 1f;
+        public float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
         public int currentWaypoint;
