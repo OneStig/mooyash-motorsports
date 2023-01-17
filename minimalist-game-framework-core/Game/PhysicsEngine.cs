@@ -20,14 +20,6 @@ namespace Mooyash.Services
 
 
         public static Kart[] aiKarts = new Kart[0];
-        public static Kart ai1;
-        public static Kart ai2;
-        /*
-        public static Kart ai3;
-        public static Kart ai4;
-        public static Kart ai5;
-        public static Kart ai6;
-        */
 
         //Item 1 is for quadratic drag, Item2 is for linear drag, Item3 is for naturalDecel
         public static Tuple<float,float,float>[] terrainConsts = new Tuple<float,float,float>[] {
@@ -50,43 +42,36 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             player.currentWaypoint = 1;
 
+            string[] aiNames = // determines which textures each sequential ai should use (add new tex later)
+            {
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red",
+                "mooyash_red"
+            };
+
+            aiKarts = new Kart[track.startingGrid.Length];
+
+            for (int i = 0; i < track.startingGrid.Length; i++)
+            {
+                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Blue);
+                tempAI.position = track.startingGrid[i];
+                tempAI.angle = track.startAngle;
+
+                aiKarts[i] = tempAI;
+            }
+
             time = 0;
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Blue);
-            ai1.position = track.startPos;
-            ai1.angle = track.startAngle;
-
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Green);
-            ai2.position = track.startPos - new Vector2(100, 100);
-            ai2.angle = track.startAngle;
-
-                //ai3 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai3", ai3);
-                //ai3.position = track.startPos + new Vector2(100, 80);
-                //ai3.angle = track.startAngle;
-
-                //ai4 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai4", ai4);
-                //ai4.position = track.startPos - new Vector2(100, 110);
-                //ai4.angle = track.startAngle;
-
-                //ai5 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai5", ai5);
-                //ai5.position = track.startPos - new Vector2(100, 120);
-                //ai5.angle = track.startAngle;
-
-                //ai6 = new Kart(2400 * (Game.GameSettings[2] + 1));
-                //gameObjects.Add("ai6", ai6);
-                //ai6.position = track.startPos - new Vector2(100, 130);
-                //ai6.angle = track.startAngle;
-
-            aiKarts = new Kart[] { ai1, ai2 };
 
             if (Game.GameSettings[1] == 1)
             {
-                gameObjects.Add(ai1);
-                gameObjects.Add(ai2);
-                karts.Add(ai1);
-                karts.Add(ai2);
+                for (int i = 0; i < aiKarts.Length; i++)
+                {
+                    gameObjects.Add(aiKarts[i]);
+                    karts.Add(aiKarts[i]);
+                }
 
                 for (int i = 0; i < track.boxes.Length; i++)
                 {

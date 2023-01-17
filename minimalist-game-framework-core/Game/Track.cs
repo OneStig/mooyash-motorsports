@@ -31,6 +31,8 @@ namespace Mooyash.Modules
 
         public Vector2[] boxes;
         public Vector2[] coins;
+
+        public Vector2[] startingGrid;
     }
 
     public class Track
@@ -64,6 +66,8 @@ namespace Mooyash.Modules
 
         public Vector2[] boxes;
         public Vector2[] coins;
+
+        public Vector2[] startingGrid;
 
         public static Track[] tracks;
 
@@ -271,6 +275,8 @@ namespace Mooyash.Modules
 
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
+
+                tracks[j].startingGrid = loaded.startingGrid;
 
                 Vector2 center = (minPoint + maxPoint) / 2f;
                 tracks[j].backObjs = generateBackObjs(50, 12000, 10000, center, new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
