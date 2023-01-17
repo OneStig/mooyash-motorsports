@@ -205,15 +205,15 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
-            // "nothing", "banana", "green shell", "mushroom"
-            if (itemHeld == 1) // banana
+            // "nothing", "manure", "green shell", "mushroom"
+            if (itemHeld == 1) // manure
             {
                 float sin = (float)Math.Sin(angle);
                 float cos = (float)Math.Cos(angle);
 
                 Vector2 spawnPosition = position - new Vector2(cos, sin) * 100;
 
-                PhysicsEngine.gameObjects.Add(new Banana(spawnPosition));
+                PhysicsEngine.gameObjects.Add(new Manure(spawnPosition));
             }
             else if (itemHeld == 2) // green shell
             {

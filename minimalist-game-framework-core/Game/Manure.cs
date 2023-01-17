@@ -3,13 +3,13 @@ using Mooyash.Services;
 
 namespace Mooyash.Modules
 {
-    public class Banana : GameObject
+    public class Manure : GameObject
     {
-        public Banana(Vector2 position) : base()
+        public Manure(Vector2 position) : base()
         {
             this.position = position;
 
-            texture = Engine.LoadTexture("banana_peel.png");
+            texture = Engine.LoadTexture("manure.png");
             size = new Vector2(62.5f, 62.5f);
             resolution = new Vector2(32, 32);
 

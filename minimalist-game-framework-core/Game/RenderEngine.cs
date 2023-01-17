@@ -280,7 +280,7 @@ namespace Mooyash.Services
             Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
             Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(240, 20) * Game.ResolutionScale, Color.White, Game.font);
 
-            // "banana", "projectile", "speed"
+            // "manure", "projectile", "speed"
             // 26 x 18 pixels
 
             lastItemTimer += Engine.TimeDelta;
