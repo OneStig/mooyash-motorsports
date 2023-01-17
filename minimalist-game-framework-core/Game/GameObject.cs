@@ -157,6 +157,8 @@ namespace Mooyash.Modules
         public int id;
         public int coins;
 
+        public float finTime;
+
         public Vector2 prevPosition;
 
         public bool stunned;
@@ -262,9 +264,10 @@ namespace Mooyash.Modules
         // particle textures
         public static Texture smoke;
         
-        public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
+        public Kart(float throttleConst, bool isAI, string kartName, Color color) : base()
         {
             iconColor = color;
+            selfId = kartName;
 
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             smoke = Engine.LoadTexture("smoke2.png");
@@ -283,6 +286,8 @@ namespace Mooyash.Modules
             currentWaypoint = 0;
             previousWaypoint = 0;
 
+            finTime = 0;
+
             prevProgressInd = 0;
             curProgressInd = 1;
             prevProgressPoint = playerWaypoints[0];
@@ -293,7 +298,7 @@ namespace Mooyash.Modules
             minDistanceToReachWaypoint = 500;
 
             //Kart-dependent lap
-            lapCount = 0;
+            lapCount = 3;
             lapDisplay = 1;
 
             itemHeld = 0;

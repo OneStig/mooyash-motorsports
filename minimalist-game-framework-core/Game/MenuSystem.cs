@@ -8,6 +8,8 @@ namespace Mooyash.Services
     {
         private static Screen[] ScreenStack = new Screen[7];
 
+        public static Dictionary<string, string> displayNames;
+
         public static int CurScreen = 0;
 
         public static Dictionary<string, int> SettingtoID = new Dictionary<string, int>();
@@ -21,6 +23,12 @@ namespace Mooyash.Services
             Texture Menu = Engine.LoadTexture("fallengong.png");
             Texture MenuWithoutLogo = Engine.LoadTexture("fallinggong.png");
             Texture CreditsScreen = Engine.LoadTexture("Credits.png");
+
+            displayNames = new Dictionary<string, string>() {
+                { "mooyash_blue","Blue" },
+                { "mooyash_red","Red" },
+                { "mooyash_green","Green" }
+            };
 
             SettingtoID["Back"] = 0;
             SettingtoID["Play"] = 0;
@@ -122,17 +130,17 @@ namespace Mooyash.Services
 
         public static string timeToString(float time)
         {
-            String timer = "0" + (int)time / 60 + "." + time % 60 + "00000000";
+            String timer = "0" + (int)time / 60 + "." + time % 60 + "00.00.00.00";
             if (time / 60 > 9)
             {
-                timer = (int)time / 60 + "." + time % 60 + "00000000";
+                timer = (int)time / 60 + "." + time % 60 + "00.00.00.00";
             }
             if (time % 60 < 10)
             {
-                timer = "0" + (int)time / 60 + ".0" + time % 60 + "00000000";
+                timer = "0" + (int)time / 60 + ".0" + time % 60 + "00.00.00.00";
                 if (time / 60 > 9)
                 {
-                    timer = (int)time / 60 + ".0" + time % 60 + "00000000";
+                    timer = (int)time / 60 + ".0" + time % 60 + "00.00.00.00";
                 }
             }
             timer = timer.Substring(0, 8);
@@ -162,20 +170,33 @@ namespace Mooyash.Services
                 {
                     Kart player = PhysicsEngine.player;
                     Kart[] aiKarts = PhysicsEngine.aiKarts;
-                    Kart[] places = new Kart[aiKarts.Length];
+                    Kart[] places = new Kart[aiKarts.Length+1];
                     for (int i = 0; i < aiKarts.Length; i++)
                     {
                         for (int j = 0; j < aiKarts.Length; j++)
                         {
-                            if (aiKarts[j].place == i)
+                            if (aiKarts[j].place-1 == i)
                             {
                                 places[i] = aiKarts[j];
                             }
                         }
                     }
+                    places[player.place-1] = player;
                     for (int i = 0; i < places.Length; i++)
                     {
-                        Engine.DrawString(timeToString(places[i].finTime), new Vector2(163, 33 + 12 * i), Color.White, Game.font);
+                        if (places[i].Equals(player))
+                        {
+                            Engine.DrawString(displayNames[places[i].selfId] , new Vector2(100, 33 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font);
+
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 33 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Right);
+                            
+                        }
+                        else
+                        {
+                            Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
+
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 33 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
+                        }
                     }
                 }
             }

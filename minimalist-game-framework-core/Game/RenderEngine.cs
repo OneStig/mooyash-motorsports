@@ -502,11 +502,11 @@ namespace Mooyash.Services
                 int place = PhysicsEngine.player.place;
                 if(place == 1)
                 {
-                    Engine.DrawString(place + "st", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                    Engine.DrawString(place + "st", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
                 }
                 else if(place == 2)
                 {
-                    Engine.DrawString(place + "nd", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                    Engine.DrawString(place + "nd", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
                 }
                 else if(place == 3)
                 {
