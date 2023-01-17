@@ -32,10 +32,12 @@ class Game
     public static bool testing;
     public Game()
     {
-        testing = false;
+        testing = true;
+
         if(testing)
         {
-            Sounds.testSounds(0);
+            LeaderboardLoader.setScores();
+            LeaderboardLoader.saveScore(3,0,0);
             return;
         }
 

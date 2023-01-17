@@ -188,10 +188,6 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
-                        if(curK.lapCount > 3)
-                        {
-                            curK.finTime = time;
-                        }
                     }
                     else
                     {
@@ -202,6 +198,10 @@ namespace Mooyash.Services
                     if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
                     {
                         Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                    }
+                    if (curK.lapDisplay == 4)
+                    {
+                        curK.finTime = time;
                     }
                 }
             }
