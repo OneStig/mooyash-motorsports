@@ -254,6 +254,11 @@ namespace Mooyash.Services
                         Sounds.playMenuMusic();
                         Game.playing = false;
                         Engine.StopSound(PhysicsEngine.player.rev, fadeTime: 0.2f);
+                        if (PhysicsEngine.player.terrain != null)
+                        {
+                            Engine.StopSound(PhysicsEngine.player.terrain, fadeTime: 0.2f);
+                        }
+                        Game.countDown = 1;
                     }
                 }
                 else if (CurScreen >= 5)
