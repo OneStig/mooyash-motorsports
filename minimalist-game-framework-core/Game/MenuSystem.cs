@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Mooyash.Modules;
 namespace Mooyash.Services
 
 {
     public static class MenuSystem
     {
-        private static Screen[] ScreenStack = new Screen[7];
+        private static Screen[] ScreenStack = new Screen[8];
 
         public static Dictionary<string, string> displayNames;
 
@@ -50,6 +51,8 @@ namespace Mooyash.Services
             SettingtoID["Replay"] = 0;
             SettingtoID["Return"] = 1;
             SettingtoID["Credits"] = 2;
+
+            SettingtoID["Resume"] = 0;
 
             //play mode cc character map return
 
@@ -126,6 +129,14 @@ namespace Mooyash.Services
             ScreenStack[6] = new Screen(CreditTextures, CreditTexturePositions, CreditTextureSizes, CreditButtons, 0);
 
 
+            Texture[] PauseTextures = new Texture[] {  };
+            Vector2[] PauseTexturePositions = new Vector2[] { new Vector2(0, 0) };
+            Vector2[] PauseTextureSizes = new Vector2[] { new Vector2(320, 180) };
+            Dictionary<int, Button> PauseButtons = new Dictionary<int, Button>();
+            PauseButtons[0] = new Button(Color.Black, new Vector2(76, 120), new Vector2(75, 30), "Resume", Color.White);
+            PauseButtons[1] = new Button(Color.Black, new Vector2(176, 120), new Vector2(75, 30), "Return", Color.White);
+
+            ScreenStack[7] = new Screen(PauseTextures, PauseTexturePositions, PauseTextureSizes, PauseButtons, 0);
 
 
         }
@@ -162,6 +173,11 @@ namespace Mooyash.Services
             Screen cur = ScreenStack[CurScreen];
 
             if (CurScreen == 5)
+            {
+                RenderEngine.draw();
+            }
+
+            if (CurScreen == 7)
             {
                 RenderEngine.draw();
             }
@@ -221,7 +237,31 @@ namespace Mooyash.Services
             }
             if (Engine.GetKeyDown(Key.Space))
             {
-                if (CurScreen >= 5)
+                if(CurScreen == 7)
+                {
+                    String select = cur.Select();
+                    if (select.Equals("Resume"))
+                    {
+                        CurScreen = 5;
+                        Game.pause = false;
+                    }
+                    if (select.Equals("Return"))
+                    {
+                        Settings.Clear();
+                        CurScreen = 0;
+                        Settings.Clear();
+                        Game.pause = false;
+                        Sounds.playMenuMusic();
+                        Game.playing = false;
+                        Engine.StopSound(PhysicsEngine.player.rev, fadeTime: 0.2f);
+                        if (PhysicsEngine.player.terrain != null)
+                        {
+                            Engine.StopSound(PhysicsEngine.player.terrain, fadeTime: 0.2f);
+                        }
+                        Game.countDown = 1;
+                    }
+                }
+                else if (CurScreen >= 5)
                 {
                     String select = cur.Select();
                     if (select.Equals("Replay"))
@@ -238,6 +278,11 @@ namespace Mooyash.Services
                     if (select.Equals("Credits"))
                     {
                         CurScreen = 6;
+                        Engine.StopSound(PhysicsEngine.player.rev, fadeTime: 0.2f);
+                        if (PhysicsEngine.player.terrain != null)
+                        {
+                            Engine.StopSound(PhysicsEngine.player.terrain, fadeTime: 0.2f);
+                        }
                     }
                     Game.go = 0;
                 }

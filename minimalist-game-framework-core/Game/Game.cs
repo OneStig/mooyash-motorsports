@@ -24,6 +24,8 @@ class Game
 
     public static bool debugging;
 
+    public static bool pause;
+
     
     public static bool playing; // (saves 31 bits of overhead yay)
 
@@ -87,11 +89,24 @@ class Game
                 Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(159, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
                 Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(160, 60) * ResolutionScale, Color.White, placeFont, TextAlignment.Center);
                 countDown += dt;
+                //  rendering handled by rendering engine     
             }
             else
             {
-                PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
-                RenderEngine.draw();
+                if (Engine.GetKeyDown(Key.Tab))
+                {
+                    pause = true;
+                }
+                if (pause)
+                {
+                    MenuSystem.CurScreen = 7;
+                    MenuSystem.UpdateMenu();
+                }
+                if(!pause)
+                {
+                    PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
+                    RenderEngine.draw();
+                }
                 if (go <= goConst)
                 {
                     float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
