@@ -27,7 +27,6 @@ namespace Mooyash.Services
 
         public static void init()
         {
-            //LAP COUNT + LAP DISPLAY!!!!
             //GameSettings[2]: 0 = 50cc, 1 = 100cc
             gameObjects = new HashSet<GameObject>();
             projectiles = new HashSet<Projectile>();
@@ -48,9 +47,16 @@ namespace Mooyash.Services
                 "mooyash_red",
                 "mooyash_red",
                 "mooyash_red",
-                "mooyash_red",
                 "mooyash_red"
             };
+
+            Color[] colors = {
+                Color.Blue,
+                Color.Green,
+                Color.Orange,
+                Color.Yellow,
+                Color.Purple
+            }
 
             aiKarts = new Kart[track.startingGrid.Length];
 
@@ -87,6 +93,9 @@ namespace Mooyash.Services
             {
                 player.itemHeld = 3;
             }
+
+            //start idle engine sound
+            player.rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat: true);
         }
 
         public static void update(float dt)
@@ -96,6 +105,12 @@ namespace Mooyash.Services
             //sees if game ends
             if (player.lapDisplay > 3)
             {
+                Engine.StopSound(player.rev);
+                if(player.terrain != null)
+                {
+                    Engine.StopSound(player.terrain);
+                }
+                Sounds.playMenuMusic();
                 player.lapDisplay = 3;
                 Game.playing = false;
                 finalTime = time;
@@ -173,7 +188,12 @@ namespace Mooyash.Services
                     {
                         curK.lapCount = curK.lapDisplay - 1;
                     }
+                    int oldLapDisplay = curK.lapDisplay;
                     curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
+                    if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
+                    {
+                        Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                    }
                 }
             }
         }
