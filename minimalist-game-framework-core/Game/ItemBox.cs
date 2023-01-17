@@ -6,7 +6,7 @@ namespace Mooyash.Modules
 {
 	public class ItemBox : GameObject // Equivalent of mario kart mystery box
 	{
-		public static string[] validItems = new string[] { "banana", "green_shell", "mushroom" };
+		public static string[] validItems = new string[] { "banana", "green_shell", "mushroom", "bread"};
 
 		public ItemBox(Vector2 position) : base()
 		{
