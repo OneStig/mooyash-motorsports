@@ -97,12 +97,19 @@ namespace Mooyash.Modules
 
         public static void LoadTracks()
         {
+            // Indicate how many tracks there are to load here
             tracks = new Track[1];
 
             for (int j = 0; j < tracks.Length; j++)
             {
+                // Json file reads to here and deserializes to a TrackLoader object
                 string RawTrack;
 
+                // Min and max, x and y values to find the center for tree generation
+                Vector2 minPoint = new Vector2(float.MaxValue, float.MaxValue);
+                Vector2 maxPoint = new Vector2(float.MinValue, float.MinValue);
+
+                // Handling MacOS funky file behavior
                 if (Engine.MacOS)
                 {
                     RawTrack = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Track" + j + ".json"));
@@ -114,14 +121,25 @@ namespace Mooyash.Modules
 
                 TrackLoader loaded = JsonConvert.DeserializeObject<TrackLoader>(RawTrack);
 
+                // Scalefactor needs to be applied to polygons because editor draws it 1/10th the size
                 float scaleFactor = 10f;
-                // apply sf
+
+
+                // Read in each of the 3 types of polygons in a track.
 
                 for (int i = 0; i < loaded.collidable.Length; i++)
                 {
                     for (int k = 0; k < loaded.collidable[i].Length; k++)
                     {
                         loaded.collidable[i][k] *= scaleFactor;
+
+                        // using interactables to determine outside collider since outer
+                        // bounds collider is defined here
+
+                        minPoint.X = Math.Min(minPoint.X, loaded.collidable[i][k].X);
+                        minPoint.Y = Math.Min(minPoint.Y, loaded.collidable[i][k].Y);
+                        maxPoint.X = Math.Max(maxPoint.X, loaded.collidable[i][k].X);
+                        maxPoint.Y = Math.Max(maxPoint.Y, loaded.collidable[i][k].Y);
                     }
                 }
 
@@ -129,6 +147,7 @@ namespace Mooyash.Modules
                 {
                     for (int k = 0; k < loaded.interactable[i].Length; k++)
                     {
+
                         loaded.interactable[i][k] *= scaleFactor;
                     }
                 }
@@ -253,7 +272,8 @@ namespace Mooyash.Modules
                 tracks[j].boxes = loaded.boxes;
                 tracks[j].coins = loaded.coins;
 
-                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, new Vector2(5625,4500), new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
+                Vector2 center = (minPoint + maxPoint) / 2f;
+                tracks[j].backObjs = generateBackObjs(50, 12000, 10000, center, new Vector2(1760, 2260), 35, new Vector2(8000, 1600), 500, 1500);
             }
         }
 
@@ -296,7 +316,7 @@ namespace Mooyash.Modules
         }
     }
 
-        public class PhysicsPolygon : Polygon
+    public class PhysicsPolygon : Polygon
     {
         public int id; //-1 = empty space, 0 = track, 1 = grass, 2 = dirt
 
