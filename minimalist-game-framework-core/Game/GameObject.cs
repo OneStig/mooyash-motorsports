@@ -438,12 +438,12 @@ namespace Mooyash.Modules
 
             if (itemHeld == 3)
             {
-                if (Math.Abs(angleToWaypoint - angle) < .2)
+                if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < 700)
                 {
                     useItem();
                 }
             }
-            else if (distanceToPlayer < 500 && itemHeld > 0)
+            else if (distanceToPlayer < 700 && itemHeld > 0)
             {
                 if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
                 {
