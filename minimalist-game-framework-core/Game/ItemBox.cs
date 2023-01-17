@@ -24,6 +24,10 @@ namespace Mooyash.Modules
 			{
 				k.rollItemTime = 0;
 				k.itemHeld = -1;
+				if(!k.isAI)
+                {
+					Engine.PlaySound(Sounds.sounds["itemBox"]);
+				}
 
 				PhysicsEngine.gameObjects.Remove(this);
             }

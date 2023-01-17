@@ -43,7 +43,7 @@ namespace Mooyash.Modules
             PhysicsEngine.gameObjects.Remove(this);
             PhysicsEngine.projectiles.Remove(this);
 
-            k.stunTime = 0;
+            k.hit();
         }
     }
 }

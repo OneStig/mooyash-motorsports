@@ -26,7 +26,7 @@ namespace Mooyash.Modules
                 k.score -= 2;
             }
 
-            k.stunTime = 0;
+            k.hit();
 
             PhysicsEngine.gameObjects.Remove(this);
         }

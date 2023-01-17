@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -152,6 +153,8 @@ namespace Mooyash.Modules
         //throttle could be signed or unsigned, it doesn't matter that much
         public float throttle;
         public float steer;
+        //physicsID for the player's current position
+        public int id;
         public int coins;
 
         public Vector2 prevPosition;
@@ -186,6 +189,9 @@ namespace Mooyash.Modules
         private readonly float stunConst = 3f;
         private readonly float speedBoostConst = 3f;
         private readonly float rollConst = 2f;
+        //for lap completion
+        public int lapCount;
+        public int lapDisplay;
         private float dBoostConst = 1f;
 
         //Waypoint variables for ai driving
@@ -206,10 +212,6 @@ namespace Mooyash.Modules
 
         //Distance from kart to closet waypoints updated every frame
         public float[] dists;
-
-        //Kart dependent lapCount and lapDisplay variables
-        public int lapCount;
-        public int lapDisplay;
 
         /*
          * two separate variables, controls the radius at which a random point is found around a waypoint
@@ -245,14 +247,19 @@ namespace Mooyash.Modules
         private readonly float steerDecay = 4f;
         private readonly float throttleDecay = 1f;
 
-        // particle textures
-        public static Texture smoke;
+        //for sounds
+        public float prevThrottle;
+        public SoundInstance rev;
+        public SoundInstance terrain;
+        public float collideTimer;
 
         // score
         public int score;
+
+        // particle textures
+        public static Texture smoke;
         
         public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
-
         {
             iconColor = color;
 
@@ -298,6 +305,10 @@ namespace Mooyash.Modules
 
         private void useItem()
         {
+            if (itemHeld != 0)
+            {
+                Engine.PlaySound(Sounds.sounds["useItem"]);
+            }
             // "nothing", "banana", "green shell", "mushroom"
             if (itemHeld == 1) // banana
             {
@@ -405,6 +416,7 @@ namespace Mooyash.Modules
             updateTargetWaypoints();
 
             braking = false;
+            prevThrottle = throttle;
 
             if (Engine.GetKeyHeld(Key.W))
             {
@@ -587,11 +599,17 @@ namespace Mooyash.Modules
         public void update(float dt)
         {
             prevPosition = new Vector2(position.X, position.Y);
+            float prevVelocity = velocity.X;
+            int prevId = id;
 
             // update various timers
             stunTime += dt;
             boostTime += dt;
             rollItemTime += dt;
+            if(collideTimer > 0)
+            {
+                collideTimer -= dt;
+            }
             dBoostTime += dt;
 
             // when itemRolled
@@ -617,7 +635,8 @@ namespace Mooyash.Modules
                 stunDrag = 1f;
             }
 
-            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[PhysicsEngine.GetPhysicsID(position)];
+            id = PhysicsEngine.GetPhysicsID(position);
+            Tuple<float, float, float> terrainConst = PhysicsEngine.terrainConsts[id];
 
             // when boosting
 
@@ -743,25 +762,63 @@ namespace Mooyash.Modules
                 }
             }
 
+            bool collided = false;
             if (minCollision != 1)
             {
                 position = finalPos;
                 wallCollide(0);
+                collided = true;
             }
 
             // base.update(dt);
-
-            percentDone();
+            
+            //handle sounds
+            if(!isAI && !collided)
+            {
+                if (id != prevId || (velocity.X == 0 && prevVelocity != 0))
+                {
+                    Engine.StopSound(terrain);
+                }
+                if (id != prevId || (prevVelocity == 0 && velocity.X != 0))
+                {
+                    terrain = Engine.PlaySound(Sounds.sounds["terrain" + id], repeat: true);
+                }
+                if (throttle == 0 && prevThrottle != 0)
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["zeroRev"], repeat:true);
+                }
+                else if (Math.Abs(throttle) >= 0.75f && Math.Abs(prevThrottle) < 0.75f)
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["highRev"], repeat:true);
+                }
+                else if ((0 != throttle && Math.Abs(throttle) < 0.75f) && (0 == prevThrottle || Math.Abs(prevThrottle) >= 0.75f))
+                {
+                    Engine.StopSound(rev);
+                    rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
+                }
+            }
         }
 
         public void wallCollide(float wallAngle)
         {
+            if (!isAI && collideTimer <= 0)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
+            }
             velocity.X = -velocity.X * 0.75f;
             throttle /= 2;
         }
 
         public override void collide(Kart kart)
         {
+            if (!isAI && collideTimer <= 0)
+            {
+                Engine.PlaySound(Sounds.sounds["collide"]);
+                collideTimer = 0.5f;
+            }
             Vector2 adjust = (radius + kart.radius - (kart.position - position).Length())*(kart.position-position).Normalized();
             kart.position += adjust;
             position -= adjust;
@@ -820,6 +877,15 @@ namespace Mooyash.Modules
             }
 
             dBoostConst = driftTime * 3;
+        }
+
+        public void hit()
+        {
+            stunTime = 0;
+            if(!isAI)
+            {
+                Engine.PlaySound(Sounds.sounds["hit"]);
+            }
         }
     }
 
