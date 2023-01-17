@@ -41,28 +41,30 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             player.currentWaypoint = 1;
 
-            string[] aiNames = // determines which textures each sequential ai should use (add new tex later)
+            string[] allNames = // determines which textures each Kart should use, and its corresponding color
             {
-                "mooyash_red",
+                "mooyash_blue",
+                "mooyash_green",
                 "mooyash_red",
                 "mooyash_red",
                 "mooyash_red",
                 "mooyash_red"
             };
 
-            Color[] colors = {
+            Color[] allColors = {
                 Color.Blue,
                 Color.Green,
                 Color.Orange,
                 Color.Yellow,
-                Color.Purple
-            }
+                Color.Purple,
+                Color.Red
+            };
 
             aiKarts = new Kart[track.startingGrid.Length];
 
             for (int i = 0; i < track.startingGrid.Length; i++)
             {
-                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Blue);
+                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[i], allColors[i]);
                 tempAI.position = track.startingGrid[i];
                 tempAI.angle = track.startAngle;
 

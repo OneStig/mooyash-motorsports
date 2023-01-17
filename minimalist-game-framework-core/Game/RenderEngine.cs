@@ -452,7 +452,7 @@ namespace Mooyash.Services
 
             foreach (Kart k in PhysicsEngine.karts)
             {
-                progress = k.percentageAlongTrack / 100;
+                progress = (k.percentageAlongTrack / 100 + 0.005f) % 1f;
 
                 Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), k.iconColor);
             }
@@ -460,7 +460,7 @@ namespace Mooyash.Services
             // manually draw for player on top
 
             Kart player = PhysicsEngine.player;
-            progress = player.percentageAlongTrack / 100;
+            progress = (player.percentageAlongTrack / 100 + 0.005f) % 1f;
 
             Engine.DrawRectSolid(new Bounds2(start + lineLen * progress, 30 - lineHeight, lineHeight * 3, lineHeight * 3), player.iconColor);
 

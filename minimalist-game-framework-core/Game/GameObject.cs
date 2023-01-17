@@ -799,6 +799,8 @@ namespace Mooyash.Modules
                     rev = Engine.PlaySound(Sounds.sounds["lowRev"], repeat:true);
                 }
             }
+
+            percentDone();
         }
 
         public void wallCollide(float wallAngle)
