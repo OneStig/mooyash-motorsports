@@ -37,7 +37,13 @@ class Game
         if(testing)
         {
             LeaderboardLoader.setScores();
-            LeaderboardLoader.saveScore(3,0,0);
+            LeaderboardLoader.saveScore(38.1f,0,0);
+            LeaderboardLoader.saveScore(39.95f, 0, 0);
+            LeaderboardLoader.saveScore(40.2f, 0, 0);
+            LeaderboardLoader.saveScore(41.3f, 0, 0);
+            LeaderboardLoader.saveScore(42.2424f, 0, 0);
+            LeaderboardLoader.saveScore(43, 0, 0);
+            LeaderboardLoader.readScores(0,0);
             return;
         }
 

@@ -4,22 +4,33 @@ using Newtonsoft.Json;
 using Mooyash.Services;
 using Mooyash.Modules;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Mooyash.Modules
 {
     public class Leaderboard
     {
-        //map, cc, order of scores
-        public float[,,] scores;
+        //map, cc
+        public List<float>[,] scores;
 
         public Leaderboard()
         {
-            scores = new float[3,2,LeaderboardLoader.numScores];
+            scores = new List<float>[3,2];
         }
 
         public void addScore(float score, int map, int cc)
         {
-            scores[map, cc, 0] = score;
+            if (scores[map, cc] == null)
+            {
+                scores[map, cc] = new List<float>();
+            }
+            int index = scores[map,cc].BinarySearch(score);
+            if (index < 0) { index = ~index; }
+            scores[map, cc].Insert(index, score);
+            if (scores[map, cc].Count > LeaderboardLoader.numScores)
+            {
+                scores[map, cc].RemoveAt(LeaderboardLoader.numScores);
+            }
         }
     }
 
@@ -37,27 +48,12 @@ namespace Mooyash.Modules
             Leaderboard l = JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText("scores.json"));
             l.addScore(score, map, cc);
             File.WriteAllText("scores.json", JsonConvert.SerializeObject(l, Formatting.Indented));
-            /*
-            Kart k;
-
-            string json = JsonConvert.SerializeObject(k, Formatting.Indented);
-            File.WriteAllText("test.json", json);
-
-            string readJson = File.ReadAllText("test.json");
-
-            k = JsonConvert.DeserializeObject<Kart>(readJson);
-            */
         }
 
-        public static float[] readScores(int map, int cc)
+        public static List<float> readScores(int map, int cc)
         {
-            float[,,] scores = JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText("scores.json")).scores;
-            float[] output = new float[numScores];
-            for(int i = 0; i < output.Length; i++)
-            {
-                output[i] = scores[map, cc, i];
-            }
-            System.Diagnostics.Debug.WriteLine(output.ToString());
+            List<float> output = JsonConvert.DeserializeObject<Leaderboard>(File.ReadAllText("scores.json")).scores[map, cc];
+            System.Diagnostics.Debug.WriteLine(String.Join(",", output));
             return output;
         }
     }
