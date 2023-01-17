@@ -62,7 +62,6 @@ namespace Mooyash.Services
     public static class RenderEngine
     {
         public static Camera camera;
-
         private static Texture itemRoulette = Engine.LoadTexture("roulette.png");
         private static int lastItem = 0;
         private static float lastItemTimer = 0;
@@ -70,7 +69,7 @@ namespace Mooyash.Services
         //just has to be greater than 0.1f to avoid error
         private static float boostLineTimer = 0.2f;
         private static float[] angles = new float[] { -0.5f, 0, 0.5f, 2.5f, 3, 3.5f };
-        private static Tuple<Vector2, Vector2>[] boostLines = new Tuple<Vector2, Vector2>[angles.Length];
+        private static Polygon[] boostLines = new Polygon[angles.Length];
 
         public static float renderDistance = 4000f;
 
@@ -408,30 +407,37 @@ namespace Mooyash.Services
         */
 
         //rads as proportion of Game.Resolution.X
-        public static void createBoostLines(float rad1, float rad2)
+        public static void createBoostLines(float rad1, float rad2, float width)
         {
-            
-            
             Random rand = new Random();
-            rad1 = Game.Resolution.X * (rad1 + (float)(rand.NextDouble() - 0.5)/60);
-            rad2 = Game.Resolution.X * (rad2 + (float)(rand.NextDouble() - 0.5)/15);
 
-            float angle1;
-            float angle2;
+            float curRad1;
+            float curRad2;
+            float angle;
+            float distance = camera.tcos * camera.follow.X + camera.tsin * camera.height;
+            //based on kart texture size
+            float kartY = project(new Vector2(0, camera.follow.X)).Y - (camera.screen / distance) * 31.25f * camera.scale;
+            Vector2[] points;
             for (int i = 0; i < angles.Length; i++)
             {
-                angle1 = angles[i] + (float)(rand.NextDouble() - 0.5) / 4;
-                angle2 = angles[i] + (float)(rand.NextDouble() - 0.5) / 4;
-                boostLines[i] = new Tuple<Vector2, Vector2>(rad1 * Vector2.angleToVector(angle1) + Game.Resolution / 2, rad2 * Vector2.angleToVector(angle2) + Game.Resolution / 2);
+                curRad1 = Game.VirtualResolution.X * (rad1 + (float)(rand.NextDouble() - 0.5) / 45);
+                curRad2 = Game.VirtualResolution.X * (rad2 + (float)(rand.NextDouble() - 0.5) / 12.5f);
+                angle = angles[i] + (float)(rand.NextDouble() - 0.5) / 3.5f;
+                points = new Vector2[] { new Vector2(curRad1, -width*Game.VirtualResolution.Y), new Vector2(curRad1,width*Game.VirtualResolution.Y),
+                    new Vector2(curRad2, width * Game.VirtualResolution.Y), new Vector2(curRad2, - width * Game.VirtualResolution.Y) };
+                for (int j = 0; j < points.Length; j++)
+                {
+                    points[j] = points[j].Rotated(-angle * 180 / (float)Math.PI) + new Vector2(Game.VirtualResolution.X/2, kartY);
+                }
+                boostLines[i] = new Polygon(points,new Color(0xC8, 0xF0, 0xFF));
             }
         }
 
         public static void drawBoostLines()
         {
-            foreach (Tuple<Vector2, Vector2> line in boostLines)
+            foreach (Polygon p in boostLines)
             {
-                //new Color(0x87, 0xCE, 0xEB)
-                Engine.DrawLine(line.Item1, line.Item2, new Color(0xC8, 0xF0, 0xFF));
+                Engine.DrawConvexPolygon(p);
             }
         }
 
@@ -537,7 +543,7 @@ namespace Mooyash.Services
                 boostLineTimer += Engine.TimeDelta;
                 if (boostLineTimer > 0.05f)
                 {
-                    createBoostLines(0.1f, 0.3f);
+                    createBoostLines(0.15f, 0.35f, 0.003f);
                     boostLineTimer = 0;
                 }
                 drawBoostLines();
