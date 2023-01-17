@@ -363,6 +363,9 @@ namespace Mooyash.Services
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
             Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(130, 5) * Game.ResolutionScale, Color.White, Game.font);
+
+            Engine.DrawString("item1  " + PhysicsEngine.ai1.itemHeld, new Vector2(170, 30) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("item2  " + PhysicsEngine.ai2.itemHeld, new Vector2(170, 60) * Game.ResolutionScale, Color.White, Game.font);
         }
 
         public static void drawObjects(List<GameObject> objs)
