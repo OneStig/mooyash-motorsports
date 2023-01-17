@@ -12,8 +12,15 @@ class Game
     public static readonly int ResolutionScale = 4;
 
     public static List<int> GameSettings;
-    public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
+    public static Font placeFont = Engine.LoadFont("MarioKart.ttf", 25 * ResolutionScale);
+    public static Font font = Engine.LoadFont("MarioKart.ttf", 12 * ResolutionScale);
     public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
+
+    public static float countDownConst = 4;
+    public static float countDown;
+
+    public static float goConst = 1;
+    public static float go;
 
     public static bool debugging;
 
@@ -44,6 +51,9 @@ class Game
         //set playing to false
         playing = false;
 
+        countDown = 1;
+        go = 0;
+
         //DEBUGGING
         debugging = false; // set true for diagnostics
         PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
@@ -67,8 +77,32 @@ class Game
             //  input handling
             //  physics handled by physics engine
             //  rendering handled by rendering engine       
-            PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
-            RenderEngine.draw();
+            if (countDown <= countDownConst)
+            {
+                RenderEngine.draw();
+                float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
+                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(159, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(161, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(161, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(159, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(160, 60) * ResolutionScale, Color.White, placeFont, TextAlignment.Center);
+                countDown += dt;
+            }
+            else
+            {
+                PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
+                RenderEngine.draw();
+                if (go <= goConst)
+                {
+                    float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
+                    Engine.DrawString("GO!", new Vector2(159, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                    Engine.DrawString("GO!", new Vector2(161, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                    Engine.DrawString("GO!", new Vector2(161, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                    Engine.DrawString("GO!", new Vector2(159, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
+                    Engine.DrawString("GO!", new Vector2(160, 60) * ResolutionScale, Color.White, placeFont, TextAlignment.Center);
+                    go += dt;
+                }
+            }
         }
         else
         {

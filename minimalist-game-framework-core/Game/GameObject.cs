@@ -157,6 +157,8 @@ namespace Mooyash.Modules
         public int id;
         public int coins;
 
+        public float finTime;
+
         public Vector2 prevPosition;
 
         public bool stunned;
@@ -265,9 +267,10 @@ namespace Mooyash.Modules
         // particle textures
         public static Texture smoke;
         
-        public Kart(float throttleConst, bool isAI, String kartName, Color color) : base()
+        public Kart(float throttleConst, bool isAI, string kartName, Color color) : base()
         {
             iconColor = color;
+            selfId = kartName;
 
             texture = Engine.LoadTexture(kartName + "_sheet.png");
             smoke = Engine.LoadTexture("smoke2.png");
@@ -285,6 +288,8 @@ namespace Mooyash.Modules
             this.playerWaypoints = Track.tracks[0].playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
+
+            finTime = 0;
 
             prevProgressInd = 0;
             curProgressInd = 1;
@@ -510,7 +515,7 @@ namespace Mooyash.Modules
 
         public void updateInputAI(float dt)
         {
-
+            updateTargetWaypoints();
             angle %= 2*(float)Math.PI;
             //target is current waypoint
 
@@ -543,7 +548,11 @@ namespace Mooyash.Modules
 
             distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
 
-            if (itemHeld == 3)
+            if (itemHeld == 4)
+            {
+                useItem();
+            }
+            else if (itemHeld == 3)
             {
                 if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < 700)
                 {

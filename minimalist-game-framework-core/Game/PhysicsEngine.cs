@@ -45,9 +45,9 @@ namespace Mooyash.Services
             {
                 "mooyash_blue",
                 "mooyash_green",
-                "mooyash_red",
-                "mooyash_red",
-                "mooyash_red",
+                "mooyash_orange",
+                "mooyash_yellow",
+                "mooyash_purple",
                 "mooyash_red"
             };
 
@@ -117,6 +117,7 @@ namespace Mooyash.Services
                 Sounds.playMenuMusic();
                 player.lapDisplay = 3;
                 Game.playing = false;
+                Game.countDown = 1;
                 finalTime = time;
                 MenuSystem.SetFinalTime(finalTime);
             }
@@ -187,6 +188,10 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
+                        if(curK.lapCount > 3)
+                        {
+                            curK.finTime = time;
+                        }
                     }
                     else
                     {

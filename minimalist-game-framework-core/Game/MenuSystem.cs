@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mooyash.Modules;
 namespace Mooyash.Services
-    
+
 {
     public static class MenuSystem
     {
         private static Screen[] ScreenStack = new Screen[7];
+
+        public static Dictionary<string, string> displayNames;
 
         public static int CurScreen = 0;
 
@@ -14,7 +17,6 @@ namespace Mooyash.Services
         public static List<string> Settings = new List<String>();
 
         public static string finTime;
-        
 
         public static void loadTextures()
         {
@@ -22,7 +24,13 @@ namespace Mooyash.Services
             Texture MenuWithoutLogo = Engine.LoadTexture("fallinggong.png");
             Texture CreditsScreen = Engine.LoadTexture("Credits.png");
 
-            SettingtoID["Back"] = 0; 
+            displayNames = new Dictionary<string, string>() {
+                { "mooyash_blue","Blue" },
+                { "mooyash_red","Red" },
+                { "mooyash_green","Green" }
+            };
+
+            SettingtoID["Back"] = 0;
             SettingtoID["Play"] = 0;
 
             SettingtoID["Time Trial"] = 0;
@@ -30,6 +38,7 @@ namespace Mooyash.Services
 
             SettingtoID["50CC"] = 0;
             SettingtoID["100CC"] = 1;
+
 
             SettingtoID["William"] = 0;
             SettingtoID["Suyash"] = 1;
@@ -118,11 +127,38 @@ namespace Mooyash.Services
 
 
 
+
+        }
+
+        public static string timeToString(float time)
+        {
+            String timer = "0" + (int)time / 60 + "." + time % 60 + "00.00.00.00";
+            if (time / 60 > 9)
+            {
+                timer = (int)time / 60 + "." + time % 60 + "00.00.00.00";
+            }
+            if (time % 60 < 10)
+            {
+                timer = "0" + (int)time / 60 + ".0" + time % 60 + "00.00.00.00";
+                if (time / 60 > 9)
+                {
+                    timer = (int)time / 60 + ".0" + time % 60 + "00.00.00.00";
+                }
+            }
+            timer = timer.Substring(0, 8);
+            return timer;
+        }
+
+        public static float calcAITime(Kart aiKart)
+        {
+            float avgSpeed = (aiKart.lapCount * Track.tracks[0].totalLen + aiKart.percentageAlongTrack/100 * Track.tracks[0].totalLen)/PhysicsEngine.finalTime;
+            float additionalTime = (1 - aiKart.percentageAlongTrack / 100) * Track.tracks[0].totalLen / avgSpeed;
+            return PhysicsEngine.finalTime + additionalTime;
         }
 
         public static bool UpdateMenu()
         {
-          
+
             Screen cur = ScreenStack[CurScreen];
 
             if (CurScreen == 5)
@@ -134,14 +170,44 @@ namespace Mooyash.Services
 
             if (CurScreen == 5)
             {
-                Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115*Game.ResolutionScale), Color.Black);
+                Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black);
                 if (GetSettings()[1] == 0)
                 {
-                    Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
+                    Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
                 }
                 else
                 {
-                    Engine.DrawString("1 - " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
+                    Kart player = PhysicsEngine.player;
+                    Kart[] karts = PhysicsEngine.karts.ToArray();
+                    Kart[] places = new Kart[karts.Length];
+
+                    for(int i = 0; i < karts.Length; i++)
+                    {
+                        places[karts[i].place - 1] = karts[i];
+                    }
+
+                    for (int i = 0; i < places.Length; i++)
+                    {
+                        if (places[i].selfId.Equals(player.selfId))
+                        {
+                            Engine.DrawString(displayNames[places[i].selfId] , new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font);
+
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Right);
+                            
+                        }
+                        else
+                        {
+                            if (places[i].finTime == 0)
+                            {
+                                places[i].finTime = calcAITime(places[i]);
+                            }
+                            Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
+
+                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
+                        }
+                    }
+
+                    Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100,123) * Game.ResolutionScale, Color.White, Game.font);      
                 }
             }
 
@@ -173,6 +239,7 @@ namespace Mooyash.Services
                     {
                         CurScreen = 6;
                     }
+                    Game.go = 0;
                 }
                 else if (CurScreen < 5 && !cur.Select().Equals("Back"))
                 {
@@ -180,17 +247,16 @@ namespace Mooyash.Services
                     CurScreen++;
                     ScreenStack[CurScreen].curButton = 0;
                 }
-                else 
+                else
                 {
                     CurScreen--;
                     Settings.RemoveAt(Settings.Count - 1);
                     ScreenStack[CurScreen].curButton = 0;
                 }
 
-
                 if (CurScreen == 5)
                 {
-                    for(int i = 0; i < ScreenStack.Length; i++)
+                    for (int i = 0; i < ScreenStack.Length; i++)
                     {
                         ScreenStack[i].resetSelected();
                     }
@@ -209,9 +275,9 @@ namespace Mooyash.Services
         public static List<int> GetSettings()
         {
             List<int> ids = new List<int>();
-            foreach(string i in Settings)
+            foreach (string i in Settings)
             {
-                 ids.Add(SettingtoID[i]);
+                ids.Add(SettingtoID[i]);
             }
             return ids;
         }
@@ -279,14 +345,14 @@ namespace Mooyash.Services
 
         public void DrawScreen()
         {
-            for(int i = 0; i < textures.Length; i++)
+            for (int i = 0; i < textures.Length; i++)
             {
                 Engine.DrawTexture(textures[i], positions[i] * Game.ResolutionScale, size: sizes[i] * Game.ResolutionScale, scaleMode: TextureScaleMode.Nearest);
             }
 
-            for(int i = 0; i < buttons.Count; i++)
+            for (int i = 0; i < buttons.Count; i++)
             {
-                if(i == curButton)
+                if (i == curButton)
                 {
                     buttons[i].DrawSelectedButton();
                 }
@@ -299,11 +365,11 @@ namespace Mooyash.Services
 
         public void Up()
         {
-            if(curButton > 0)
+            if (curButton > 0)
             {
                 curButton--;
             }
-            if(curButton == -1)
+            if (curButton == -1)
             {
                 curButton = 0;
             }
@@ -311,11 +377,11 @@ namespace Mooyash.Services
 
         public void Down()
         {
-            if(curButton == buttons.Count-1)
+            if (curButton == buttons.Count - 1)
             {
                 return;
             }
-            if(curButton < buttons.Count-1)
+            if (curButton < buttons.Count - 1)
             {
                 curButton++;
             }
@@ -327,7 +393,7 @@ namespace Mooyash.Services
 
         public string Select()
         {
-            if(curButton != -1)
+            if (curButton != -1)
             {
                 return buttons[curButton].Function();
             }
@@ -367,14 +433,17 @@ namespace Mooyash.Services
         public void DrawButton()
         {
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color);
-            Engine.DrawString(func, new Vector2(position.X+size.X/2,position.Y+size.Y/2-6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+
         }
 
         public void DrawSelectedButton()
         {
             Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue);
             Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color);
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2-6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+
         }
 
         public string Function()
