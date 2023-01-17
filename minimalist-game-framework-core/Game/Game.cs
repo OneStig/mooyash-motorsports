@@ -12,7 +12,8 @@ class Game
     public static readonly int ResolutionScale = 4;
 
     public static List<int> GameSettings;
-    public static Font font = Engine.LoadFont("Mario-Kart-DS.ttf", 17 * ResolutionScale);
+    public static Font placeFont = Engine.LoadFont("MarioKart.ttf", 17 * ResolutionScale);
+    public static Font font = Engine.LoadFont("MarioKart.ttf", 12 * ResolutionScale);
     public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
 
     public static bool debugging;

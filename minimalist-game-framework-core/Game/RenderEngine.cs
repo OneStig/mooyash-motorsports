@@ -463,8 +463,8 @@ namespace Mooyash.Services
             //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
-            Engine.DrawString(timer, new Vector2(250, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("lap " + PhysicsEngine.player.lapDisplay + " of 3", new Vector2(245, 20) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString(timer, new Vector2(247, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("Lap " + PhysicsEngine.player.lapDisplay + "/3", new Vector2(253, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
@@ -488,13 +488,28 @@ namespace Mooyash.Services
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
 
-            Engine.DrawString("score  " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("coins  " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("Score:" + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
+            Engine.DrawString("Coins:" + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
 
             if (Game.GameSettings[1] == 1)
             {
-                Engine.DrawString("P" + PhysicsEngine.player.place, new Vector2(5, 160) * Game.ResolutionScale, Color.White, Game.font);
-
+                int place = PhysicsEngine.player.place;
+                if(place == 1)
+                {
+                    Engine.DrawString(place + "st", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                }
+                else if(place == 2)
+                {
+                    Engine.DrawString(place + "nd", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                }
+                else if(place == 3)
+                {
+                    Engine.DrawString(place + "rd", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                }
+                else
+                {
+                    Engine.DrawString(place + "th", new Vector2(315, 160) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                }
             }
         }
 
