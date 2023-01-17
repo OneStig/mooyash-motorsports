@@ -42,7 +42,7 @@ namespace Mooyash.Services
             karts = new HashSet<Kart>();
             spawners = new HashSet<Spawner>();
 
-            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mario", Color.Red);
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mooyash_red", Color.Red);
 
             gameObjects.Add(player);
             karts.Add(player);
@@ -51,11 +51,11 @@ namespace Mooyash.Services
             player.currentWaypoint = 1;
 
             time = 0;
-            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Blue);
+            ai1 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Blue);
             ai1.position = track.startPos;
             ai1.angle = track.startAngle;
 
-            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mario", Color.Green);
+            ai2 = new Kart(2400 * (Game.GameSettings[2] + 1), true, "mooyash_red", Color.Green);
             ai2.position = track.startPos - new Vector2(100, 100);
             ai2.angle = track.startAngle;
 
