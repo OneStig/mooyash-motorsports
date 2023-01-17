@@ -13,7 +13,7 @@ namespace Mooyash.Modules
         "menuMusic", "gameMusic"};
         //empty is for testing
         private static readonly string[] wavNames = new string[]
-            {"itemBox", "collide", "hit", "lapFinish", "useItem", "coin", "empty"};
+            {"itemBox", "collide", "hit", "lapFinish", "useItem", "coin", "empty", "drift"};
 
         private static SoundInstance music;
 
@@ -44,7 +44,7 @@ namespace Mooyash.Modules
         {
             if (music != null)
             {
-                Engine.StopSound(music);
+                Engine.StopSound(music, fadeTime:1f);
             }
             music = Engine.PlaySound(sounds["menuMusic"], repeat:true);
         }
@@ -53,7 +53,7 @@ namespace Mooyash.Modules
         {
             if(music != null)
             {
-                Engine.StopSound(music);
+                Engine.StopSound(music, fadeTime:0.5f);
             }
             music = Engine.PlaySound(sounds["gameMusic"], repeat:true);
         }
