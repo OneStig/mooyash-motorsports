@@ -346,20 +346,6 @@ namespace Mooyash.Modules
             itemHeld = 0;
         }
 
-        //public void percentDoneAI()
-        //{
-        //    if(previousWaypoint == 0)
-        //    {
-        //        percentageAlongTrack = Track.tracks[0].lens[0] *
-        //                                Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / Track.tracks[0].totalLen;
-        //        return;
-        //    }
-        //    float curDist = Track.tracks[0].lens[previousWaypoint] *
-        //                    Splines.getPercentageProgress(prevRandomWaypoint, newRandomWaypoint, position) / 100;
-        //    float prevDist = Track.tracks[0].lensToPoint[previousWaypoint - 1];
-        //    percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].totalLen * 100;
-        //}
-
         public void percentDone()
         {
             if (prevProgressInd == 0)
@@ -495,7 +481,6 @@ namespace Mooyash.Modules
                 camFlipped = false;
             }
 
-            // percentDonePlayer();
         }
 
         public void updateInputAI(float dt)
@@ -508,21 +493,21 @@ namespace Mooyash.Modules
             Vector2 distToWaypoint = new Vector2(allWaypoints[currentWaypoint].X - position.X, allWaypoints[currentWaypoint].Y - position.Y);
             if (Math.Sqrt(distToWaypoint.X * distToWaypoint.X + distToWaypoint.Y * distToWaypoint.Y) < minDistanceToReachWaypoint)
             {
-                minDistanceToReachWaypoint = rand.Next(450, 500);
+                minDistanceToReachWaypoint = rand.Next(400, 500);
                 previousWaypoint = currentWaypoint;
                 currentWaypoint = (currentWaypoint + 1) % allWaypoints.Count;
 
-                randomDrivingRadius = rand.Next(0, 30);
+                randomDrivingRadius = rand.Next(0, 100);
                 randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
                 prevRandomWaypoint = newRandomWaypoint;
                 newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
                                                 (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
             }
 
-            //updateTargetWaypoints(rand.Next(450, 500));
 
             braking = false;
-            throttle = Math.Min(1, throttle + tInputScale * dt);    
+
+            throttle = Math.Min(1, throttle + tInputScale * dt);
 
             angleToWaypoint = (float)Math.Atan2(newRandomWaypoint.Y - position.Y,
                                                     newRandomWaypoint.X - position.X);
@@ -591,9 +576,17 @@ namespace Mooyash.Modules
             {
                 steer = decay(steer, steerDecay, dt);
                 angle = angleToWaypoint;
+                
             }
 
-            // percentDoneAI();
+            if (rand.Next(0, 100) < 7)
+            {
+                randomDrivingRadius = rand.Next(0, 100);
+                randAngle = (float)(rand.NextDouble() * 2) * (float)Math.PI;
+                prevRandomWaypoint = newRandomWaypoint;
+                newRandomWaypoint = new Vector2((float)(allWaypoints[currentWaypoint].X + Math.Cos(randAngle) * randomDrivingRadius),
+                                                (float)(allWaypoints[currentWaypoint].Y + Math.Sin(randAngle) * randomDrivingRadius));
+            }
         }
 
         public void update(float dt)
