@@ -447,6 +447,26 @@ namespace Mooyash.Services
             }
         }
 
+        public static string toPlace(int place)
+        {
+            //doesn't work for big numbers like 21
+            if (place == 1)
+            {
+                return place + "st";
+            }
+            else if (place == 2)
+            {
+                return place + "nd";
+            }
+            else if (place == 3)
+            {
+                return place + "rd";
+            }
+            else
+            {
+                return place + "th";
+            }
+        }
         public static void drawUI()
         {
             if (Game.debugging)
@@ -541,22 +561,7 @@ namespace Mooyash.Services
             if (Game.GameSettings[1] == 1)
             {
                 int place = PhysicsEngine.player.place;
-                if(place == 1)
-                {
-                    Engine.DrawString(place + "st", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
-                }
-                else if(place == 2)
-                {
-                    Engine.DrawString(place + "nd", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
-                }
-                else if(place == 3)
-                {
-                    Engine.DrawString(place + "rd", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
-                }
-                else
-                {
-                    Engine.DrawString(place + "th", new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
-                }
+                Engine.DrawString(toPlace(place), new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
             }
 
             if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)
