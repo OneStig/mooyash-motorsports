@@ -123,6 +123,11 @@ namespace Mooyash.Services
                 player.throttle = 0;
 
                 MenuSystem.endTimer = 0;
+                
+                if (Game.GameSettings[1] == 0)
+                {
+                    LeaderboardLoader.saveScore(player.finTime, Game.GameSettings[4], Game.GameSettings[2]);
+                }
                 MenuSystem.SetFinalTime(player.finTime);
             }
 
@@ -211,6 +216,10 @@ namespace Mooyash.Services
                     if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
                     {
                         Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                    }
+                    if (curK.lapDisplay == 4)
+                    {
+                        curK.finTime = time;
                     }
                 }
             }

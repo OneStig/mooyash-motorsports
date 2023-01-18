@@ -194,16 +194,26 @@ namespace Mooyash.Services
                 PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
                 RenderEngine.draw();
 
+                
+
                 if (endTimer > 1.5f)
                 {
                     alpha = Math.Min((endTimer - 1.5f) / 0.6f, 1f);
 
                     cur.DrawScreen();
 
-                    Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black * alpha);
                     if (GetSettings()[1] == 0)
                     {
                         Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow * alpha, Game.font, TextAlignment.Center);
+                        Engine.DrawString("Leaderboard", new Vector2(163,48) * Game.ResolutionScale, Color.White * alpha, Game.font, TextAlignment.Center);
+                        List<float> scores = LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2]);
+                        for(int i = 0; i < scores.Count; i++)
+                        {
+                            Engine.DrawString(RenderEngine.toPlace(i + 1) + ":", new Vector2(100, 63 + 15 * i) * Game.ResolutionScale,
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Left);
+                            Engine.DrawString(timeToString(scores[i]), new Vector2(220, 63+15*i) * Game.ResolutionScale,
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Right);
+                        }
                     }
                     else
                     {
