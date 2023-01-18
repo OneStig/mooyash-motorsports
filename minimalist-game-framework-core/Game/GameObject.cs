@@ -260,6 +260,7 @@ namespace Mooyash.Modules
         public SoundInstance terrain;
         public SoundInstance driftSound;
         public float collideTimer;
+        public int prevId;
 
         // score
         public int score;
@@ -310,6 +311,8 @@ namespace Mooyash.Modules
             
             this.isAI = isAI;
             this.throttleConst = throttleConst;
+
+            id = PhysicsEngine.GetPhysicsID(PhysicsEngine.track.startPos);
         }
 
         //do not call itemHeld unless the item is greater than 0
@@ -649,7 +652,7 @@ namespace Mooyash.Modules
         {
             prevPosition = new Vector2(position.X, position.Y);
             float prevVelocity = velocity.X;
-            int prevId = id;
+            prevId = id;
 
             // update various timers
             stunTime += dt;
