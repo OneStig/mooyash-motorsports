@@ -50,8 +50,8 @@ namespace Mooyash.Services
             SettingtoID["100CC"] = 1;
 
 
-            SettingtoID["William"] = 0;
-            SettingtoID["Suyash"] = 1;
+            SettingtoID["Mooyash"] = 0;
+            SettingtoID["Gilliam"] = 1;
             SettingtoID["Davis"] = 2;
 
             SettingtoID["Mooyash Loop"] = 0;
@@ -73,8 +73,8 @@ namespace Mooyash.Services
             Dictionary<int, Button> MenuButtons = new Dictionary<int, Button>();
             
             MenuButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 65), new Vector2(80, 25), "Play", Color.White);
-            MenuButtons[1] = new Button(new Color(4, 148, 4), new Vector2(185, 98), new Vector2(110, 25), "How to Play", Color.White);
-            MenuButtons[2] = new Button(new Color(4, 148, 4), new Vector2(200, 131), new Vector2(80, 30), "Exit", Color.White);
+            MenuButtons[1] = new Button(new Color(4, 148, 4), new Vector2(190, 98), new Vector2(100, 25), "How to Play", Color.White);
+            MenuButtons[2] = new Button(new Color(4, 148, 4), new Vector2(210, 131), new Vector2(60, 18), "Exit", Color.White);
             
             ScreenStack[0] = new Screen(MenuTextures, MenuTexturePositions, MenuTextureSizes, MenuButtons, 0);
 
@@ -103,8 +103,8 @@ namespace Mooyash.Services
             Vector2[] CharacterTexturePosition = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CharacterTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CharacterButtons = new Dictionary<int, Button>();
-            CharacterButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 60), new Vector2(80, 25), "William", Color.White);
-            CharacterButtons[1] = new Button(new Color(4, 148, 4), new Vector2(200, 93), new Vector2(80, 25), "Suyash", Color.White);
+            CharacterButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 60), new Vector2(80, 25), "Mooyash", Color.White);
+            CharacterButtons[1] = new Button(new Color(4, 148, 4), new Vector2(200, 93), new Vector2(80, 25), "Gilliam", Color.White);
             CharacterButtons[2] = new Button(new Color(4, 148, 4), new Vector2(200, 126), new Vector2(80, 25), "Davis", Color.White);
             CharacterButtons[3] = new Button(new Color(4, 148, 4), new Vector2(215, 159), new Vector2(50, 18), "Back", Color.White);
             ScreenStack[3] = new Screen(CharacterTextures, CharacterTexturePosition, CharacterTextureSizes, CharacterButtons, 0);
