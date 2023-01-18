@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Mooyash.Modules;
 namespace Mooyash.Services
@@ -333,6 +334,10 @@ namespace Mooyash.Services
                 CurScreen--;
                 Settings.RemoveAt(Settings.Count - 1);
                 ScreenStack[CurScreen].curButton = 0;
+            }
+            else if (Engine.GetKeyDown(Key.Escape) && CurScreen == 0)
+            {
+                Process.GetCurrentProcess().Kill();
             }
             return false;
         }
