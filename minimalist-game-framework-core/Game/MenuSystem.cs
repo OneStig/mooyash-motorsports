@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Mooyash.Modules;
 namespace Mooyash.Services
@@ -40,6 +41,7 @@ namespace Mooyash.Services
 
             SettingtoID["Back"] = 0;
             SettingtoID["Play"] = 0;
+            SettingtoID["Exit"] = 1;
 
             SettingtoID["Time Trial"] = 0;
             SettingtoID["Grand Prix"] = 1;
@@ -69,8 +71,11 @@ namespace Mooyash.Services
             Vector2[] MenuTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] MenuTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MenuButtons = new Dictionary<int, Button>();
+            
             MenuButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 65), new Vector2(80, 25), "Play", Color.White);
             MenuButtons[1] = new Button(new Color(4, 148, 4), new Vector2(185, 98), new Vector2(110, 25), "How to Play", Color.White);
+            MenuButtons[2] = new Button(new Color(4, 148, 4), new Vector2(200, 131), new Vector2(80, 30), "Exit", Color.White);
+            
             ScreenStack[0] = new Screen(MenuTextures, MenuTexturePositions, MenuTextureSizes, MenuButtons, 0);
 
             //mode
@@ -346,7 +351,7 @@ namespace Mooyash.Services
                     }
                     Game.go = 0;
                 }
-                else if (CurScreen < 5 && !cur.Select().Equals("Back"))
+                else if (CurScreen < 5 && !cur.Select().Equals("Back") && !cur.Select().Equals("Exit"))
                 {
                     Settings.Add(cur.Select());
                     CurScreen++;
@@ -373,6 +378,11 @@ namespace Mooyash.Services
                         ScreenStack[i].resetSelected();
                     }
                     return true; //create new way to move on
+                }
+
+                if (CurScreen == 0 && cur.Select().Equals("Exit"))
+                {
+                    Process.GetCurrentProcess().Kill();
                 }
             }
             if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
