@@ -40,6 +40,7 @@ namespace Mooyash.Services
 
             SettingtoID["Back"] = 0;
             SettingtoID["Play"] = 0;
+            SettingtoID["Exit"] = 1;
 
             SettingtoID["Time Trial"] = 0;
             SettingtoID["Grand Prix"] = 1;
@@ -69,6 +70,7 @@ namespace Mooyash.Services
             Vector2[] MenuTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MenuButtons = new Dictionary<int, Button>();
             MenuButtons[0] = new Button(Color.Black, new Vector2(120, 90), new Vector2(80, 30), "Play", Color.White);
+            MenuButtons[1] = new Button(Color.Black, new Vector2(120, 130), new Vector2(80, 30), "Exit", Color.White);
             ScreenStack[0] = new Screen(MenuTextures, MenuTexturePositions, MenuTextureSizes, MenuButtons, 0);
 
             //mode
@@ -307,7 +309,7 @@ namespace Mooyash.Services
                     }
                     Game.go = 0;
                 }
-                else if (CurScreen < 5 && !cur.Select().Equals("Back"))
+                else if (CurScreen < 5 && !cur.Select().Equals("Back") && !cur.Select().Equals("Exit"))
                 {
                     Settings.Add(cur.Select());
                     CurScreen++;
@@ -328,16 +330,17 @@ namespace Mooyash.Services
                     }
                     return true; //create new way to move on
                 }
+
+                if (CurScreen == 0 && cur.Select().Equals("Exit"))
+                {
+                    Process.GetCurrentProcess().Kill();
+                }
             }
             if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
             {
                 CurScreen--;
                 Settings.RemoveAt(Settings.Count - 1);
                 ScreenStack[CurScreen].curButton = 0;
-            }
-            else if (Engine.GetKeyDown(Key.Escape) && CurScreen == 0)
-            {
-                Process.GetCurrentProcess().Kill();
             }
             return false;
         }
