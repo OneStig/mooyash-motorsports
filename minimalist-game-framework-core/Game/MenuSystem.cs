@@ -32,7 +32,9 @@ namespace Mooyash.Services
             displayNames = new Dictionary<string, string>() {
                 { "mooyash_blue","Blue" },
                 { "mooyash_red","Red" },
-                { "mooyash_green","Green" }
+                { "mooyash_green","Green" },
+                { "mooyash_yellow", "Yellow" },
+                { "mooyash_orange", "Orange" }
             };
 
             SettingtoID["Back"] = 0;
@@ -48,9 +50,9 @@ namespace Mooyash.Services
             SettingtoID["William"] = 0;
             SettingtoID["Suyash"] = 1;
 
-            SettingtoID["map1"] = 0;
-            SettingtoID["map2"] = 1;
-            SettingtoID["map3"] = 2;
+            SettingtoID["Mooyash Loop"] = 0;
+            SettingtoID["Panda Express"] = 1;
+            SettingtoID["Gilliam Racetrack"] = 2;
 
             SettingtoID["Replay"] = 0;
             SettingtoID["Return"] = 1;
@@ -103,9 +105,9 @@ namespace Mooyash.Services
             Vector2[] MapTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] MapTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MapButtons = new Dictionary<int, Button>();
-            MapButtons[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1", Color.White);
-            MapButtons[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2", Color.White);
-            MapButtons[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3", Color.White);
+            MapButtons[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "Mooyash Loop", Color.White);
+            MapButtons[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "Panda Express", Color.White);
+            MapButtons[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "Gilliam Racetrack", Color.White);
             MapButtons[3] = new Button(Color.Black, new Vector2(160, 120), new Vector2(50, 25), "Back", Color.White);
 
             ScreenStack[4] = new Screen(MapTextures, MapTexturePositions, MapTextureSizes, MapButtons, 0);

@@ -49,7 +49,6 @@ class Game
 
         //DEBUGGING
         debugging = false; // set true for diagnostics
-        PhysicsEngine.track = Track.tracks[0]; // should be handled by menu
         RenderEngine.camera = new Camera(new Vector2(250, 150), Math.PI / 2, 20, (float) Math.PI/12);
     }
 
