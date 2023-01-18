@@ -487,8 +487,6 @@ namespace Mooyash.Services
                     }
                 }
 
-                Engine.DrawString(PhysicsEngine.aiKarts[0].lapDisplay + "", new Vector2(300, 300), Color.Black, Game.diagnosticFont);
-                Engine.DrawString(PhysicsEngine.aiKarts[0].finTime + "", new Vector2(300, 320), Color.Black, Game.diagnosticFont);
             }
 
             String timer = MenuSystem.timeToString(PhysicsEngine.time);
@@ -520,8 +518,8 @@ namespace Mooyash.Services
             //Engine.DrawString(player.dists[2] + " ", new Vector2(300, 350), Color.White, Game.diagnosticFont);
             //Engine.DrawString(player.prevProgressInd + " " + player.curProgressInd, new Vector2(300, 400), Color.White, Game.diagnosticFont);
 
-            Engine.DrawString(timer, new Vector2(247, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("Lap " + PhysicsEngine.player.lapDisplay + "/3", new Vector2(253, 20) * Game.ResolutionScale, Color.White, Game.font);
+            MenuSystem.DrawHighlightedString(timer, new Vector2(247, 5) * Game.ResolutionScale, Color.Black, Game.font);
+            MenuSystem.DrawHighlightedString("Lap " + PhysicsEngine.player.lapDisplay + "/3", new Vector2(253, 20) * Game.ResolutionScale, Color.Black, Game.font);
 
             // "banana", "projectile", "speed"
             // 26 x 18 pixels
@@ -545,13 +543,13 @@ namespace Mooyash.Services
                 source: new Bounds2(new Vector2(26 * ind, 0), new Vector2(26, 18)), size: new Vector2(26, 18) * Game.ResolutionScale,
                 scaleMode: TextureScaleMode.Nearest);
 
-            Engine.DrawString("Score " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.White, Game.font);
-            Engine.DrawString("Coins " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.White, Game.font);
+            MenuSystem.DrawHighlightedString("Score " + PhysicsEngine.player.score, new Vector2(5, 5) * Game.ResolutionScale, Color.Black, Game.font);
+            MenuSystem.DrawHighlightedString("Coins " + PhysicsEngine.player.coins, new Vector2(5, 20) * Game.ResolutionScale, Color.Black, Game.font);
 
             if (Game.GameSettings[1] == 1)
             {
                 int place = PhysicsEngine.player.place;
-                Engine.DrawString(toPlace(place), new Vector2(315, 150) * Game.ResolutionScale, Color.White, Game.placeFont, TextAlignment.Right);
+                MenuSystem.DrawHighlightedString(toPlace(place), new Vector2(305, 150) * Game.ResolutionScale, Color.Black, Game.placeFont);
             }
 
             if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)

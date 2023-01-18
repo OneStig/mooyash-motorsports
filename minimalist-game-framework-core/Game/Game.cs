@@ -69,7 +69,7 @@ class Game
             {
                 RenderEngine.draw();
                 float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
-                MenuSystem.DrawHighlightedString(4 - Math.Floor(countDown) + "",new Vector2(160,60), Color.Black, placeFont);
+                MenuSystem.DrawHighlightedString(4 - Math.Floor(countDown) + "",new Vector2(160,60) * ResolutionScale, Color.Black, placeFont);
 
                 countDown += dt;
                 //  rendering handled by rendering engine     
@@ -93,7 +93,7 @@ class Game
                 if (go <= goConst)
                 {
                     float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
-                    MenuSystem.DrawHighlightedString("GO!", new Vector2(160,60), Color.Black, placeFont);
+                    MenuSystem.DrawHighlightedString("GO!", new Vector2(160,60) * ResolutionScale, Color.Black, placeFont);
                     go += dt;
                 }
             }
