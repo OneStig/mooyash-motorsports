@@ -491,20 +491,7 @@ namespace Mooyash.Services
                 Engine.DrawString(PhysicsEngine.aiKarts[0].finTime + "", new Vector2(300, 320), Color.Black, Game.diagnosticFont);
             }
 
-            String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
-            if (PhysicsEngine.time / 60 > 9)
-            {
-                timer = (int)PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";
-            }
-            if (PhysicsEngine.time % 60 < 10)
-            {
-                timer = "0" + (int) PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
-                if (PhysicsEngine.time / 60 > 9)
-                {
-                    timer = (int)PhysicsEngine.time / 60 + ".0" + PhysicsEngine.time % 60 + "00000000";
-                }
-            }
-            timer = timer.Substring(0, 8);
+            String timer = MenuSystem.timeToString(PhysicsEngine.time);
 
 
             float lineLen = 500;

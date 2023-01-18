@@ -151,6 +151,10 @@ namespace Mooyash.Services
             {
                 return "---";
             }
+            if(time == 0)
+            {
+                return "00.00.00";
+            }
 
             String timer = "0" + (int)time / 60 + "." + time % 60 + "00.00.00.00";
             if (time / 60 > 9)
@@ -194,9 +198,9 @@ namespace Mooyash.Services
                 PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
                 RenderEngine.draw();
 
-                if (endTimer > 1.5f)
+                if (endTimer > 0.5f)
                 {
-                    alpha = Math.Min((endTimer - 1.5f) / 0.6f, 1f);
+                    alpha = Math.Min((endTimer - 0.5f) / 0.6f, 1f);
 
                     cur.DrawScreen();
 
