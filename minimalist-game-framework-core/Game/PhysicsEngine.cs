@@ -39,7 +39,26 @@ namespace Mooyash.Services
                 RenderEngine.renderDistance = 10000f;
             }
 
-            player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mooyash_red", Color.Red);
+            string[] allNames = // determines which textures each Kart should use, and its corresponding color
+            {
+                "mooyash_red",
+                "gilliam_orange",
+                "davis_green",
+                "mooyash_blue",
+                "mooyash_yellow"
+            };
+
+            Color[] allColors = {
+                Color.Red,
+                Color.Orange,
+                Color.Green,
+                Color.Blue,
+                Color.Yellow
+            };
+
+            int playerCharacter = Game.GameSettings[3];
+
+            player = new Kart(2400 * (Game.GameSettings[2]+1), false, allNames[playerCharacter], allColors[playerCharacter]);
 
             gameObjects.Add(player);
             karts.Add(player);
@@ -47,30 +66,18 @@ namespace Mooyash.Services
             player.angle = track.startAngle;
             player.currentWaypoint = 1;
 
-            string[] allNames = // determines which textures each Kart should use, and its corresponding color
-            {
-                "mooyash_blue",
-                "mooyash_green",
-                "mooyash_orange",
-                "mooyash_yellow",
-                "mooyash_purple",
-                "mooyash_red"
-            };
-
-            Color[] allColors = {
-                Color.Blue,
-                Color.Green,
-                Color.Orange,
-                Color.Yellow,
-                Color.Purple,
-                Color.Red
-            };
-
             aiKarts = new Kart[track.startingGrid.Length];
+
+            int offset = 0;
 
             for (int i = 0; i < track.startingGrid.Length; i++)
             {
-                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[i], allColors[i]);
+                if (i == playerCharacter)
+                {
+                    offset++;
+                }
+
+                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[i + offset], allColors[i + offset]);
                 tempAI.position = track.startingGrid[i];
                 tempAI.angle = track.startAngle;
 

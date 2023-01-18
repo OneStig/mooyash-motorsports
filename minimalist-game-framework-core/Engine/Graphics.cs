@@ -418,7 +418,7 @@ static partial class Engine
     }
 }
 
-enum TextAlignment
+public enum TextAlignment
 {
     /// <summary>
     /// Left-align the text.
