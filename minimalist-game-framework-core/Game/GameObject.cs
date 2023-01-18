@@ -548,7 +548,7 @@ namespace Mooyash.Modules
 
             distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
 
-            if (itemHeld == 4)
+            if (itemHeld == 1 || itemHeld == 4)
             {
                 useItem();
             }
@@ -559,13 +559,9 @@ namespace Mooyash.Modules
                     useItem();
                 }
             }
-            else if (distanceToPlayer < 700 && itemHeld > 0)
+            else if (distanceToPlayer < 700 && itemHeld == 2)
             {
-                if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
-                {
-                    useItem();
-                }
-                else if (itemHeld == 2 && Math.Abs(angleToPlayer - angle) < .1) //shell
+                if (Math.Abs(angleToPlayer - angle) < .1) //shell
                 {
                     useItem();
                 }
