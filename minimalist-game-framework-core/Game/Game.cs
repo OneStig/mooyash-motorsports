@@ -28,8 +28,6 @@ class Game
 
     
     public static bool playing; // (saves 31 bits of overhead yay)
-
-    public static bool testing;
     public Game()
     {
         Engine.Fullscreen = true;
