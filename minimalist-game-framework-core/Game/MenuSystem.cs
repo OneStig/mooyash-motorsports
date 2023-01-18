@@ -194,13 +194,13 @@ namespace Mooyash.Services
                 PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
                 RenderEngine.draw();
 
-                
-
                 if (endTimer > 1.5f)
                 {
                     alpha = Math.Min((endTimer - 1.5f) / 0.6f, 1f);
 
                     cur.DrawScreen();
+
+                    Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black * alpha);
 
                     if (GetSettings()[1] == 0)
                     {
