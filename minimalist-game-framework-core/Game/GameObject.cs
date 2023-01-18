@@ -157,7 +157,7 @@ namespace Mooyash.Modules
         public int id;
         public int coins;
 
-        public float finTime;
+        public float finTime = float.MaxValue;
 
         public Vector2 prevPosition;
 
@@ -288,8 +288,6 @@ namespace Mooyash.Modules
             this.playerWaypoints = Track.tracks[0].playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
-
-            finTime = 0;
 
             prevProgressInd = 0;
             curProgressInd = 1;
@@ -837,7 +835,7 @@ namespace Mooyash.Modules
             // base.update(dt);
 
             //handle sounds
-            if (!isAI && !collided)
+            if (Game.playing && !isAI && !collided)
             {
                 if (id != prevId)
                 {

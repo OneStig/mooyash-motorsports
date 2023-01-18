@@ -52,6 +52,11 @@ public struct Color
         return new Color(R, G, B, alpha);
     }
 
+    public static Color operator *(Color a, float alpha)
+    {
+        return new Color(a.R, a.G, a.B, (byte)(a.A * alpha));
+    }
+
     public static readonly Color Transparent = new Color(0x00, 0x00, 0x00, 0x00);
     public static readonly Color AliceBlue = new Color(0xF0, 0xF8, 0xFF);
     public static readonly Color AntiqueWhite = new Color(0xFA, 0xEB, 0xD7);

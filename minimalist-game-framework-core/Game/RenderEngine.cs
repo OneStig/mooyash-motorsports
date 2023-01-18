@@ -466,6 +466,9 @@ namespace Mooyash.Services
                         break;
                     }
                 }
+
+                Engine.DrawString(PhysicsEngine.aiKarts[0].lapDisplay + "", new Vector2(300, 300), Color.Black, Game.diagnosticFont);
+                Engine.DrawString(PhysicsEngine.aiKarts[0].finTime + "", new Vector2(300, 320), Color.Black, Game.diagnosticFont);
             }
 
             String timer = "0" + (int) PhysicsEngine.time / 60 + "." + PhysicsEngine.time % 60 + "00000000";

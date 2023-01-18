@@ -16,8 +16,8 @@ namespace Mooyash.Services
         public static Track track;
 
         public static float time;
-        public static float finalTime;
 
+        public static readonly int totalLaps = 3;
 
         public static Kart[] aiKarts = new Kart[0];
 
@@ -105,7 +105,7 @@ namespace Mooyash.Services
             time += dt;
 
             //sees if game ends
-            if (player.lapDisplay > 3)
+            if (Game.playing && player.lapDisplay > totalLaps)
             {
                 Engine.StopSound(player.rev, fadeTime: 0.2f);
                 if(player.terrain != null)
@@ -115,14 +115,21 @@ namespace Mooyash.Services
                 player.boostTime = float.MaxValue / 2;
                 player.dBoostTime = float.MaxValue / 2;
                 Sounds.playMenuMusic();
-                player.lapDisplay = 3;
+                player.lapDisplay = totalLaps;
                 Game.playing = false;
                 Game.countDown = 1;
-                finalTime = time;
-                MenuSystem.SetFinalTime(finalTime);
+                player.finTime = time;
+
+                player.throttle = 0;
+
+                MenuSystem.endTimer = 0;
+                MenuSystem.SetFinalTime(player.finTime);
             }
 
-            player.updateInput(dt);
+            if (Game.playing)
+            {
+                player.updateInput(dt);
+            }
 
             foreach (Kart kart in karts)
             {
@@ -188,10 +195,6 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
-                        if(curK.lapCount > 3)
-                        {
-                            curK.finTime = time;
-                        }
                     }
                     else
                     {
@@ -199,6 +202,12 @@ namespace Mooyash.Services
                     }
                     int oldLapDisplay = curK.lapDisplay;
                     curK.lapDisplay = Math.Max(curK.lapDisplay, curK.lapCount);
+
+                    if (curK.finTime == float.MaxValue && curK.lapDisplay > totalLaps)
+                    {
+                        curK.finTime = time;
+                    }
+
                     if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
                     {
                         Engine.PlaySound(Sounds.sounds["lapFinish"]);
@@ -209,12 +218,17 @@ namespace Mooyash.Services
 
         public static int ComparePosition(Kart k1, Kart k2)
         {
-            if (k1.lapCount == k2.lapCount)
+            if (k1.finTime == float.MaxValue && k2.finTime == float.MaxValue)
             {
-                return k2.percentageAlongTrack.CompareTo(k1.percentageAlongTrack);
+                if (k1.lapCount == k2.lapCount)
+                {
+                    return k2.percentageAlongTrack.CompareTo(k1.percentageAlongTrack);
+                }
+
+                return k2.lapCount.CompareTo(k1.lapCount);
             }
 
-            return k2.lapCount.CompareTo(k1.lapCount);
+            return k1.finTime.CompareTo(k2.finTime);
         }
 
         public static int GetPhysicsID(Vector2 position)
