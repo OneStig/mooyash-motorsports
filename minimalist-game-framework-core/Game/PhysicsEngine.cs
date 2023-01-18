@@ -65,6 +65,7 @@ namespace Mooyash.Services
             player.position = track.startPos;
             player.angle = track.startAngle;
             player.currentWaypoint = 1;
+            player.place = track.startingGrid.Length+1;
 
             aiKarts = new Kart[track.startingGrid.Length];
 
