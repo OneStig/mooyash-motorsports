@@ -432,7 +432,7 @@ namespace Mooyash.Modules
             braking = false;
             prevThrottle = throttle;
 
-            if (Engine.GetKeyHeld(Key.W))
+            if (Engine.GetKeyHeld(Key.W) || Engine.GetKeyHeld(Key.Up))
             {
                 if (velocity.X < 0)
                 {
@@ -444,7 +444,7 @@ namespace Mooyash.Modules
                     throttle = Math.Min(1, throttle + tInputScale * dt);
                 }
             }
-            else if (Engine.GetKeyHeld(Key.S))
+            else if (Engine.GetKeyHeld(Key.S) || Engine.GetKeyHeld(Key.Down))
             {
                 if (velocity.X > 0)
                 {
@@ -461,7 +461,7 @@ namespace Mooyash.Modules
                 throttle = decay(throttle, throttleDecay, dt);
             }
 
-            if (Engine.GetKeyHeld(Key.LeftShift) && Math.Abs(steer) > 0.2f && velocity.X > 0)
+            if ((Engine.GetKeyHeld(Key.LeftShift) || Engine.GetKeyHeld(Key.RightShift)) && Math.Abs(steer) > 0.2f && velocity.X > 0)
             {
                 if (drifting == false)
                 {
@@ -480,11 +480,11 @@ namespace Mooyash.Modules
                     drifting = false;
                     Engine.StopSound(driftSound, fadeTime: 0.2f);
                 }
-                if (Engine.GetKeyHeld(Key.A))
+                if (Engine.GetKeyHeld(Key.A) || Engine.GetKeyHeld(Key.Left))
                 {
                     steer = Math.Max(-1, steer - sInputScale * dt);
                 }
-                else if (Engine.GetKeyHeld(Key.D))
+                else if (Engine.GetKeyHeld(Key.D) || Engine.GetKeyHeld(Key.Right))
                 {
                     steer = Math.Min(1, steer + sInputScale * dt);
                 }
