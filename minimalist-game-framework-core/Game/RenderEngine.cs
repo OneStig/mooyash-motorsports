@@ -422,7 +422,7 @@ namespace Mooyash.Services
             float angle;
             float distance = camera.tcos * camera.follow.X + camera.tsin * camera.height;
             //based on kart texture size
-            float kartY = project(new Vector2(0, camera.follow.X)).Y - (camera.screen / distance) * 31.25f * camera.scale;
+            float kartY = project(new Vector2(0, camera.follow.X)).Y - (camera.screen / distance) * PhysicsEngine.player.size.Y/2 * camera.scale;
             Vector2[] points;
             for (int i = 0; i < angles.Length; i++)
             {
