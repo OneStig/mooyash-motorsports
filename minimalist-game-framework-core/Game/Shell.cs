@@ -48,8 +48,12 @@ namespace Mooyash.Modules
             {
                 k.coins -= 2;
             }
+
+            if(!k.isLarge)
+            {
+                k.hit();
+            }
             
-            k.hit();
 
             PhysicsEngine.gameObjects.Remove(this);
             PhysicsEngine.projectiles.Remove(this);
