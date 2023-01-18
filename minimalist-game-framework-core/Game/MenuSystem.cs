@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Mooyash.Modules;
 namespace Mooyash.Services
 
@@ -18,6 +17,11 @@ namespace Mooyash.Services
         public static List<string> Settings = new List<String>();
 
         public static string finTime;
+
+        public static float alpha; // menu opacity from 0-1, 1 being opaque
+
+        // Menu timers for animation
+        public static float endTimer = float.MaxValue / 2;
 
         public static void loadTextures()
         {
@@ -143,6 +147,15 @@ namespace Mooyash.Services
 
         public static string timeToString(float time)
         {
+            if (time == float.MaxValue)
+            {
+                return "---";
+            }
+            if(time == 0)
+            {
+                return "00.00.00";
+            }
+
             String timer = "0" + (int)time / 60 + "." + time % 60 + "00.00.00.00";
             if (time / 60 > 9)
             {
@@ -160,79 +173,75 @@ namespace Mooyash.Services
             return timer;
         }
 
-        public static float calcAITime(Kart aiKart)
-        {
-            float avgSpeed = (aiKart.lapCount * Track.tracks[0].totalLen + aiKart.percentageAlongTrack/100 * Track.tracks[0].totalLen)/PhysicsEngine.finalTime;
-            float additionalTime = (1 - aiKart.percentageAlongTrack / 100) * Track.tracks[0].totalLen / avgSpeed;
-            return PhysicsEngine.finalTime + additionalTime;
-        }
-
         public static bool UpdateMenu()
         {
+            alpha = 1;
+
+            //Update timers
+            endTimer += Engine.TimeDelta;
 
             Screen cur = ScreenStack[CurScreen];
-
-            if (CurScreen == 5)
-            {
-                RenderEngine.draw();
-            }
 
             if (CurScreen == 7)
             {
                 RenderEngine.draw();
             }
 
-            cur.DrawScreen();
+            if (CurScreen != 5)
+            {
+                cur.DrawScreen();
+            }
+            
 
             if (CurScreen == 5)
             {
-                Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black);
-                if (GetSettings()[1] == 0)
-                {
-                    Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
-                    Engine.DrawString("Leaderboard", new Vector2(163,48) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
-                    List<float> scores = LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2]);
-                    for(int i = 0; i < scores.Count; i++)
-                    {
-                        Engine.DrawString(RenderEngine.toPlace(i + 1) + ":", new Vector2(100, 63 + 15 * i) * Game.ResolutionScale,
-                            finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White, Game.font, TextAlignment.Left);
-                        Engine.DrawString(timeToString(scores[i]), new Vector2(220, 63+15*i) * Game.ResolutionScale,
-                            finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White, Game.font, TextAlignment.Right);
-                    }
-                }
-                else
-                {
-                    Kart player = PhysicsEngine.player;
-                    Kart[] karts = PhysicsEngine.karts.ToArray();
-                    Kart[] places = new Kart[karts.Length];
+                PhysicsEngine.update(Math.Min(Engine.TimeDelta, 1f / 30f));
+                RenderEngine.draw();
 
-                    for(int i = 0; i < karts.Length; i++)
-                    {
-                        places[karts[i].place - 1] = karts[i];
-                    }
+                if (endTimer > 0.5f)
+                {
+                    alpha = Math.Min((endTimer - 0.5f) / 0.6f, 1f);
 
-                    for (int i = 0; i < places.Length; i++)
+                    cur.DrawScreen();
+
+                    Engine.DrawRectSolid(new Bounds2(95 * Game.ResolutionScale, 25 * Game.ResolutionScale, 130 * Game.ResolutionScale, 115 * Game.ResolutionScale), Color.Black * alpha);
+
+                    if (GetSettings()[1] == 0)
                     {
-                        if (places[i].selfId.Equals(player.selfId))
+                        Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow * alpha, Game.font, TextAlignment.Center);
+                        Engine.DrawString("Leaderboard", new Vector2(163,48) * Game.ResolutionScale, Color.White * alpha, Game.font, TextAlignment.Center);
+                        List<float> scores = LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2]);
+                        for(int i = 0; i < scores.Count; i++)
                         {
-                            Engine.DrawString(displayNames[places[i].selfId] , new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font);
-
-                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Right);
-                            
+                            Engine.DrawString(RenderEngine.toPlace(i + 1) + ":", new Vector2(100, 63 + 15 * i) * Game.ResolutionScale,
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Left);
+                            Engine.DrawString(timeToString(scores[i]), new Vector2(220, 63+15*i) * Game.ResolutionScale,
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Right);
                         }
-                        else
+                    }
+                    else
+                    {
+                        Kart player = PhysicsEngine.player;
+
+                        List<Kart> kartList = PhysicsEngine.karts.ToList();
+                        kartList.Sort(PhysicsEngine.ComparePosition);
+
+                        for (int i = 0; i < kartList.Count; i++)
                         {
-                            if (places[i].finTime == 0)
+                            Color txtColor = Color.White * alpha;
+
+                            if (kartList[i] == player)
                             {
-                                places[i].finTime = calcAITime(places[i]);
+                                txtColor = Color.Yellow * alpha;
                             }
-                            Engine.DrawString(displayNames[places[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font);
 
-                            Engine.DrawString(timeToString(places[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Right);
+                            Engine.DrawString(displayNames[kartList[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.font);
+
+                            Engine.DrawString(timeToString(kartList[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.font, TextAlignment.Right);
                         }
-                    }
 
-                    Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100,123) * Game.ResolutionScale, Color.White, Game.font);      
+                        Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100, 123) * Game.ResolutionScale, Color.White * alpha, Game.font);
+                    }
                 }
             }
 
@@ -244,7 +253,7 @@ namespace Mooyash.Services
             {
                 cur.Down();
             }
-            if (Engine.GetKeyDown(Key.Space))
+            if (Engine.GetKeyDown(Key.Space) || Engine.GetKeyDown(Key.Return))
             {
                 if(CurScreen == 7)
                 {
@@ -317,7 +326,7 @@ namespace Mooyash.Services
                     return true; //create new way to move on
                 }
             }
-            if (Engine.GetKeyDown(Key.Backspace) && CurScreen > 0)
+            if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
             {
                 CurScreen--;
                 Settings.RemoveAt(Settings.Count - 1);
@@ -401,7 +410,7 @@ namespace Mooyash.Services
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                Engine.DrawTexture(textures[i], positions[i] * Game.ResolutionScale, size: sizes[i] * Game.ResolutionScale, scaleMode: TextureScaleMode.Nearest);
+                Engine.DrawTexture(textures[i], positions[i] * Game.ResolutionScale, size: sizes[i] * Game.ResolutionScale, scaleMode: TextureScaleMode.Nearest, color: Color.White * MenuSystem.alpha);
             }
 
             for (int i = 0; i < buttons.Count; i++)
@@ -486,17 +495,17 @@ namespace Mooyash.Services
 
         public void DrawButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color);
+            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color * MenuSystem.alpha);
 
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor * MenuSystem.alpha, font, TextAlignment.Center);
 
         }
 
         public void DrawSelectedButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue);
-            Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color);
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor, font, TextAlignment.Center);
+            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue * MenuSystem.alpha);
+            Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color * MenuSystem.alpha);
+            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor * MenuSystem.alpha, font, TextAlignment.Center);
 
         }
 

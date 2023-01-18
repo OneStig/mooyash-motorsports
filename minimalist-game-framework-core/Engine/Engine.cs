@@ -144,7 +144,7 @@ static partial class Engine
             PollEvents();
 
             // Toggle between windowed and fullscreen mode when Alt+Enter is pressed:
-            if (GetKeyDown(Key.Escape))
+            if (GetKeyDown(Key.F))
             {
                 Fullscreen = !Fullscreen;
                 SDL.SDL_SetWindowFullscreen(Window, Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
