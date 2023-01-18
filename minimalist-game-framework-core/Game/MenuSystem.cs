@@ -287,9 +287,13 @@ namespace Mooyash.Services
                 if(CurScreen == 0)
                 {
                     string select = cur.Select();
-                    if(select.Equals("How to Play"))
+                    if (select.Equals("How to Play"))
                     {
                         CurScreen = 8;
+                    }
+                    else if (cur.Select().Equals("Exit"))
+                    {
+                        Process.GetCurrentProcess().Kill();
                     }
                     else
                     {
@@ -378,11 +382,6 @@ namespace Mooyash.Services
                         ScreenStack[i].resetSelected();
                     }
                     return true; //create new way to move on
-                }
-
-                if (CurScreen == 0 && cur.Select().Equals("Exit"))
-                {
-                    Process.GetCurrentProcess().Kill();
                 }
             }
             if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
