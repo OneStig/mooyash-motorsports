@@ -192,7 +192,7 @@ namespace Mooyash.Modules
         // Constants to determine how long certain effects will last (in seconds)
         private readonly float stunConst = 1.8f;
         public readonly float speedBoostConst = 2f;
-        private readonly float largeConst = 6f;
+        private readonly float largeConst = 4f;
         private readonly float rollConst = 2f;
         //for lap completion
         public int lapCount;
@@ -260,9 +260,13 @@ namespace Mooyash.Modules
         public SoundInstance terrain;
         public SoundInstance driftSound;
         public float collideTimer;
+        public int prevId;
 
         // score
         public int score;
+
+        //enlargement
+        public bool isLarge = false;
 
         // particle textures
         public static Texture smoke;
@@ -284,8 +288,8 @@ namespace Mooyash.Modules
             coins = 0;
 
             //Waypoint initialiazation
-            this.allWaypoints = Track.tracks[0].splines;
-            this.playerWaypoints = Track.tracks[0].playerSplines;
+            this.allWaypoints = PhysicsEngine.track.splines;
+            this.playerWaypoints = PhysicsEngine.track.playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
 
@@ -310,6 +314,8 @@ namespace Mooyash.Modules
             
             this.isAI = isAI;
             this.throttleConst = throttleConst;
+
+            id = PhysicsEngine.GetPhysicsID(PhysicsEngine.track.startPos);
         }
 
         //do not call itemHeld unless the item is greater than 0
@@ -377,15 +383,15 @@ namespace Mooyash.Modules
         {
             if (prevProgressInd == 0)
             {
-                percentageAlongTrack = Track.tracks[0].pLens[0] *
+                percentageAlongTrack = PhysicsEngine.track.pLens[0] *
                                         Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) /
-                                        Track.tracks[0].pTotalLen;
+                                        PhysicsEngine.track.pTotalLen;
                 return;
             }
-            float curDist = Track.tracks[0].pLens[prevProgressInd] *
+            float curDist = PhysicsEngine.track.pLens[prevProgressInd] *
                             Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) / 100;
-            float prevDist = Track.tracks[0].pLensToPoint[prevProgressInd - 1];
-            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
+            float prevDist = PhysicsEngine.track.pLensToPoint[prevProgressInd - 1];
+            percentageAlongTrack = (curDist + prevDist) / PhysicsEngine.track.pTotalLen * 100;
         }
 
         private float decay(float value, float constant, float dt)
@@ -546,7 +552,7 @@ namespace Mooyash.Modules
 
             distanceToPlayer = Splines.distanceToPoint(PhysicsEngine.player.position, position);
 
-            if (itemHeld == 4)
+            if (itemHeld == 1 || itemHeld == 4)
             {
                 useItem();
             }
@@ -557,13 +563,9 @@ namespace Mooyash.Modules
                     useItem();
                 }
             }
-            else if (distanceToPlayer < 700 && itemHeld > 0)
+            else if (distanceToPlayer < 700 && itemHeld == 2)
             {
-                if ((Math.Abs(angleToPlayer - angle) < .1) && (angleToPlayer - angle) < 0 && itemHeld == 1)
-                {
-                    useItem();
-                }
-                else if (itemHeld == 2 && Math.Abs(angleToPlayer - angle) < .1) //shell
+                if (Math.Abs(angleToPlayer - angle) < .1) //shell
                 {
                     useItem();
                 }
@@ -649,7 +651,7 @@ namespace Mooyash.Modules
         {
             prevPosition = new Vector2(position.X, position.Y);
             float prevVelocity = velocity.X;
-            int prevId = id;
+            prevId = id;
 
             // update various timers
             stunTime += dt;
@@ -701,11 +703,13 @@ namespace Mooyash.Modules
                 size = new Vector2(62.5f * largeMultiplier, 62.5f * largeMultiplier);
                 terrainConst = PhysicsEngine.terrainConsts[0];
                 radius = 48f;
+                isLarge = true;
             }
             else
             {
                 size = new Vector2(62.5f, 62.5f);
                 radius = 24f;
+                isLarge = false;
             }
 
             //acceleration due to drag (quadratic) and friction

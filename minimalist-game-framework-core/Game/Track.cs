@@ -102,7 +102,7 @@ namespace Mooyash.Modules
         public static void LoadTracks()
         {
             // Indicate how many tracks there are to load here
-            tracks = new Track[1];
+            tracks = new Track[3];
 
             for (int j = 0; j < tracks.Length; j++)
             {
