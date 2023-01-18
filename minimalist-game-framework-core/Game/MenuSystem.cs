@@ -55,7 +55,7 @@ namespace Mooyash.Services
             SettingtoID["Davis"] = 2;
 
             SettingtoID["Mooyash Loop"] = 0;
-            SettingtoID["Panda Express"] = 1;
+            SettingtoID["Panda Express Way"] = 1;
             SettingtoID["Gilliam Racetrack"] = 2;
 
             SettingtoID["Replay"] = 0;
@@ -115,7 +115,7 @@ namespace Mooyash.Services
             Vector2[] MapTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MapButtons = new Dictionary<int, Button>();
             MapButtons[0] = new Button(new Color(120,120,120), new Vector2(175, 65), new Vector2(130, 25), "Mooyash Loop", Color.White);
-            MapButtons[1] = new Button(new Color(120,120,120), new Vector2(175, 95), new Vector2(130, 25), "Panda Express", Color.White);
+            MapButtons[1] = new Button(new Color(120,120,120), new Vector2(155, 95), new Vector2(170, 25), "Panda Express Way", Color.White);
             MapButtons[2] = new Button(new Color(120,120,120), new Vector2(166, 125), new Vector2(148, 25), "Gilliam Racetrack", Color.White);
             MapButtons[3] = new Button(new Color(6, 97, 6), new Vector2(215, 155), new Vector2(50, 18), "Back", Color.White);
 
