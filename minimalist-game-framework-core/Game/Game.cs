@@ -28,17 +28,8 @@ class Game
 
     
     public static bool playing; // (saves 31 bits of overhead yay)
-
-    public static bool testing;
     public Game()
     {
-        testing = false;
-        if(testing)
-        {
-            Sounds.testSounds(0);
-            return;
-        }
-
         Engine.Fullscreen = true;
         SDL.SDL_SetWindowFullscreen(Engine.Window, Engine.Fullscreen ? (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
@@ -64,11 +55,6 @@ class Game
 
     public void Update()
     {
-        if (testing)
-        {
-            return;
-        }
-
         if (Engine.GetKeyDown(Key.P))
         {
             debugging = !debugging;

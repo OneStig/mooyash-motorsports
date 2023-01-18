@@ -119,6 +119,10 @@ namespace Mooyash.Services
                 Game.playing = false;
                 Game.countDown = 1;
                 finalTime = time;
+                if (Game.GameSettings[1] == 0)
+                {
+                    LeaderboardLoader.saveScore(finalTime, Game.GameSettings[4], Game.GameSettings[2]);
+                }
                 MenuSystem.SetFinalTime(finalTime);
             }
 
@@ -188,10 +192,6 @@ namespace Mooyash.Services
                     {
                         curK.lapCount++;
                         curK.distanceTraveled = 0;
-                        if(curK.lapCount > 3)
-                        {
-                            curK.finTime = time;
-                        }
                     }
                     else
                     {
@@ -202,6 +202,10 @@ namespace Mooyash.Services
                     if (curK.lapDisplay > oldLapDisplay && !curK.isAI)
                     {
                         Engine.PlaySound(Sounds.sounds["lapFinish"]);
+                    }
+                    if (curK.lapDisplay == 4)
+                    {
+                        curK.finTime = time;
                     }
                 }
             }

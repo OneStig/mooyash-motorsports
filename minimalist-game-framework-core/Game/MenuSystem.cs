@@ -190,6 +190,15 @@ namespace Mooyash.Services
                 if (GetSettings()[1] == 0)
                 {
                     Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow, Game.font, TextAlignment.Center);
+                    Engine.DrawString("Leaderboard", new Vector2(163,48) * Game.ResolutionScale, Color.White, Game.font, TextAlignment.Center);
+                    List<float> scores = LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2]);
+                    for(int i = 0; i < scores.Count; i++)
+                    {
+                        Engine.DrawString(RenderEngine.toPlace(i + 1) + ":", new Vector2(100, 63 + 15 * i) * Game.ResolutionScale,
+                            finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White, Game.font, TextAlignment.Left);
+                        Engine.DrawString(timeToString(scores[i]), new Vector2(220, 63+15*i) * Game.ResolutionScale,
+                            finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White, Game.font, TextAlignment.Right);
+                    }
                 }
                 else
                 {
