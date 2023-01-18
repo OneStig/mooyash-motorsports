@@ -69,11 +69,8 @@ class Game
             {
                 RenderEngine.draw();
                 float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
-                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(159, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(161, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(161, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(159, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                Engine.DrawString(4 - Math.Floor(countDown) + "", new Vector2(160, 60) * ResolutionScale, Color.White, placeFont, TextAlignment.Center);
+                MenuSystem.DrawHighlightedString(4 - Math.Floor(countDown) + "",new Vector2(160,60), Color.Black, placeFont);
+
                 countDown += dt;
                 //  rendering handled by rendering engine     
             }
@@ -96,11 +93,7 @@ class Game
                 if (go <= goConst)
                 {
                     float dt = Math.Min(Engine.TimeDelta, 1f / 30f);
-                    Engine.DrawString("GO!", new Vector2(159, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                    Engine.DrawString("GO!", new Vector2(161, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                    Engine.DrawString("GO!", new Vector2(161, 59) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                    Engine.DrawString("GO!", new Vector2(159, 61) * ResolutionScale, Color.Black, placeFont, TextAlignment.Center);
-                    Engine.DrawString("GO!", new Vector2(160, 60) * ResolutionScale, Color.White, placeFont, TextAlignment.Center);
+                    MenuSystem.DrawHighlightedString("GO!", new Vector2(160,60), Color.Black, placeFont);
                     go += dt;
                 }
             }

@@ -330,7 +330,7 @@ public class ResizableTexture
 /// <summary>
 /// A handle to a font. These should only be created by calling LoadFont().
 /// </summary>
-class Font
+public class Font
 {
     public readonly IntPtr Handle;
 

@@ -49,7 +49,7 @@ namespace Mooyash.Services
 
         public void followKart(Kart kart)
         {
-            angle = (kart.camFlipped ? (kart.angle + (float)Math.PI) % (2 * (float)Math.PI) : kart.angle);
+             angle = (kart.camFlipped ? (kart.angle + (float)Math.PI) % (2 * (float)Math.PI) : kart.angle);
             sin = (float) Math.Sin(angle);
             cos = (float) Math.Cos(angle);
 
