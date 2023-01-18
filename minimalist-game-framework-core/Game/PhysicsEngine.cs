@@ -32,6 +32,12 @@ namespace Mooyash.Services
             projectiles = new HashSet<Projectile>();
             karts = new HashSet<Kart>();
             spawners = new HashSet<Spawner>();
+            track = Track.tracks[Game.GameSettings[4]];
+            //scuffed, but it's 9:45 PM
+            if (Game.GameSettings[4] == 2)
+            {
+                RenderEngine.renderDistance = 10000f;
+            }
 
             player = new Kart(2400 * (Game.GameSettings[2]+1), false, "mooyash_red", Color.Red);
 

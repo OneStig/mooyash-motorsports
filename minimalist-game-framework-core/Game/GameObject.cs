@@ -284,8 +284,8 @@ namespace Mooyash.Modules
             coins = 0;
 
             //Waypoint initialiazation
-            this.allWaypoints = Track.tracks[0].splines;
-            this.playerWaypoints = Track.tracks[0].playerSplines;
+            this.allWaypoints = PhysicsEngine.track.splines;
+            this.playerWaypoints = PhysicsEngine.track.playerSplines;
             currentWaypoint = 0;
             previousWaypoint = 0;
 
@@ -377,15 +377,15 @@ namespace Mooyash.Modules
         {
             if (prevProgressInd == 0)
             {
-                percentageAlongTrack = Track.tracks[0].pLens[0] *
+                percentageAlongTrack = PhysicsEngine.track.pLens[0] *
                                         Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) /
-                                        Track.tracks[0].pTotalLen;
+                                        PhysicsEngine.track.pTotalLen;
                 return;
             }
-            float curDist = Track.tracks[0].pLens[prevProgressInd] *
+            float curDist = PhysicsEngine.track.pLens[prevProgressInd] *
                             Splines.getPercentageProgress(prevProgressPoint, curProgressPoint, position) / 100;
-            float prevDist = Track.tracks[0].pLensToPoint[prevProgressInd - 1];
-            percentageAlongTrack = (curDist + prevDist) / Track.tracks[0].pTotalLen * 100;
+            float prevDist = PhysicsEngine.track.pLensToPoint[prevProgressInd - 1];
+            percentageAlongTrack = (curDist + prevDist) / PhysicsEngine.track.pTotalLen * 100;
         }
 
         private float decay(float value, float constant, float dt)
