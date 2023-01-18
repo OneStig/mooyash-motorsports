@@ -77,9 +77,9 @@ namespace Mooyash.Services
             Vector2[] GamemodeTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] GamemodeTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> GamemodeButtons = new Dictionary<int, Button>();
-            GamemodeButtons[0] = new Button(Color.Black, new Vector2(220, 70), new Vector2(100, 30), "Time Trial", Color.White);
-            GamemodeButtons[1] = new Button(Color.Black, new Vector2(195, 105), new Vector2(100, 30), "Grand Prix", Color.White);
-            GamemodeButtons[2] = new Button(Color.Black, new Vector2(160, 160), new Vector2(50, 25), "Back", Color.White);
+            GamemodeButtons[0] = new Button(Color.Black, new Vector2(190, 70), new Vector2(100, 30), "Time Trial", Color.White);
+            GamemodeButtons[1] = new Button(Color.Black, new Vector2(190, 105), new Vector2(100, 30), "Grand Prix", Color.White);
+            GamemodeButtons[2] = new Button(Color.Black, new Vector2(215, 140), new Vector2(50, 25), "Back", Color.White);
             ScreenStack[1] = new Screen(GamemodeTextures, GamemodeTexturePositions, GamemodeTextureSizes, GamemodeButtons, 0);
 
             //cc
@@ -87,9 +87,9 @@ namespace Mooyash.Services
             Vector2[] CCTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CCTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CCButtons = new Dictionary<int, Button>();
-            CCButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "50CC", Color.White);
-            CCButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "100CC", Color.White);
-            CCButtons[2] = new Button(Color.Black, new Vector2(160, 120), new Vector2(50, 25), "Back", Color.White);
+            CCButtons[0] = new Button(Color.Black, new Vector2(200, 70), new Vector2(80, 30), "50CC", Color.White);
+            CCButtons[1] = new Button(Color.Black, new Vector2(200, 105), new Vector2(80, 30), "100CC", Color.White);
+            CCButtons[2] = new Button(Color.Black, new Vector2(215, 140), new Vector2(50, 25), "Back", Color.White);
             ScreenStack[2] = new Screen(CCTextures, CCTexturePositions, CCTextureSizes, CCButtons, 0);
 
             //character
@@ -97,9 +97,9 @@ namespace Mooyash.Services
             Vector2[] CharacterTexturePosition = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CharacterTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CharacterButtons = new Dictionary<int, Button>();
-            CharacterButtons[0] = new Button(Color.Black, new Vector2(76, 60), new Vector2(75, 30), "William", Color.White);
-            CharacterButtons[1] = new Button(Color.Black, new Vector2(176, 60), new Vector2(75, 30), "Suyash", Color.White);
-            CharacterButtons[2] = new Button(Color.Black, new Vector2(160, 120), new Vector2(50, 25), "Back", Color.White);
+            CharacterButtons[0] = new Button(Color.Black, new Vector2(200, 70), new Vector2(80, 30), "William", Color.White);
+            CharacterButtons[1] = new Button(Color.Black, new Vector2(200, 105), new Vector2(80, 30), "Suyash", Color.White);
+            CharacterButtons[2] = new Button(Color.Black, new Vector2(215, 140), new Vector2(50, 25), "Back", Color.White);
             ScreenStack[3] = new Screen(CharacterTextures, CharacterTexturePosition, CharacterTextureSizes, CharacterButtons, 0);
 
             //map
@@ -107,10 +107,10 @@ namespace Mooyash.Services
             Vector2[] MapTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] MapTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MapButtons = new Dictionary<int, Button>();
-            MapButtons[0] = new Button(Color.Black, new Vector2(22, 60), new Vector2(75, 30), "map1", Color.White);
-            MapButtons[1] = new Button(Color.Black, new Vector2(122, 60), new Vector2(75, 30), "map2", Color.White);
-            MapButtons[2] = new Button(Color.Black, new Vector2(222, 60), new Vector2(75, 30), "map3", Color.White);
-            MapButtons[3] = new Button(Color.Black, new Vector2(160, 120), new Vector2(50, 25), "Back", Color.White);
+            MapButtons[0] = new Button(Color.Black, new Vector2(200, 70), new Vector2(80, 30), "map1", Color.White);
+            MapButtons[1] = new Button(Color.Black, new Vector2(200, 105), new Vector2(80, 30), "map2", Color.White);
+            MapButtons[2] = new Button(Color.Black, new Vector2(200, 140), new Vector2(80, 30), "map3", Color.White);
+            MapButtons[3] = new Button(Color.Black, new Vector2(215, 175), new Vector2(50, 25), "Back", Color.White);
 
             ScreenStack[4] = new Screen(MapTextures, MapTexturePositions, MapTextureSizes, MapButtons, 0);
 
@@ -151,7 +151,7 @@ namespace Mooyash.Services
             Vector2[] HTPPositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] HTPSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> HTPButtons = new Dictionary<int, Button>();
-            HTPButtons[0] = new Button(Color.Black, new Vector2(76, 120), new Vector2(75, 30), "Continue", Color.White);
+            HTPButtons[0] = new Button(Color.Black, new Vector2(120, 135), new Vector2(80, 30), "Continue", Color.White);
 
             ScreenStack[8] = new Screen(HTPTextures, HTPPositions, HTPSizes, HTPButtons, 0);
 
