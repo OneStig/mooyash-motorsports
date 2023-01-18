@@ -549,7 +549,7 @@ namespace Mooyash.Services
             if (Game.GameSettings[1] == 1)
             {
                 int place = PhysicsEngine.player.place;
-                MenuSystem.DrawHighlightedString(toPlace(place), new Vector2(305, 150) * Game.ResolutionScale, Color.Black, Game.placeFont);
+                MenuSystem.DrawHighlightedString(toPlace(place), new Vector2(315, 150) * Game.ResolutionScale, Color.Black, Game.placeFont, align: TextAlignment.Right);
             }
 
             if (PhysicsEngine.player.boostTime < PhysicsEngine.player.speedBoostConst || PhysicsEngine.player.dBoostTime < PhysicsEngine.player.dBoostConst)

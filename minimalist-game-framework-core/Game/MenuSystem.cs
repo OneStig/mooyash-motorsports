@@ -193,13 +193,13 @@ namespace Mooyash.Services
             return timer;
         }
 
-        public static void DrawHighlightedString(string s, Vector2 position, Color c, Font f)
+        public static void DrawHighlightedString(string s, Vector2 position, Color c, Font f, TextAlignment align = TextAlignment.Left)
         {
-            Engine.DrawString(s, (position + new Vector2(-1, +1)), c, f, TextAlignment.Center);
-            Engine.DrawString(s, (position + new Vector2(-1, -1)), c, f, TextAlignment.Center);
-            Engine.DrawString(s, (position + new Vector2(1, -1)), c, f, TextAlignment.Center);
-            Engine.DrawString(s, (position + new Vector2(1, 1)), c, f, TextAlignment.Center);
-            Engine.DrawString(s, position, Color.White, f, TextAlignment.Center);
+            Engine.DrawString(s, (position + new Vector2(-4, +4)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(-4, -4)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(4, -4)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(4, 4)), c, f, align);
+            Engine.DrawString(s, position, Color.White, f, align);
         }
 
         public static bool UpdateMenu()
