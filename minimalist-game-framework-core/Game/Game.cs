@@ -14,6 +14,7 @@ class Game
     public static List<int> GameSettings;
     public static Font placeFont = Engine.LoadFont("MarioKart.ttf", 25 * ResolutionScale);
     public static Font font = Engine.LoadFont("MarioKart.ttf", 12 * ResolutionScale);
+    public static Font menuFont = Engine.LoadFont("MarioKart.ttf", 10 * ResolutionScale);
     public static Font diagnosticFont = Engine.LoadFont("cour.ttf", 12);
 
     public static float countDownConst = 4;
