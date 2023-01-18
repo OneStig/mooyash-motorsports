@@ -30,9 +30,11 @@ namespace Mooyash.Services
             Texture CreditsScreen = Engine.LoadTexture("Credits.png");
 
             displayNames = new Dictionary<string, string>() {
-                { "mooyash_blue","Blue" },
-                { "mooyash_red","Red" },
-                { "mooyash_green","Green" }
+                { "mooyash_red","Mooyash" },
+                { "gilliam_orange","Gilliam" },
+                { "davis_green","Davis" },
+                { "mooyash_blue", "Blueyash" },
+                { "mooyash_yellow", "Suyash" }
             };
 
             SettingtoID["Back"] = 0;
