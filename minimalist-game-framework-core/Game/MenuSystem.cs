@@ -32,7 +32,9 @@ namespace Mooyash.Services
             displayNames = new Dictionary<string, string>() {
                 { "mooyash_blue","Blue" },
                 { "mooyash_red","Red" },
-                { "mooyash_green","Green" }
+                { "mooyash_green","Green" },
+                { "mooyash_yellow", "Yellow" },
+                { "mooyash_orange", "Orange" }
             };
 
             SettingtoID["Back"] = 0;
