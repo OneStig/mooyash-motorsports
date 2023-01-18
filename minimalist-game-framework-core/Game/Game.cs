@@ -93,9 +93,9 @@ class Game
             }
             else
             {
-                if (Engine.GetKeyDown(Key.Tab))
+                if (Engine.GetKeyDown(Key.Escape))
                 {
-                    pause = true;
+                    pause = !pause;
                 }
                 if (pause)
                 {

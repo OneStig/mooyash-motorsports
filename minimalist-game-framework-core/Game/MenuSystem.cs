@@ -235,7 +235,7 @@ namespace Mooyash.Services
             {
                 cur.Down();
             }
-            if (Engine.GetKeyDown(Key.Space))
+            if (Engine.GetKeyDown(Key.Space) || Engine.GetKeyDown(Key.Return))
             {
                 if(CurScreen == 7)
                 {
@@ -308,7 +308,7 @@ namespace Mooyash.Services
                     return true; //create new way to move on
                 }
             }
-            if (Engine.GetKeyDown(Key.Backspace) && CurScreen > 0)
+            if (Engine.GetKeyDown(Key.Escape) && CurScreen > 0)
             {
                 CurScreen--;
                 Settings.RemoveAt(Settings.Count - 1);
