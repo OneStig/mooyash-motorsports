@@ -35,7 +35,11 @@ namespace Mooyash.Services
                 { "gilliam_orange","Gilliam" },
                 { "davis_green","Davis" },
                 { "mooyash_blue", "Blueyash" },
-                { "mooyash_yellow", "Suyash" }
+                { "mooyash_yellow", "Suyash" },
+                { "davis_blue", "Bavis" },
+                { "davis_yellow", "Yavis" },
+                { "gilliam_brown", "Santilliam" },
+                { "gilliam_blue", "Billiam" }
             };
             SettingtoID["How To Play"] = 0;
 

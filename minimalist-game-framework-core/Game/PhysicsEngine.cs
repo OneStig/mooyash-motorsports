@@ -12,6 +12,8 @@ namespace Mooyash.Services
         public static HashSet<GameObject> gameObjects = new HashSet<GameObject>();
         public static HashSet<Spawner> spawners = new HashSet<Spawner>();
 
+        public static Random rand = new Random();
+
         public static Kart player;
         public static Track track;
 
@@ -44,6 +46,10 @@ namespace Mooyash.Services
                 "mooyash_red",
                 "gilliam_orange",
                 "davis_green",
+                "gilliam_brown",
+                "gilliam_blue",
+                "davis_yellow",
+                "davis_blue",
                 "mooyash_blue",
                 "mooyash_yellow"
             };
@@ -52,6 +58,10 @@ namespace Mooyash.Services
                 Color.Red,
                 Color.Orange,
                 Color.Green,
+                Color.Brown,
+                Color.Blue,
+                Color.Yellow,
+                Color.Blue,
                 Color.Blue,
                 Color.Yellow
             };
@@ -68,6 +78,8 @@ namespace Mooyash.Services
             player.place = track.startingGrid.Length+1;
 
             aiKarts = new Kart[track.startingGrid.Length];
+            List<int> kartColors = new List<int>();
+            kartColors.Add(playerCharacter);
 
             int offset = 0;
 
@@ -78,12 +90,19 @@ namespace Mooyash.Services
                     offset++;
                 }
 
-                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[i + offset], allColors[i + offset]);
+                int randKart = rand.Next(0, allNames.Length);
+                while (kartColors.Contains(randKart))
+                {
+                    randKart = rand.Next(0, allNames.Length);
+                }
+                kartColors.Add(randKart);
+                Kart tempAI = new Kart(2400 * (Game.GameSettings[2] + 1), true, allNames[randKart], allColors[randKart]);
                 tempAI.position = track.startingGrid[i];
                 tempAI.angle = track.startAngle;
 
                 aiKarts[i] = tempAI;
             }
+
 
             time = 0;
 
