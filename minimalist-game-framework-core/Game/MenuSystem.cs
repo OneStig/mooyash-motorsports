@@ -35,7 +35,11 @@ namespace Mooyash.Services
                 { "gilliam_orange","Gilliam" },
                 { "davis_green","Davis" },
                 { "mooyash_blue", "Blueyash" },
-                { "mooyash_yellow", "Suyash" }
+                { "mooyash_yellow", "Suyash" },
+                { "davis_blue", "Bavis" },
+                { "davis_yellow", "Yavis" },
+                { "gilliam_brown", "Santilliam" },
+                { "gilliam_blue", "Billiam" }
             };
             SettingtoID["How To Play"] = 0;
 
@@ -55,7 +59,7 @@ namespace Mooyash.Services
             SettingtoID["Davis"] = 2;
 
             SettingtoID["Mooyash Loop"] = 0;
-            SettingtoID["Panda Express"] = 1;
+            SettingtoID["Panda Express Way"] = 1;
             SettingtoID["Gilliam Racetrack"] = 2;
 
             SettingtoID["Replay"] = 0;
@@ -72,9 +76,9 @@ namespace Mooyash.Services
             Vector2[] MenuTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MenuButtons = new Dictionary<int, Button>();
             
-            MenuButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 65), new Vector2(80, 25), "Play", Color.White);
-            MenuButtons[1] = new Button(new Color(4, 148, 4), new Vector2(190, 98), new Vector2(100, 25), "How to Play", Color.White);
-            MenuButtons[2] = new Button(new Color(4, 148, 4), new Vector2(210, 131), new Vector2(60, 18), "Exit", Color.White);
+            MenuButtons[0] = new Button(new Color(120,120,120), new Vector2(210, 65), new Vector2(60, 25), "Play", Color.White);
+            MenuButtons[1] = new Button(new Color(120,120,120), new Vector2(180, 95), new Vector2(120, 25), "How to Play", Color.White);
+            MenuButtons[2] = new Button(new Color(6, 97, 6), new Vector2(210, 125), new Vector2(60, 18), "Exit", Color.White);
             
             ScreenStack[0] = new Screen(MenuTextures, MenuTexturePositions, MenuTextureSizes, MenuButtons, 0);
 
@@ -83,9 +87,9 @@ namespace Mooyash.Services
             Vector2[] GamemodeTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] GamemodeTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> GamemodeButtons = new Dictionary<int, Button>();
-            GamemodeButtons[0] = new Button(new Color(4, 148, 4), new Vector2(190, 60), new Vector2(100, 25), "Time Trial", Color.White);
-            GamemodeButtons[1] = new Button(new Color(4, 148, 4), new Vector2(190, 93), new Vector2(100, 25), "Grand Prix", Color.White);
-            GamemodeButtons[2] = new Button(new Color(4, 148, 4), new Vector2(215, 126), new Vector2(50, 18), "Back", Color.White);
+            GamemodeButtons[0] = new Button(new Color(120,120,120), new Vector2(190, 65), new Vector2(100, 25), "Time Trial", Color.White);
+            GamemodeButtons[1] = new Button(new Color(120,120,120), new Vector2(190, 95), new Vector2(100, 25), "Grand Prix", Color.White);
+            GamemodeButtons[2] = new Button(new Color(6, 97, 6), new Vector2(215, 125), new Vector2(50, 18), "Back", Color.White);
             ScreenStack[1] = new Screen(GamemodeTextures, GamemodeTexturePositions, GamemodeTextureSizes, GamemodeButtons, 0);
 
             //cc
@@ -93,20 +97,20 @@ namespace Mooyash.Services
             Vector2[] CCTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CCTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CCButtons = new Dictionary<int, Button>();
-            CCButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 60), new Vector2(80, 25), "50CC", Color.White);
-            CCButtons[1] = new Button(new Color(4, 148, 4), new Vector2(200, 93), new Vector2(80, 25), "100CC", Color.White);
-            CCButtons[2] = new Button(new Color(4, 148, 4), new Vector2(215, 126), new Vector2(50, 18), "Back", Color.White);
+            CCButtons[0] = new Button(new Color(120,120,120), new Vector2(200, 65), new Vector2(80, 25), "50CC", Color.White);
+            CCButtons[1] = new Button(new Color(120,120,120), new Vector2(200, 95), new Vector2(80, 25), "100CC", Color.White);
+            CCButtons[2] = new Button(new Color(6, 97, 6), new Vector2(215, 125), new Vector2(50, 18), "Back", Color.White);
             ScreenStack[2] = new Screen(CCTextures, CCTexturePositions, CCTextureSizes, CCButtons, 0);
 
             //character
-            Texture[] CharacterTextures = new Texture[] { Menu };
+            Texture[] CharacterTextures = new Texture[] { Menu,  };
             Vector2[] CharacterTexturePosition = new Vector2[] { new Vector2(0, 0) };
             Vector2[] CharacterTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> CharacterButtons = new Dictionary<int, Button>();
-            CharacterButtons[0] = new Button(new Color(4, 148, 4), new Vector2(200, 60), new Vector2(80, 25), "Mooyash", Color.White);
-            CharacterButtons[1] = new Button(new Color(4, 148, 4), new Vector2(200, 93), new Vector2(80, 25), "Gilliam", Color.White);
-            CharacterButtons[2] = new Button(new Color(4, 148, 4), new Vector2(200, 126), new Vector2(80, 25), "Davis", Color.White);
-            CharacterButtons[3] = new Button(new Color(4, 148, 4), new Vector2(215, 159), new Vector2(50, 18), "Back", Color.White);
+            CharacterButtons[0] = new Button(new Color(120,120,120), new Vector2(200, 65), new Vector2(80, 25), "Mooyash", Color.White);
+            CharacterButtons[1] = new Button(new Color(120,120,120), new Vector2(200, 95), new Vector2(80, 25), "Gilliam", Color.White);
+            CharacterButtons[2] = new Button(new Color(120,120,120), new Vector2(200, 125), new Vector2(80, 25), "Davis", Color.White);
+            CharacterButtons[3] = new Button(new Color(6, 97, 6), new Vector2(215, 155), new Vector2(50, 18), "Back", Color.White);
             ScreenStack[3] = new Screen(CharacterTextures, CharacterTexturePosition, CharacterTextureSizes, CharacterButtons, 0);
 
             //map
@@ -114,10 +118,10 @@ namespace Mooyash.Services
             Vector2[] MapTexturePositions = new Vector2[] { new Vector2(0, 0) };
             Vector2[] MapTextureSizes = new Vector2[] { new Vector2(320, 180) };
             Dictionary<int, Button> MapButtons = new Dictionary<int, Button>();
-            MapButtons[0] = new Button(new Color(4, 148, 4), new Vector2(170, 60), new Vector2(140, 25), "Mooyash Loop", Color.White);
-            MapButtons[1] = new Button(new Color(4, 148, 4), new Vector2(170, 93), new Vector2(140, 25), "Panda Express", Color.White);
-            MapButtons[2] = new Button(new Color(4, 148, 4), new Vector2(170, 126), new Vector2(140, 25), "Gilliam Racetrack", Color.White);
-            MapButtons[3] = new Button(new Color(4, 148, 4), new Vector2(215, 159), new Vector2(50, 18), "Back", Color.White);
+            MapButtons[0] = new Button(new Color(120,120,120), new Vector2(175, 65), new Vector2(130, 25), "Mooyash Loop", Color.White);
+            MapButtons[1] = new Button(new Color(120,120,120), new Vector2(155, 95), new Vector2(170, 25), "Panda Express Way", Color.White);
+            MapButtons[2] = new Button(new Color(120,120,120), new Vector2(166, 125), new Vector2(148, 25), "Gilliam Racetrack", Color.White);
+            MapButtons[3] = new Button(new Color(6, 97, 6), new Vector2(215, 155), new Vector2(50, 18), "Back", Color.White);
 
             ScreenStack[4] = new Screen(MapTextures, MapTexturePositions, MapTextureSizes, MapButtons, 0);
 
@@ -199,6 +203,10 @@ namespace Mooyash.Services
             Engine.DrawString(s, (position + new Vector2(-4, -4)), c, f, align);
             Engine.DrawString(s, (position + new Vector2(4, -4)), c, f, align);
             Engine.DrawString(s, (position + new Vector2(4, 4)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(-4, 0)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(0, -4)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(4, 0)), c, f, align);
+            Engine.DrawString(s, (position + new Vector2(0, 4)), c, f, align);
             Engine.DrawString(s, position, Color.White, f, align);
         }
 
@@ -237,15 +245,15 @@ namespace Mooyash.Services
 
                     if (GetSettings()[1] == 0)
                     {
-                        Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow * alpha, Game.font, TextAlignment.Center);
+                        Engine.DrawString("Time: " + finTime, new Vector2(163, 33) * Game.ResolutionScale, Color.Yellow * alpha, Game.menuFont, TextAlignment.Center);
                         Engine.DrawString("Leaderboard", new Vector2(163,48) * Game.ResolutionScale, Color.White * alpha, Game.font, TextAlignment.Center);
                         List<float> scores = LeaderboardLoader.getScores(Game.GameSettings[4], Game.GameSettings[2]);
                         for(int i = 0; i < scores.Count; i++)
                         {
                             Engine.DrawString(RenderEngine.toPlace(i + 1) + ":", new Vector2(100, 63 + 15 * i) * Game.ResolutionScale,
-                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Left);
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.menuFont, TextAlignment.Left);
                             Engine.DrawString(timeToString(scores[i]), new Vector2(220, 63+15*i) * Game.ResolutionScale,
-                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.font, TextAlignment.Right);
+                                (finTime.Equals(timeToString(scores[i])) ? Color.Yellow : Color.White) * alpha, Game.menuFont, TextAlignment.Right);
                         }
                     }
                     else
@@ -264,12 +272,12 @@ namespace Mooyash.Services
                                 txtColor = Color.Yellow * alpha;
                             }
 
-                            Engine.DrawString(displayNames[kartList[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.font);
+                            Engine.DrawString(displayNames[kartList[i].selfId], new Vector2(100, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.menuFont);
 
-                            Engine.DrawString(timeToString(kartList[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.font, TextAlignment.Right);
+                            Engine.DrawString(timeToString(kartList[i].finTime), new Vector2(220, 31 + 15 * i) * Game.ResolutionScale, txtColor, Game.menuFont, TextAlignment.Right);
                         }
 
-                        Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100, 123) * Game.ResolutionScale, Color.White * alpha, Game.font);
+                        Engine.DrawString("Score: " + PhysicsEngine.player.score, new Vector2(100, 123) * Game.ResolutionScale, Color.White * alpha, Game.menuFont);
                     }
                 }
             }
@@ -547,7 +555,7 @@ namespace Mooyash.Services
         private Color color;
         private Color fontColor;
 
-        private static Font font = Game.menuFont;
+        private static Font font = Game.font;
 
         public Button(Color color, Vector2 position, Vector2 size, string func, Color fontColor)
         {
@@ -560,17 +568,18 @@ namespace Mooyash.Services
 
         public void DrawButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color * MenuSystem.alpha);
+            //Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), color * MenuSystem.alpha);
 
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor * MenuSystem.alpha, font, TextAlignment.Center);
+            MenuSystem.DrawHighlightedString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, new Color(153, 153, 153) * MenuSystem.alpha, font, TextAlignment.Center);
 
         }
 
         public void DrawSelectedButton()
         {
-            Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue * MenuSystem.alpha);
-            Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color * MenuSystem.alpha);
-            Engine.DrawString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, fontColor * MenuSystem.alpha, font, TextAlignment.Center);
+            //Engine.DrawRectSolid(new Bounds2(position * Game.ResolutionScale, size * Game.ResolutionScale), Color.AliceBlue * MenuSystem.alpha);
+            //Engine.DrawRectSolid(new Bounds2((position + new Vector2(2f, 2f)) * Game.ResolutionScale, (size + new Vector2(-4f, -4f)) * Game.ResolutionScale), color * MenuSystem.alpha);
+            MenuSystem.DrawHighlightedString(">", new Vector2(position.X, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, Color.Black * MenuSystem.alpha, font, TextAlignment.Center);
+            MenuSystem.DrawHighlightedString(func, new Vector2(position.X + size.X / 2, position.Y + size.Y / 2 - 6) * Game.ResolutionScale, Color.Black * MenuSystem.alpha, font, TextAlignment.Center);
 
         }
 
